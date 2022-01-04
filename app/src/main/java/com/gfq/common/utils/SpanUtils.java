@@ -1269,7 +1269,7 @@ public final class SpanUtils {
 
         private CustomImageSpan(final Bitmap b, final int verticalAlignment) {
             super(verticalAlignment);
-            mDrawable = new BitmapDrawable(ApplicationHolder.application.getResources(), b);
+            mDrawable = new BitmapDrawable(ApplicationHolder.instance.getResources(), b);
             mDrawable.setBounds(
                     0, 0, mDrawable.getIntrinsicWidth(), mDrawable.getIntrinsicHeight()
             );
@@ -1302,9 +1302,9 @@ public final class SpanUtils {
                 Bitmap bitmap;
                 try {
                     InputStream is =
-                            ApplicationHolder.application.getContentResolver().openInputStream(mContentUri);
+                            ApplicationHolder.instance.getContentResolver().openInputStream(mContentUri);
                     bitmap = BitmapFactory.decodeStream(is);
-                    drawable = new BitmapDrawable(ApplicationHolder.application.getResources(), bitmap);
+                    drawable = new BitmapDrawable(ApplicationHolder.instance.getResources(), bitmap);
                     drawable.setBounds(
                             0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight()
                     );
@@ -1316,7 +1316,7 @@ public final class SpanUtils {
                 }
             } else {
                 try {
-                    drawable = ContextCompat.getDrawable(ApplicationHolder.application, mResourceId);
+                    drawable = ContextCompat.getDrawable(ApplicationHolder.instance, mResourceId);
                     drawable.setBounds(
                             0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight()
                     );

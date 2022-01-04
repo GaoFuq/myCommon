@@ -15,7 +15,7 @@ import kotlin.system.exitProcess
  * 2、在 [Application] 的 onTerminate 方法中调用 [onTerminate] 方法。
  */
 object ApplicationHolder {
-    lateinit var application: Application
+    lateinit var instance: Application
     private val activities = Collections.synchronizedList(mutableListOf<Activity>())
     private val activityLifecycleCallbacks = object : Application.ActivityLifecycleCallbacks {
         override fun onActivityPaused(activity: Activity) {
@@ -44,13 +44,13 @@ object ApplicationHolder {
     }
 
     fun onCreate(application: Application) {
-        ApplicationHolder.application = application
+        ApplicationHolder.instance = application
         application.registerActivityLifecycleCallbacks(activityLifecycleCallbacks)
     }
 
     fun onTerminate() {
         activities.clear()
-        application.unregisterActivityLifecycleCallbacks(activityLifecycleCallbacks)
+        instance.unregisterActivityLifecycleCallbacks(activityLifecycleCallbacks)
     }
 
     /**
@@ -99,6 +99,6 @@ object ApplicationHolder {
      * 这里参考https://www.cnblogs.com/zhujiabin/p/6874508.html
      */
     fun isDebug(): Boolean {
-        return application.applicationInfo != null && (application.applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0
+        return instance.applicationInfo != null && (instance.applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0
     }
 }

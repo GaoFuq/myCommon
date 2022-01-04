@@ -1,4 +1,4 @@
-package com.gfq.common
+package com.gfq.common.view
 
 /**
  *  2021/12/30 11:55

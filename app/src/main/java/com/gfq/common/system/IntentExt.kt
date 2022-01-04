@@ -1,5 +1,6 @@
 @file:Suppress("NOTHING_TO_INLINE")
-package com.gfq.common
+package com.gfq.common.system
+
 import android.app.Activity
 import android.content.Context
 import android.content.Intent

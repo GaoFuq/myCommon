@@ -1,4 +1,4 @@
-package com.gfq.common
+package com.gfq.common.system
 
 /**
  *  2021/12/30 9:38
@@ -11,6 +11,8 @@ import com.google.gson.reflect.TypeToken
 val gson by lazy {
     Gson()
 }
+
+
 inline fun <reified T> String.toBean(): T? {
     return gson.fromJson<T>(this, object : TypeToken<T>() {}.type)
 }

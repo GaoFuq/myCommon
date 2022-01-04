@@ -1,4 +1,4 @@
-package com.gfq.common
+package com.gfq.common.system
 
 /**
  *  2021/12/29 15:33
@@ -8,7 +8,6 @@ package com.gfq.common
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.gfq.common.system.ApplicationHolder
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
@@ -201,4 +200,4 @@ internal class SPUtils private constructor() {
 
 
 
-class TestSP<T>(key: String, default: T) : SharedPreferencesDelegate<T>(ApplicationHolder.application, "testSP", key, default)
+class TestSP<T>(key: String, default: T) : SharedPreferencesDelegate<T>(ApplicationHolder.instance, "testSP", key, default)

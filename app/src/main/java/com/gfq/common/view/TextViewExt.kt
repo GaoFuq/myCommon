@@ -1,5 +1,5 @@
 @file:Suppress("NOTHING_TO_INLINE")
-package com.gfq.common
+package com.gfq.common.view
 
 /**
  *  2021/12/30 18:05

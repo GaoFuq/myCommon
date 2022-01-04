@@ -1,5 +1,6 @@
-package com.gfq.common
+package com.gfq.common.other
 
+import com.gfq.common.system.toBean
 import com.gfq.common.view.getSplitInputFilter
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor

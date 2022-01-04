@@ -1,10 +1,7 @@
-package com.gfq.common
+package com.gfq.common.view
 
-import android.app.Activity
-import android.content.Context
 import android.util.Log
 import android.view.View
-import androidx.core.view.doOnPreDraw
 import androidx.core.view.isGone
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible

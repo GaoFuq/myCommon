@@ -4,9 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import com.gfq.common.createIntent
 import java.io.File
-import java.lang.Deprecated
 
 /**
  *  2021/12/30 9:29
