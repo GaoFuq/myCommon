@@ -3,6 +3,7 @@ package com.gfq.common.system
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.net.Uri
 import java.io.File
 
@@ -36,4 +37,24 @@ fun Context.notifyGalleryUpdate(file: File?) {
         intent.data = uri
         sendBroadcast(intent)
     }
+}
+
+private val homePressedReceiver by lazy {
+    HomePressedReceiver()
+}
+
+fun Context?.registerHomePressedReceiver(
+    onHomePressed: (() -> Unit)? = null,
+    onHomeLongPressed: (() -> Unit)? = null
+) {
+    if (this == null) return
+    val filter = IntentFilter(Intent.ACTION_CLOSE_SYSTEM_DIALOGS)
+    homePressedReceiver.onHomePressed = onHomePressed
+    homePressedReceiver.onHomeLongPressed = onHomeLongPressed
+    registerReceiver(homePressedReceiver, filter);
+}
+
+fun Context?.unRegisterHomePressedReceiver() {
+    if (this == null) return
+    unregisterReceiver(homePressedReceiver)
 }

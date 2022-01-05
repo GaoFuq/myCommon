@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.gfq.common">
+    <application>
 
+        <provider
+            android:name="com.gfq.common.system.ActivityManagerProvider"
+            android:authorities="${applicationId}.ActivityManagerProvider"
+            android:exported="false"
+            android:multiprocess="true" />
+    </application>
 </manifest>

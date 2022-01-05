@@ -200,4 +200,4 @@ internal class SPUtils private constructor() {
 
 
 
-class TestSP<T>(key: String, default: T) : SharedPreferencesDelegate<T>(ApplicationHolder.instance, "testSP", key, default)
+class TestSP<T>(key: String, default: T) : SharedPreferencesDelegate<T>(ActivityManager.application, "testSP", key, default)

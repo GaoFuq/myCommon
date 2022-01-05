@@ -9,13 +9,9 @@ import kotlin.system.exitProcess
 
 /**
  * 持有 [Application] 实例，并对 [Activity] 进行了管理。
- *
- * 使用步骤：
- * 1、在 [Application] 的 onCreate 方法中调用 [onCreate] 方法。
- * 2、在 [Application] 的 onTerminate 方法中调用 [onTerminate] 方法。
  */
-object ApplicationHolder {
-    lateinit var instance: Application
+object ActivityManager {
+    lateinit var application: Application
     private val activities = Collections.synchronizedList(mutableListOf<Activity>())
     private val activityLifecycleCallbacks = object : Application.ActivityLifecycleCallbacks {
         override fun onActivityPaused(activity: Activity) {
@@ -43,15 +39,11 @@ object ApplicationHolder {
 
     }
 
-    fun onCreate(application: Application) {
-        ApplicationHolder.instance = application
+    fun init(application: Application) {
+        ActivityManager.application = application
         application.registerActivityLifecycleCallbacks(activityLifecycleCallbacks)
     }
 
-    fun onTerminate() {
-        activities.clear()
-        instance.unregisterActivityLifecycleCallbacks(activityLifecycleCallbacks)
-    }
 
     /**
      * 关闭所有Activity
@@ -99,6 +91,6 @@ object ApplicationHolder {
      * 这里参考https://www.cnblogs.com/zhujiabin/p/6874508.html
      */
     fun isDebug(): Boolean {
-        return instance.applicationInfo != null && (instance.applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0
+        return application.applicationInfo != null && (application.applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0
     }
 }

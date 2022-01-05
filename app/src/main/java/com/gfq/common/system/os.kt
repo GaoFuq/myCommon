@@ -4,11 +4,12 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
+import android.content.res.Resources
 import android.os.Build
 import android.provider.Settings
 import android.telephony.TelephonyManager
+import android.util.TypedValue
 import androidx.core.app.ActivityCompat
-import androidx.core.content.PermissionChecker
 import java.lang.Exception
 
 /**
@@ -16,6 +17,19 @@ import java.lang.Exception
  * @auth gaofuq
  * @description
  */
+
+fun dpF(n: Number?): Float {
+    if (n == null) return 0f
+    return TypedValue.applyDimension(
+        TypedValue.COMPLEX_UNIT_DIP,
+        n.toFloat(),
+        Resources.getSystem().displayMetrics
+    )
+}
+
+
+fun dp(n: Number?): Int = dpF(n).toInt()
+
 
 //需要获得READ_PHONE_STATE权限，>=6.0，默认返回null
 fun getIMEI(context: Context): String? {

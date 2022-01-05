@@ -1,10 +1,16 @@
 package com.gfq.common.view
 
+import android.app.Activity
+import android.util.Base64
 import android.util.Log
 import android.view.View
+import android.widget.ImageView
 import androidx.core.view.isGone
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
+import androidx.fragment.app.FragmentActivity
+import com.bumptech.glide.Glide
+import com.tencent.bugly.crashreport.CrashReport
 
 /**
  *  2021/12/29 11:55
@@ -47,7 +53,7 @@ inline fun View.setDebounceClick(limitTime: Long = 500L, crossinline onClick: ()
     var lastClickTime = 0L
     setOnClickListener {
         val currentTime = System.currentTimeMillis()
-        if( currentTime - lastClickTime >limitTime) {
+        if (currentTime - lastClickTime > limitTime) {
             lastClickTime = currentTime
             onClick()
         }
@@ -61,7 +67,11 @@ inline fun View.setDebounceClick(limitTime: Long = 500L, crossinline onClick: ()
  * @param interval      两次点击的时间间隔
  * @param clickTimes    点击次数
  */
-inline fun View.setMultiClicksListener(interval: Long=1000, clickTimes: Int, crossinline block:()->Unit) {
+inline fun View.setMultiClicksListener(
+    interval: Long = 1000,
+    clickTimes: Int,
+    crossinline block: () -> Unit
+) {
     setOnClickListener(object : View.OnClickListener {
         var firstTime: Long = 0
         var count: Int = 0
@@ -86,3 +96,48 @@ inline fun View.setMultiClicksListener(interval: Long=1000, clickTimes: Int, cro
         }
     })
 }
+
+
+fun ImageView?.setGif(url: String) {
+    this?.let { Glide.with(it).asGif().load(url).into(it) }
+}
+
+fun ImageView?.setGif(id: Int) {
+    this?.let { Glide.with(it).asGif().load(id).into(it) }
+}
+
+fun ImageView?.setImage(imgSource: Any?) {
+    if (this == null) return
+    if (imgSource == null) return
+    try {
+        if (this.context is Activity) {
+            if (isActivityDestroyed(this.context as Activity)) return
+        }
+
+        if (imgSource is Int) {
+            this.setImageResource(imgSource)
+            if (imgSource == 0) return
+        }
+
+        if (imgSource is String && imgSource.endsWith(".gif", true)) {
+            Glide.with(context).asGif().load(imgSource).into(this)
+            return
+        }
+
+        if (imgSource is String && imgSource.startsWith("data:image/png;base64")) {
+            val base64 = (imgSource as String).split(",")[1]
+            val imageByteArray: ByteArray = Base64.decode(base64, Base64.DEFAULT)
+            Glide.with(context).load(imageByteArray).into(this)
+            return
+        }
+
+        Glide.with(context).load(imgSource).into(this)
+    } catch (e: Exception) {
+        CrashReport.postCatchedException(e)
+    }
+}
+
+fun isActivityDestroyed(mActivity: Activity?): Boolean {
+    return mActivity == null || mActivity.isFinishing || mActivity.isDestroyed
+}
+
