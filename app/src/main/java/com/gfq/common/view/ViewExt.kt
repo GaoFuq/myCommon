@@ -1,10 +1,15 @@
 package com.gfq.common.view
 
 import android.app.Activity
+import android.content.Context
+import android.graphics.drawable.ColorDrawable
 import android.util.Base64
 import android.util.Log
+import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.widget.ImageView
+import android.widget.PopupWindow
 import androidx.core.view.isGone
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
@@ -125,7 +130,7 @@ fun ImageView?.setImage(imgSource: Any?) {
         }
 
         if (imgSource is String && imgSource.startsWith("data:image/png;base64")) {
-            val base64 = (imgSource as String).split(",")[1]
+            val base64 = imgSource.split(",")[1]
             val imageByteArray: ByteArray = Base64.decode(base64, Base64.DEFAULT)
             Glide.with(context).load(imageByteArray).into(this)
             return
@@ -139,5 +144,41 @@ fun ImageView?.setImage(imgSource: Any?) {
 
 fun isActivityDestroyed(mActivity: Activity?): Boolean {
     return mActivity == null || mActivity.isFinishing || mActivity.isDestroyed
+}
+
+/**
+ * 要在 Activity 初始化后立即显示 PopupWindow ，
+ * 建议在 onWindowFocusChanged 中调用
+ */
+fun Activity.createPopWindow(
+    layoutId: Int, width: Int = -2, height: Int = -2,
+    dismissOnTouchOutSide: Boolean = true,
+    block: (view: View, pop: PopupWindow) -> Unit = { _, _ -> }
+) {
+    val view = LayoutInflater.from(this).inflate(layoutId, null)
+    createPopWindow(view, width, height, dismissOnTouchOutSide, block)
+}
+
+/**
+ * 要在 Activity 初始化后立即显示 PopupWindow ，
+ * 建议在 onWindowFocusChanged 中调用
+ */
+fun Activity.createPopWindow(
+    view: View, width: Int = -2, height: Int = -2,
+    dismissOnTouchOutSide: Boolean = true,
+    block: (view: View, pop: PopupWindow) -> Unit = { _, _ -> }
+) {
+    val pop = PopupWindow(view, width, height)
+    pop.setBackgroundDrawable(ColorDrawable())
+    pop.isFocusable = true
+    pop.isOutsideTouchable = true
+    pop.setTouchInterceptor { v: View?, _: MotionEvent? ->
+        v?.performClick()
+        if (dismissOnTouchOutSide) {
+            pop.dismiss()
+        }
+        true
+    }
+    block(view, pop)
 }
 

@@ -76,5 +76,4 @@ abstract class BaseFragment<T : ViewDataBinding>(private val layoutId: Int) : Fr
             navController?.navigate(actionId)
         }
     }
-
 }

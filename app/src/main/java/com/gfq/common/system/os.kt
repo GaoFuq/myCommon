@@ -20,12 +20,25 @@ import android.widget.EditText
 import androidx.annotation.RequiresPermission
 import androidx.core.app.ActivityCompat
 import com.luck.picture.lib.tools.ScreenUtils
+import com.orhanobut.logger.AndroidLogAdapter
+import com.orhanobut.logger.Logger
+import com.orhanobut.logger.PrettyFormatStrategy
 import java.lang.Exception
 
 /**
  *  2021/12/31 10:19
  * @auth gaofuq
  * @description
+ *
+ * 在 Application onCreate 中调用，初始化 Logger
+    Logger.addLogAdapter(
+        AndroidLogAdapter(
+            PrettyFormatStrategy.newBuilder()
+            .showThreadInfo(false)
+            .build()
+        )
+    )
+
  */
 
 fun dpF(n: Number?): Float {
@@ -161,3 +174,4 @@ fun Context.getStatusBarHeight(): Int {
     }
     return if (result == 0) dp(25) else result
 }
+
