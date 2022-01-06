@@ -2,14 +2,24 @@ package com.gfq.common.system
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
 import android.content.res.Resources
-import android.os.Build
+import android.graphics.Rect
+import android.os.*
 import android.provider.Settings
 import android.telephony.TelephonyManager
+import android.util.Log
 import android.util.TypedValue
+import android.view.View
+import android.view.ViewGroup
+import android.view.Window
+import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
+import androidx.annotation.RequiresPermission
 import androidx.core.app.ActivityCompat
+import com.luck.picture.lib.tools.ScreenUtils
 import java.lang.Exception
 
 /**
@@ -27,11 +37,11 @@ fun dpF(n: Number?): Float {
     )
 }
 
-
 fun dp(n: Number?): Int = dpF(n).toInt()
 
 
 //需要获得READ_PHONE_STATE权限，>=6.0，默认返回null
+@RequiresPermission("android.permission.READ_PRIVILEGED_PHONE_STATE")
 fun getIMEI(context: Context): String? {
     try {
         val tm = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
@@ -55,12 +65,18 @@ fun getIMEI(context: Context): String? {
  * @return 设备的AndroidId
  */
 @SuppressLint("HardwareIds")
-fun getAndroidId(context: Context): String {
+fun Context.getAndroidId(): String {
     try {
-        return Settings.Secure.getString(
-            context.contentResolver,
+        val id = Settings.Secure.getString(
+            contentResolver,
             Settings.Secure.ANDROID_ID
         )
+        if (id == null || "9774d56d682e549c" == id) {
+            return ""
+        } else {
+            return id
+        }
+
     } catch (ex: Exception) {
         ex.printStackTrace()
     }
@@ -80,4 +96,68 @@ fun getSERIAL(): String? {
         ex.printStackTrace()
     }
     return ""
+}
+
+fun Context.showSoftInput(){
+    val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager ?: return
+    imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY)
+}
+
+
+
+fun View.showSoftInput() {
+    showSoftInput(context,this,0)
+}
+
+private fun showSoftInput(context: Context,view: View, flags: Int) {
+    val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager ?: return
+    view.isFocusable = true
+    view.isFocusableInTouchMode = true
+    view.requestFocus()
+    imm.showSoftInput(view, flags, object : ResultReceiver(Handler()) {
+        override fun onReceiveResult(resultCode: Int, resultData: Bundle) {
+            if (resultCode == InputMethodManager.RESULT_UNCHANGED_HIDDEN
+                || resultCode == InputMethodManager.RESULT_HIDDEN
+            ) {
+                imm.toggleSoftInput(0, 0)
+            }
+        }
+    })
+    imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY)
+}
+
+fun Activity.hideSoftInput() {
+    hideSoftInput(this.window)
+}
+
+fun hideSoftInput(window: Window) {
+    var view = window.currentFocus
+    if (view == null) {
+        val decorView = window.decorView
+        val focusView = decorView.findViewWithTag<View>("keyboardTagView")
+        if (focusView == null) {
+            view = EditText(window.context)
+            view.setTag("keyboardTagView")
+            (decorView as ViewGroup).addView(view, 0, 0)
+        } else {
+            view = focusView
+        }
+        view.requestFocus()
+    }
+    view.hideSoftInput()
+}
+
+fun View.hideSoftInput() {
+    val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager ?: return
+    imm.hideSoftInputFromWindow(this.windowToken, 0)
+}
+
+
+fun Context.getStatusBarHeight(): Int {
+    var result = 0
+    val resourceId = resources.getIdentifier("status_bar_height", "dimen", "android")
+    if (resourceId > 0) {
+        result = resources.getDimensionPixelSize(resourceId)
+    }
+    return if (result == 0) dp(25) else result
 }
