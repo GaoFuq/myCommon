@@ -19,7 +19,7 @@ import kotlin.reflect.KProperty
  * 示例：var xxx by SharedPreferencesDelegate()
  *
  * @property context
- * @property sharedPreferencesFileName  sharedPreferences对于的文件名字
+ * @property name  sharedPreferences对于的文件名字
  * @property key                        存储的key
  * @property default                    获取失败时，返回的默认值
  *
@@ -28,8 +28,8 @@ import kotlin.reflect.KProperty
  *   val test by TestSP("key","default")
  */
 open class SharedPreferencesDelegate<T>(
-    context: Context,
-    name: String,
+    private val context: Context,
+    private val name: String,
     private val key: String,
     private val default: T
 ) : ReadWriteProperty<Any?, T> {
