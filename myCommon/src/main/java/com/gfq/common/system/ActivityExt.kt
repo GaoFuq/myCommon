@@ -5,6 +5,8 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.net.Uri
+import android.widget.Toast
+import com.orhanobut.logger.Logger
 import java.io.File
 
 /**
@@ -57,4 +59,12 @@ fun Context?.registerHomePressedReceiver(
 fun Context?.unRegisterHomePressedReceiver() {
     if (this == null) return
     unregisterReceiver(homePressedReceiver)
+}
+
+fun toast(msg: String?) {
+    Toast.makeText(ActivityManager.application, msg, Toast.LENGTH_SHORT).show()
+}
+
+fun log(msg: String?) {
+    Logger.e(msg ?: "null")
 }

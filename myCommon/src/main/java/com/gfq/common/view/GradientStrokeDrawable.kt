@@ -4,6 +4,9 @@ import android.graphics.*
 import android.graphics.drawable.Drawable
 import com.gfq.common.system.dp
 
+/**
+ * 代码设置 渐变色的边框背景drawable
+ */
 class GradientStrokeDrawable(val width: Int, val height: Int): Drawable() {
 
     var mPaint: Paint = Paint()

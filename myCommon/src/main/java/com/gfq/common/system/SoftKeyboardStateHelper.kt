@@ -4,6 +4,7 @@ import android.graphics.Rect
 import android.util.Log
 import android.view.View
 import android.view.ViewTreeObserver
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
@@ -25,6 +26,22 @@ fun FragmentActivity.doOnSoftInputStateChange(
         onOpen = onOpen
     )
 }
+
+fun Fragment.doOnSoftInputStateChange(
+    activityRootView: View,
+    isSoftKeyboardOpened: Boolean = false,
+    onClose: () -> Unit = {},
+    onOpen: (diffPx: Int) -> Unit = {},
+) {
+    SoftKeyboardStateHelper(
+        activity = this.requireActivity(),
+        activityRootView = activityRootView,
+        isSoftKeyboardOpened = isSoftKeyboardOpened,
+        onClose = onClose,
+        onOpen = onOpen
+    )
+}
+
 
 class SoftKeyboardStateHelper(
     private val activity: FragmentActivity,

@@ -19,6 +19,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.annotation.RequiresPermission
 import androidx.core.app.ActivityCompat
+import androidx.fragment.app.Fragment
 import com.luck.picture.lib.tools.ScreenUtils
 import com.orhanobut.logger.AndroidLogAdapter
 import com.orhanobut.logger.Logger
@@ -31,13 +32,13 @@ import java.lang.Exception
  * @description
  *
  * 在 Application onCreate 中调用，初始化 Logger
-    Logger.addLogAdapter(
-        AndroidLogAdapter(
-            PrettyFormatStrategy.newBuilder()
-            .showThreadInfo(false)
-            .build()
-        )
-    )
+Logger.addLogAdapter(
+AndroidLogAdapter(
+PrettyFormatStrategy.newBuilder()
+.showThreadInfo(false)
+.build()
+)
+)
 
  */
 
@@ -111,19 +112,19 @@ fun getSERIAL(): String? {
     return ""
 }
 
-fun Context.showSoftInput(){
+fun Context.showSoftInput() {
     val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager ?: return
     imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY)
 }
 
 
-
 fun View.showSoftInput() {
-    showSoftInput(context,this,0)
+    showSoftInput(context, this, 0)
 }
 
-private fun showSoftInput(context: Context,view: View, flags: Int) {
-    val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager ?: return
+private fun showSoftInput(context: Context, view: View, flags: Int) {
+    val imm =
+        context.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager ?: return
     view.isFocusable = true
     view.isFocusableInTouchMode = true
     view.requestFocus()
@@ -141,6 +142,14 @@ private fun showSoftInput(context: Context,view: View, flags: Int) {
 
 fun Activity.hideSoftInput() {
     hideSoftInput(this.window)
+}
+
+fun Fragment.hideSoftInput() {
+    this.activity?.hideSoftInput()
+}
+
+fun Fragment.showSoftInput() {
+    this.activity?.showSoftInput()
 }
 
 fun hideSoftInput(window: Window) {
@@ -161,7 +170,8 @@ fun hideSoftInput(window: Window) {
 }
 
 fun View.hideSoftInput() {
-    val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager ?: return
+    val imm =
+        context.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager ?: return
     imm.hideSoftInputFromWindow(this.windowToken, 0)
 }
 

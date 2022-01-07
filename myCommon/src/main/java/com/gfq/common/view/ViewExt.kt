@@ -15,6 +15,7 @@ import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentActivity
 import com.bumptech.glide.Glide
+import com.gfq.common.system.ActivityManager
 import com.tencent.bugly.crashreport.CrashReport
 
 /**
@@ -150,12 +151,12 @@ fun isActivityDestroyed(mActivity: Activity?): Boolean {
  * 要在 Activity 初始化后立即显示 PopupWindow ，
  * 建议在 onWindowFocusChanged 中调用
  */
-fun Activity.createPopWindow(
+fun createPopWindow(
     layoutId: Int, width: Int = -2, height: Int = -2,
     dismissOnTouchOutSide: Boolean = true,
     block: (view: View, pop: PopupWindow) -> Unit = { _, _ -> }
 ) {
-    val view = LayoutInflater.from(this).inflate(layoutId, null)
+    val view = LayoutInflater.from(ActivityManager.application).inflate(layoutId, null)
     createPopWindow(view, width, height, dismissOnTouchOutSide, block)
 }
 
@@ -163,7 +164,7 @@ fun Activity.createPopWindow(
  * 要在 Activity 初始化后立即显示 PopupWindow ，
  * 建议在 onWindowFocusChanged 中调用
  */
-fun Activity.createPopWindow(
+fun createPopWindow(
     view: View, width: Int = -2, height: Int = -2,
     dismissOnTouchOutSide: Boolean = true,
     block: (view: View, pop: PopupWindow) -> Unit = { _, _ -> }
