@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
+import com.gfq.common.system.injectForIntentExtras
 
 /**
  *  2021/12/23 11:26
@@ -15,6 +16,7 @@ abstract class BaseActivity<Binding : ViewDataBinding>(private val layoutId:Int)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         actBinding = DataBindingUtil.setContentView<Binding>(this, layoutId)
+        injectForIntentExtras()
         initView()
     }
 

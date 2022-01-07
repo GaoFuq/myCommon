@@ -1,6 +1,7 @@
 package com.gfq.common.system
 import android.app.Activity
 import android.util.Log
+import androidx.fragment.app.Fragment
 
 /**
  * 基于反射与注解实现页面跳转参数注入。配合[com.like.common.util.injectForIntentExtras]使用。
@@ -29,6 +30,7 @@ annotation class AutoWired
  */
 @Throws(java.lang.IllegalArgumentException::class)
 fun Activity.injectForIntentExtras() {
+    val extras = intent.extras ?: return
     val declaredFields = try {
         javaClass.declaredFields
     } catch (e: Exception) {
@@ -38,11 +40,38 @@ fun Activity.injectForIntentExtras() {
         return
     }
 
-    val extras = intent.extras
+
     for (field in declaredFields) {
         if (field.isAnnotationPresent(AutoWired::class.java)) {
             val key = field.name
-            if (extras?.containsKey(key) == true) {
+            if (extras.containsKey(key)) {
+                field.isAccessible = true
+                field.set(this, extras[key])
+                continue
+            }
+            Log.w("AutoWired","@AutoWired field ${javaClass.name}.$key not found")
+        }
+    }
+}
+
+
+@Throws(java.lang.IllegalArgumentException::class)
+fun Fragment.injectForArguments() {
+    val extras = arguments ?: return
+    val declaredFields = try {
+        javaClass.declaredFields
+    } catch (e: Exception) {
+        null
+    }
+    if (declaredFields.isNullOrEmpty()) {
+        return
+    }
+
+
+    for (field in declaredFields) {
+        if (field.isAnnotationPresent(AutoWired::class.java)) {
+            val key = field.name
+            if (extras.containsKey(key)) {
                 field.isAccessible = true
                 field.set(this, extras[key])
                 continue
