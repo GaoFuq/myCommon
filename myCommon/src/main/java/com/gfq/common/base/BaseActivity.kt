@@ -21,5 +21,4 @@ abstract class BaseActivity<Binding : ViewDataBinding>(private val layoutId:Int)
     }
 
     abstract fun initView()
-
 }

@@ -78,6 +78,8 @@ object ActivityManager {
 
     fun getAllActivities(): List<Activity> = activities
 
+    fun getTopActivity() = activities.lastOrNull()
+
     /**
      * 退出整个app
      */

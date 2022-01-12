@@ -5,6 +5,8 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.net.Uri
+import android.view.Window
+import android.view.WindowManager
 import android.widget.Toast
 import com.orhanobut.logger.Logger
 import java.io.File
@@ -47,7 +49,7 @@ private val homePressedReceiver by lazy {
 
 fun Context?.registerHomePressedReceiver(
     onHomePressed: (() -> Unit)? = null,
-    onHomeLongPressed: (() -> Unit)? = null
+    onHomeLongPressed: (() -> Unit)? = null,
 ) {
     if (this == null) return
     val filter = IntentFilter(Intent.ACTION_CLOSE_SYSTEM_DIALOGS)
@@ -67,4 +69,10 @@ fun toast(msg: String?) {
 
 fun log(msg: String?) {
     Logger.e(msg ?: "null")
+}
+
+inline fun Window.updateAttributes(block: (WindowManager.LayoutParams) -> Unit) {
+    val params = attributes
+    block(params)
+    attributes = params
 }
