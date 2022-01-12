@@ -97,7 +97,7 @@ abstract class AbsRequestViewModel() : ViewModel() {
     override fun onCleared() {
     }
 
-    open fun <T, Resp : BaseResp<T>> request(
+    open  fun <T, Resp : BaseResp<T>> request(
         request: suspend CoroutineScope.() -> Resp?,
         success: ((T?) -> Unit)? = null,
         failed: ((code: Int, message: String?) -> Unit)? = null,
@@ -106,6 +106,10 @@ abstract class AbsRequestViewModel() : ViewModel() {
     ) {
 
         requestCount++
+        if (requestCount == 1) {
+            loadingTime = System.currentTimeMillis()
+            requestStateDialog?.showLoading()
+        }
 
         viewModelScope.launch {
             updateRequestStateDialogIfNeed<T, Resp>(RequestState.loading)
@@ -149,7 +153,6 @@ abstract class AbsRequestViewModel() : ViewModel() {
             RequestState.loading -> {
                 if (requestCount == 1) {
                     requestStateDialog?.showLoading()
-                    loadingTime = System.currentTimeMillis()
                 }
 
             }
