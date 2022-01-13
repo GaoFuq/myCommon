@@ -112,7 +112,7 @@ abstract class AbsRequestViewModel() : ViewModel() {
         }
 
         viewModelScope.launch {
-            updateRequestStateDialogIfNeed<T, Resp>(RequestState.loading)
+//            updateRequestStateDialogIfNeed<T, Resp>(RequestState.loading)
             flow { emit(request()) }    //网络请求
                 .flowOn(Dispatchers.IO)
                 .catch { e: Throwable? ->//异常捕获处理
