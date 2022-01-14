@@ -23,15 +23,22 @@ import kotlin.reflect.KProperty
  * 1.定义sp表
  * class SimpleSP <T> (key:String,def:T?) : SPDelegate<T>("SimpleSP",key,def)
  *
- * 2.定义字段
- * var simple by UserSp("simple",false)
+ * 2.定义字段名称和类型
+ * var simple by SimpleSP("simple",false)
+ * var simple by SimpleSP("simple","")
+ * var simple by SimpleSP("simple",0)
  *
  * 3.获取值 Log.e("tag",simple.toString())
- *   赋值   simple        = true
+ * 4.赋值   simple        = true
+ * 4.赋值   simple        = "下次一定"
+ * 4.赋值   simple        = 666
  *
  * API
- * 1.根据表名称获取[SharedPreferences]
  *  @see [SP.get]
+ *  @see [SP.getAllSPFormNames]
+ *  @see [SP.getAllSPFormData]
+ *  @see [SP.clear]
+ *  @see [SP.clearAll]
  *
  */
 object SP {
