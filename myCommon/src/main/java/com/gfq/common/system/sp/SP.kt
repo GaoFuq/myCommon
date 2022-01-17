@@ -173,9 +173,12 @@ object SP {
                 if (count > 0) {
                     getSaveAllSp().put(spFormCount, count - 1)
                     if (list.size == count - 1) {
+                        val editor = getSaveAllSp().edit()
+                        editor.clear()
                         for (index in 0 until count - 1) {
-                            getSaveAllSp().edit().putString("${formIndex_}${index}", list[index]).apply()
+                            editor.putString("${formIndex_}${index}", list[index])
                         }
+                        editor.apply()
                     }
                 }
             }
