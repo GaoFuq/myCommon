@@ -4,7 +4,6 @@ package com.gfq.common.net
 import android.net.ParseException
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.gson.JsonParseException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -229,7 +228,6 @@ abstract class AbsRequestViewModel() : ViewModel() {
                 customCode = IO_ERROR
             }
 
-            is JsonParseException,
             is JSONException,
             is ParseException,
             -> {
