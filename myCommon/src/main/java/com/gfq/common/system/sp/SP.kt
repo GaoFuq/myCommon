@@ -171,10 +171,10 @@ object SP {
                 val list = getAllSPFormNames().filter { it != spFormName }
                 val count = getSaveAllSp().getInt(spFormCount, 0)
                 if (count > 0) {
-                    getSaveAllSp().put(spFormCount, count - 1)
                     if (list.size == count - 1) {
                         val editor = getSaveAllSp().edit()
                         editor.clear()
+                        editor.putInt(spFormCount, count - 1)
                         for (index in 0 until count - 1) {
                             editor.putString("${formIndex_}${index}", list[index])
                         }
