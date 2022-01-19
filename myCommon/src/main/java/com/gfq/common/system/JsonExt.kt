@@ -6,8 +6,10 @@ package com.gfq.common.system
  * @description
  */
 import com.alibaba.fastjson.JSON
+import com.alibaba.fastjson.JSONException
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import kotlin.jvm.Throws
 
 
 val gson by lazy { Gson() }
@@ -25,15 +27,27 @@ fun Any?.toJSONStr(): String = JSON.toJSONString(this)
 /**
  * user Gson
  */
+@Throws(IllegalStateException::class)
 inline fun <reified T> String?.toBean(): T? {
-    return gson.fromJson(this, object : TypeToken<T>() {}.type)
+    return try {
+        gson.fromJson(this, object : TypeToken<T>() {}.type)
+    } catch (e: Exception) {
+        e.printStackTrace()
+        null
+    }
 }
 
 /**
  * user fastJson
  */
+@Throws(JSONException::class)
 inline fun <reified T> String?.toBEAN(): T? {
-    return JSON.parseObject(this, T::class.java)
+    return try {
+        JSON.parseObject(this, T::class.java)
+    } catch (e: Exception) {
+        e.printStackTrace()
+        null
+    }
 }
 
 /**
