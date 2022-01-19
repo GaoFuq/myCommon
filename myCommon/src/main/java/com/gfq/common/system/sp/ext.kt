@@ -19,8 +19,8 @@ internal val KEY_IS_EMPTY_EXCEPTION = "key is empty"
  * 如果[key]不存在，则返回[default]；
  */
 @Suppress("UNCHECKED_CAST")
-@Throws(IllegalArgumentException::class, NullPointerException::class)
-fun <T> SharedPreferences.get(key: String, default: T): T? {
+@Throws(IllegalArgumentException::class, NullPointerException::class,Exception::class)
+fun <T> SharedPreferences.get(key: String, default: T?): T? {
     require(key.isNotEmpty()) { KEY_IS_EMPTY_EXCEPTION }
     all?.forEach {
         if (it.key == key) {
@@ -35,10 +35,7 @@ fun <T> SharedPreferences.get(key: String, default: T): T? {
                         Log.i("get", "dataClassName = ${spDataWrapper.sp_g_f_q_dataClassName}")
                         Log.i("get", "dataKeyName = ${spDataWrapper.sp_g_f_q_dataKeyName}")
                         Log.i("get", "dataValue = ${spDataWrapper.sp_g_f_q_dataValue}")
-                        spDataWrapper.sp_g_f_q_dataValue?.let {
-                            JSON.parseObject(spDataWrapper.sp_g_f_q_dataValue,
-                                Class.forName(spDataWrapper.sp_g_f_q_dataClassName)) as? T
-                        }
+                        JSON.parseObject(spDataWrapper.sp_g_f_q_dataValue, Class.forName(spDataWrapper.sp_g_f_q_dataClassName)) as? T
                     } else {
                         it.value as T
                     }
