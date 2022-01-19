@@ -14,16 +14,12 @@ package com.gfq.common.system.sp.simple
  * @see [NoClearSP]
  */
 internal object SPCache {
-    class Table {
-        companion object {
-            const val user = "userTable"
-            const val notClearOnExitApp = "notClearOnExitAppTable"
-        }
+    object Table {
+        const val user = "userTable"
+        const val notClearOnExitApp = "notClearOnExitAppTable"
     }
-    class Key {
-        companion object {
-            const val userInfo = "userInfo"
-        }
+    object Key {
+        const val userInfo = "userInfo"
     }
 
     var userInfo by UserSP()
