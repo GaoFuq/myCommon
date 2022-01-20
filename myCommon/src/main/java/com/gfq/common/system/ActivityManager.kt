@@ -4,6 +4,9 @@ import android.app.Activity
 import android.app.Application
 import android.content.pm.ApplicationInfo
 import android.os.Bundle
+import com.orhanobut.logger.AndroidLogAdapter
+import com.orhanobut.logger.Logger
+import com.orhanobut.logger.PrettyFormatStrategy
 import java.util.*
 import kotlin.system.exitProcess
 
@@ -42,6 +45,17 @@ object ActivityManager {
     fun init(application: Application) {
         ActivityManager.application = application
         application.registerActivityLifecycleCallbacks(activityLifecycleCallbacks)
+        initLogger()
+    }
+
+    private fun initLogger() {
+        Logger.addLogAdapter(
+            AndroidLogAdapter(
+                PrettyFormatStrategy.newBuilder()
+                    .showThreadInfo(false)
+                    .build()
+            )
+        )
     }
 
 
