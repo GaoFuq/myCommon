@@ -9,10 +9,10 @@ import com.gfq.common.system.sp.SPDelegate
  * @auth gaofuq
  * @description
  */
-internal class TestSP<T>(key: String, default: T) : SPDelegate<T>("testSP", key, default)
+internal class TestSP<T>( default: T) : SPDelegate<T>("testSP", default)
 
 internal class ATestActivity:AppCompatActivity() {
-    var test by TestSP("key","default")
+    var test by TestSP("default")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
