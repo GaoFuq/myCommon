@@ -309,7 +309,7 @@ public class TopSheetBehavior<V extends View> extends CoordinatorLayout.Behavior
 
     @Override
     public boolean onStartNestedScroll(CoordinatorLayout coordinatorLayout, V child,
-                                       View directTargetChild, View target, int nestedScrollAxes) {
+                                       View directTargetChild, View target, int nestedScrollAxes, int type) {
         mLastNestedScrollDy = 0;
         mNestedScrolled = false;
         return (nestedScrollAxes & ViewCompat.SCROLL_AXIS_VERTICAL) != 0;
@@ -317,7 +317,7 @@ public class TopSheetBehavior<V extends View> extends CoordinatorLayout.Behavior
 
     @Override
     public void onNestedPreScroll(CoordinatorLayout coordinatorLayout, V child, View target, int dx,
-                                  int dy, int[] consumed) {
+                                  int dy, int[] consumed, int type) {
         View scrollingChild = mNestedScrollingChildRef.get();
         if (target != scrollingChild) {
             return;
@@ -325,7 +325,7 @@ public class TopSheetBehavior<V extends View> extends CoordinatorLayout.Behavior
         int currentTop = child.getTop();
         int newTop = currentTop - dy;
         if (dy > 0) { // Upward
-            if (!ViewCompat.canScrollVertically(target, 1)) {
+            if (!target.canScrollVertically( 1)) {
                 if (newTop >= mMinOffset || mHideable) {
                     consumed[1] = dy;
                     ViewCompat.offsetTopAndBottom(child, -dy);
@@ -354,7 +354,7 @@ public class TopSheetBehavior<V extends View> extends CoordinatorLayout.Behavior
     }
 
     @Override
-    public void onStopNestedScroll(CoordinatorLayout coordinatorLayout, V child, View target) {
+    public void onStopNestedScroll(CoordinatorLayout coordinatorLayout, V child, View target,int type) {
         if (child.getTop() == mMaxOffset) {
             setStateInternal(STATE_EXPANDED);
             return;
@@ -572,7 +572,7 @@ public class TopSheetBehavior<V extends View> extends CoordinatorLayout.Behavior
 
     private float getYVelocity() {
         mVelocityTracker.computeCurrentVelocity(1000, mMaximumVelocity);
-        return VelocityTrackerCompat.getYVelocity(mVelocityTracker, mActivePointerId);
+        return  mVelocityTracker.getYVelocity(mActivePointerId);
     }
 
     private final ViewDragHelper.Callback mDragCallback = new ViewDragHelper.Callback() {
@@ -587,7 +587,7 @@ public class TopSheetBehavior<V extends View> extends CoordinatorLayout.Behavior
             }
             if (mState == STATE_EXPANDED && mActivePointerId == pointerId) {
                 View scroll = mNestedScrollingChildRef.get();
-                if (scroll != null && ViewCompat.canScrollVertically(scroll, -1)) {
+                if (scroll != null && scroll.canScrollVertically( -1)) {
                     // Let the content scroll up
                     return false;
                 }
@@ -718,18 +718,23 @@ public class TopSheetBehavior<V extends View> extends CoordinatorLayout.Behavior
             out.writeInt(state);
         }
 
-        public static final Creator<SavedState> CREATOR = ParcelableCompat.newCreator(
-                new ParcelableCompatCreatorCallbacks<SavedState>() {
-                    @Override
-                    public SavedState createFromParcel(Parcel in, ClassLoader loader) {
-                        return new SavedState(in, loader);
-                    }
+        public static final Creator<SavedState> CREATOR = new ClassLoaderCreator<SavedState>() {
+            @Override
+            public SavedState createFromParcel(Parcel in, ClassLoader loader) {
+                return new SavedState(in, loader);
+            }
 
-                    @Override
-                    public SavedState[] newArray(int size) {
-                        return new SavedState[size];
-                    }
-                });
+            @Override
+            public SavedState createFromParcel(Parcel in) {
+                return createFromParcel(in, null);
+            }
+
+            @Override
+            public SavedState[] newArray(int size) {
+                return new SavedState[size];
+            }
+        };
+
     }
 
     /**
