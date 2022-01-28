@@ -31,7 +31,7 @@ val externalPicture by lazy { ActivityManager.application.getExternalFilesDir(En
 val externalMovies by lazy { ActivityManager.application.getExternalFilesDir(Environment.DIRECTORY_MOVIES) }
 
 /**
- * 下载文件
+ * 下载文件。如果文件是 图片/视频/音频 ，下载完成后会自动插入MediaStore媒体库中，并刷新图库。
  * @param url 文件地址
  * @param saveDir 文件保存的目录路径，默认[externalDownload]
  * @param saveFileName 文件保存名称，默认原名称
@@ -46,7 +46,7 @@ fun downloadFile(
     saveFileName: String? = null,
     needOpen: Boolean = false,
     onProgress: ((Int) -> Unit)? = null,
-    success: (() -> Unit)? = null,
+    success: ((file:File) -> Unit)? = null,
     failed: (() -> Unit)? = null,
 ) {
     val startTime = System.currentTimeMillis()
@@ -80,7 +80,7 @@ fun downloadFile(
                     onProgress?.invoke(progress)
                 }
                 fos.flush()
-                success?.invoke()
+                success?.invoke(file)
                 log("downloadFile success cost time = ${(System.currentTimeMillis() - startTime)}")
 
                 if (file.canInsertMediaStore()) {
