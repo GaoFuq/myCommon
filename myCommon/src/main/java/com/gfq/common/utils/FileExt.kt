@@ -6,7 +6,6 @@ import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
-import android.util.Log
 import android.webkit.MimeTypeMap
 import androidx.core.content.FileProvider
 import com.gfq.common.system.ActivityManager
@@ -35,7 +34,7 @@ val externalMovies by lazy { ActivityManager.application.getExternalFilesDir(Env
  * @param url 文件地址
  * @param saveDir 文件保存的目录路径，默认[externalDownload]
  * @param saveFileName 文件保存名称，默认原名称
- * @param needOpen 文件下载完成后，是否打开
+ * @param autoOpen 文件下载完成后，是否自动打开
  * @param onProgress 下载进度回调
  * @param success 下载成功回调
  * @param failed 下载失败回调
@@ -44,7 +43,7 @@ fun downloadFile(
     url: String,
     saveDir: String? = externalDownload?.path,
     saveFileName: String? = null,
-    needOpen: Boolean = false,
+    autoOpen: Boolean = false,
     onProgress: ((Int) -> Unit)? = null,
     success: ((file:File) -> Unit)? = null,
     failed: (() -> Unit)? = null,
@@ -87,7 +86,7 @@ fun downloadFile(
                 if (file.canInsertMediaStore()) {
                     file.insertMediaStore()
                 }
-                if (needOpen) {
+                if (autoOpen) {
                     file.open()
                 }
             } catch (e: Exception) {
@@ -197,7 +196,7 @@ fun File?.open() {
         addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         action = Intent.ACTION_VIEW
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             val contentUri =
                 FileProvider.getUriForFile(ctx, ctx.packageName + ".fileProvider", this@open)
             setDataAndType(contentUri, getMimeType())
