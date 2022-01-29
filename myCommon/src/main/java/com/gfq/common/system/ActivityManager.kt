@@ -52,7 +52,7 @@ object ActivityManager {
         Logger.addLogAdapter(
             AndroidLogAdapter(
                 PrettyFormatStrategy.newBuilder()
-                    .showThreadInfo(false)
+                    .showThreadInfo(true)
                     .build()
             )
         )

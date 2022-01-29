@@ -56,7 +56,7 @@ fun downloadFile(
     okHttpClient.newCall(request).enqueue(object : Callback {
         override fun onFailure(call: Call, e: IOException) {
             log("downloadFile failed ")
-            failed?.invoke()
+            mainThread { failed?.invoke() }
             e.printStackTrace()
         }
 
@@ -77,10 +77,11 @@ fun downloadFile(
                     sum += len.toLong()
                     val progress = (sum * 1.0f / total * 100).toInt()
                     // 下载中
-                    onProgress?.invoke(progress)
+                    mainThread { onProgress?.invoke(progress) }
                 }
                 fos.flush()
-                success?.invoke(file)
+                mainThread { success?.invoke(file) }
+
                 log("downloadFile success cost time = ${(System.currentTimeMillis() - startTime)}")
 
                 if (file.canInsertMediaStore()) {
@@ -91,7 +92,7 @@ fun downloadFile(
                 }
             } catch (e: Exception) {
                 log("downloadFile failed onResponse handle failed")
-                failed?.invoke()
+                mainThread { failed?.invoke() }
                 e.printStackTrace()
             } finally {
                 try {
@@ -198,7 +199,7 @@ fun File?.open() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
             val contentUri =
-                FileProvider.getUriForFile(ctx, ctx.packageName + "fileProvider", this@open)
+                FileProvider.getUriForFile(ctx, ctx.packageName + ".fileProvider", this@open)
             setDataAndType(contentUri, getMimeType())
         } else {
             setDataAndType(Uri.fromFile(this@open), getMimeType())
