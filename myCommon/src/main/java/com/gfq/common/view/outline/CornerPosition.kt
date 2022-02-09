@@ -1,6 +1,6 @@
 package com.gfq.common.view.outline
 
-enum class Direct {
+enum class CornerPosition {
     all,
     leftTop,
     leftBottom,

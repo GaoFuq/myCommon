@@ -16,6 +16,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentActivity
 import com.bumptech.glide.Glide
 import com.gfq.common.system.ActivityManager
+import com.github.forjrking.drawable.shapeDrawable
 import com.tencent.bugly.crashreport.CrashReport
 
 /**

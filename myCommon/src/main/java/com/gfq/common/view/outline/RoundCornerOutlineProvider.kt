@@ -4,9 +4,14 @@ import android.graphics.Outline
 import android.view.View
 import android.view.ViewOutlineProvider
 
+/**
+ * 圆角 OutlineProvider
+ * 可以设置四个角的半径。
+ * @see [CornerPosition]
+ */
 class RoundCornerOutlineProvider(
     var radius: Float = 0f,
-    var direct: Direct = Direct.all,
+    var cornerPosition: CornerPosition = CornerPosition.all,
 ) : ViewOutlineProvider() {
 
     private var view: View? = null
@@ -14,21 +19,21 @@ class RoundCornerOutlineProvider(
 
     fun update(
         radius: Float,
-        direct: Direct = Direct.all,
+        cornerPosition: CornerPosition = CornerPosition.all,
     ) {
         this.radius = radius
-        this.direct = direct
+        this.cornerPosition = cornerPosition
         view?.invalidateOutline()
     }
 
     fun update(
         view: View?,
         radius: Float,
-        direct: Direct = Direct.all,
+        cornerPosition: CornerPosition = CornerPosition.all,
     ) {
         this.view = view
         this.radius = radius
-        this.direct = direct
+        this.cornerPosition = cornerPosition
         if (view?.clipToOutline == false) {
             view.clipToOutline = true
         }
@@ -54,29 +59,29 @@ class RoundCornerOutlineProvider(
             view!!.height
         }
         val radiusInt = radius.toInt() + 1
-        when (direct) {
-            Direct.all -> {
+        when (cornerPosition) {
+            CornerPosition.all -> {
             }
-            Direct.leftTop -> {
+            CornerPosition.leftTop -> {
                 right += radiusInt
                 bottom += radiusInt
             }
-            Direct.leftBottom -> {
+            CornerPosition.leftBottom -> {
                 top -= radiusInt
                 right += radiusInt
             }
-            Direct.rightTop -> {
+            CornerPosition.rightTop -> {
                 left -= radiusInt
                 bottom += radiusInt
             }
-            Direct.rightBottom -> {
+            CornerPosition.rightBottom -> {
                 left -= radiusInt
                 top -= radiusInt
             }
-            Direct.left -> right += radiusInt
-            Direct.top -> bottom += radiusInt
-            Direct.right -> left -= radiusInt
-            Direct.bottom -> top -= radiusInt
+            CornerPosition.left -> right += radiusInt
+            CornerPosition.top -> bottom += radiusInt
+            CornerPosition.right -> left -= radiusInt
+            CornerPosition.bottom -> top -= radiusInt
         }
         o.setRoundRect(left, top, right, bottom, radius)
     }
