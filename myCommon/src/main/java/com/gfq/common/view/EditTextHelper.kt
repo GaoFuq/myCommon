@@ -15,7 +15,7 @@ import android.text.Spanned
  * @param length 分割位数（每隔 length 个字符，分割一次）
  * @param split 分隔符
  * @param useSpecialSymbol 是否可以使用特殊符号 "空格.;+-*#/" ，默认 false
- * return InputFilter
+ * @return [InputFilter]
  */
 fun getSplitInputFilter(length: Int, split: String, useSpecialSymbol: Boolean = false) =
     InputFilter { source, start, end, dest, dstart, dend ->

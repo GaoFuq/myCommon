@@ -63,24 +63,13 @@ fun Context?.unRegisterHomePressedReceiver() {
     unregisterReceiver(homePressedReceiver)
 }
 
-fun toast(msg: String?) {
-    Toast.makeText(ActivityManager.application, msg, Toast.LENGTH_SHORT).show()
-}
-
-fun logd(msg: String?) {
-    Logger.d(msg ?: "null")
-}
-
-fun loge(msg: String?) {
-    Logger.e(msg ?: "null")
-}
-
-fun log(any: Any?){
-    Logger.d(any ?: "null")
-}
 
 inline fun Window.updateAttributes(block: (WindowManager.LayoutParams) -> Unit) {
     val params = attributes
     block(params)
     attributes = params
+}
+
+fun isActivityDestroyed(mActivity: Activity?): Boolean {
+    return mActivity == null || mActivity.isFinishing || mActivity.isDestroyed
 }
