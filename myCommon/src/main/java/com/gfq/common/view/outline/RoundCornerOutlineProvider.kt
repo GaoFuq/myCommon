@@ -14,7 +14,7 @@ class RoundCornerOutlineProvider(
     var cornerPosition: CornerPosition = CornerPosition.all,
 ) : ViewOutlineProvider() {
 
-    private var view: View? = null
+    private lateinit var view: View
 
 
     fun update(
@@ -23,41 +23,25 @@ class RoundCornerOutlineProvider(
     ) {
         this.radius = radius
         this.cornerPosition = cornerPosition
-        view?.invalidateOutline()
+        if(::view.isInitialized) {
+            if (!view.clipToOutline) {
+                view.clipToOutline = true
+            }
+            if (view.outlineProvider == null) {
+                view.outlineProvider = this
+            }
+            view.invalidateOutline()
+        }
     }
 
-    fun update(
-        view: View?,
-        radius: Float,
-        cornerPosition: CornerPosition = CornerPosition.all,
-    ) {
-        this.view = view
-        this.radius = radius
-        this.cornerPosition = cornerPosition
-        if (view?.clipToOutline == false) {
-            view.clipToOutline = true
-        }
-        if (view?.outlineProvider == null) {
-            view?.outlineProvider = this
-        }
-        view?.invalidateOutline()
-    }
 
-    override fun getOutline(v: View?, o: Outline?) {
-        if (o == null) return
-        if (v == null) return
+    override fun getOutline(v: View, o: Outline) {
+        view = v
+        if(radius<=0)return
         var left = 0
         var top = 0
-        var right = if (view == null) {
-            v.width
-        } else {
-            view!!.width
-        }
-        var bottom = if (view == null) {
-            v.height
-        } else {
-            view!!.height
-        }
+        var right = v.width
+        var bottom = v.height
         val radiusInt = radius.toInt() + 1
         when (cornerPosition) {
             CornerPosition.all -> {

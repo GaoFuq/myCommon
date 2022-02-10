@@ -9,7 +9,11 @@ import com.google.android.material.shape.*
 /**
  *  2022/2/9 17:09
  * @auth gaofuq
- * @description 给view设置一个聊天气泡的drawable背景
+ * @description 给view设置一个带尖角的聊天气泡drawable背景
+ */
+
+/**
+ * 尖角朝向
  */
 enum class MarkerDirect {
     left,
@@ -18,6 +22,10 @@ enum class MarkerDirect {
     bottom
 }
 
+/**
+ * 设置尖角朝左的气泡背景drawable
+ * @see [setBubbleBackground]
+ */
 fun View?.setBubbleBackgroundLeft(
     solid: String = "#bebebe",
     radius: Float = dpF(8),
@@ -25,6 +33,10 @@ fun View?.setBubbleBackgroundLeft(
     markerOffset: Float = 0f,
 ) = setBubbleBackground(solid, radius, markerSize, MarkerDirect.left, markerOffset)
 
+/**
+ * 设置尖角朝右的气泡背景drawable
+ * @see [setBubbleBackground]
+ */
 fun View?.setBubbleBackgroundRight(
     solid: String = "#bebebe",
     radius: Float = dpF(8),
@@ -32,6 +44,10 @@ fun View?.setBubbleBackgroundRight(
     markerOffset: Float = 0f,
 ) = setBubbleBackground(solid, radius, markerSize, MarkerDirect.right, markerOffset)
 
+/**
+ * 设置尖角朝上的气泡背景drawable
+ * @see [setBubbleBackground]
+ */
 fun View?.setBubbleBackgroundTop(
     solid: String = "#bebebe",
     radius: Float = dpF(8),
@@ -39,6 +55,10 @@ fun View?.setBubbleBackgroundTop(
     markerOffset: Float = 0f,
 ) = setBubbleBackground(solid, radius, markerSize, MarkerDirect.top, markerOffset)
 
+/**
+ * 设置尖角朝下的气泡背景drawable
+ * @see [setBubbleBackground]
+ */
 fun View?.setBubbleBackgroundBottom(
     solid: String = "#bebebe",
     radius: Float = dpF(8),
@@ -46,7 +66,14 @@ fun View?.setBubbleBackgroundBottom(
     markerOffset: Float = 0f,
 ) = setBubbleBackground(solid, radius, markerSize, MarkerDirect.bottom, markerOffset)
 
-
+/**
+ * 设置气泡背景drawable
+ * @param markerSize 尖角朝向的直线距离 px
+ * @param markerDirect 尖角朝向
+ * @param markerOffset 尖角在该边的水平偏移量，默认不偏移，在中间。
+ * * 尖角在的左边或右边[MarkerDirect.left],[MarkerDirect.right]，markerOffset > 0 ,尖角向上偏移，反之向下偏移。
+ * * 尖角在上边或下边[MarkerDirect.top],[MarkerDirect.bottom]，markerOffset > 0 ,尖角向右偏移，反之向左偏移。
+ */
 fun View?.setBubbleBackground(
     solid: String,
     radius: Float,

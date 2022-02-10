@@ -19,11 +19,12 @@ import com.google.android.material.badge.BadgeUtils
  */
 
 /**
- * * 给 View 添加一个 badge（圆形气泡）。
+ * * 给 View 添加一个 badge（圆形气泡（徽章））。
+ * * app需要使用 Theme.MaterialComponents 主题。
  * * 不适合在 recyclerView 的 itemView 里面使用。
  * * 依靠id定位的布局，如：RelativeLayout，ConstraintLayout，
- * 会导致 findViewById 失效。dataBinding 不受影响。
- * * 如果确实需要使用 findViewById ，就不要使用该方法。
+ * 使用该方法后会导致 findViewById 失效。dataBinding 不受影响。
+ * * 如果[addBadge]之后需要使用 findViewById 获取该 View，就不要使用该方法。
  * @see [BadgeDrawable]
  * @see [getBadge]
  * @see [removeBadge]

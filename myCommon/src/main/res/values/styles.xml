@@ -13,4 +13,61 @@
         <item name="behavior_hideable">true</item>
     </style>
 
+    <!-- ShapeableImageView 通用 style -->
+    <!-- 注意：设置边框的时候，需要添加padding属性，padding的值为strokeWidth的一半。-->
+    <!-- 圆形图片 -->
+    <style name="ShapeableImageView_circleStyle">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
+    <!-- 菱形图片 -->
+    <style name="ShapeableImageView_rhombusStyle">
+        <item name="cornerFamily">cut</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
+    <!-- 叶子图片 -->
+    <style name="ShapeableImageView_leafStyle1">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopLeft">50%</item>
+        <item name="cornerSizeBottomRight">50%</item>
+    </style>
+    <!-- 叶子图片 -->
+    <style name="ShapeableImageView_leafStyle2">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopRight">50%</item>
+        <item name="cornerSizeBottomLeft">50%</item>
+    </style>
+
+    <!-- 左圆弧，右尖角 -->
+    <style name="ShapeableImageView_labelStyle1">
+        <item name="cornerFamilyTopLeft">rounded</item>
+        <item name="cornerSizeTopLeft">50%</item>
+
+        <item name="cornerFamilyBottomLeft">rounded</item>
+        <item name="cornerSizeBottomLeft">50%</item>
+
+        <item name="cornerFamilyTopRight">cut</item>
+        <item name="cornerSizeTopRight">50%</item>
+
+        <item name="cornerFamilyBottomRight">cut</item>
+        <item name="cornerSizeBottomRight">50%</item>
+    </style>
+
+    <!-- 右圆弧，左尖角 -->
+    <style name="ShapeableImageView_labelStyle2">
+        <item name="cornerFamilyTopRight">rounded</item>
+        <item name="cornerSizeTopRight">50%</item>
+
+        <item name="cornerFamilyBottomRight">rounded</item>
+        <item name="cornerSizeBottomRight">50%</item>
+
+        <item name="cornerFamilyTopLeft">cut</item>
+        <item name="cornerSizeTopLeft">50%</item>
+
+        <item name="cornerFamilyBottomLeft">cut</item>
+        <item name="cornerSizeBottomLeft">50%</item>
+    </style>
+
 </resources>
