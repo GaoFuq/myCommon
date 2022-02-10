@@ -60,7 +60,7 @@ fun View.updateRoundOutline(radius: Float) {
 fun View.setRoundCorner(radius: Float) {
     if (this is ShapeableImageView) {
         shapeAppearanceModel =
-            ShapeAppearanceModel.Builder().setAllCorners(RoundedCornerTreatment())
+            shapeAppearanceModel.toBuilder().setAllCorners(RoundedCornerTreatment())
                 .setAllCornerSizes(radius).build()
     } else {
         setRoundOutline(radius)
@@ -70,7 +70,7 @@ fun View.setRoundCorner(radius: Float) {
 fun View.setCircle() {
     if (this is ShapeableImageView) {
         shapeAppearanceModel =
-            ShapeAppearanceModel.Builder().setAllCorners(RoundedCornerTreatment())
+            shapeAppearanceModel.toBuilder().setAllCorners(RoundedCornerTreatment())
                 .setAllCornerSizes(PILL).build()
     } else {
         setCircleOutline()

@@ -45,7 +45,7 @@ fun ImageView.setImage(imgSource: Any?, placeholder: Int = 0, error: Int = 0) {
  * @see [RelativeCornerSize]
  */
 fun ShapeableImageView.setTopLeftCornerSize(cornerSize: CornerSize) {
-    shapeAppearanceModel = ShapeAppearanceModel.Builder().setAllCorners(RoundedCornerTreatment())
+    shapeAppearanceModel = shapeAppearanceModel.toBuilder()
         .setTopLeftCornerSize(cornerSize)
         .build()
 }
@@ -56,7 +56,7 @@ fun ShapeableImageView.setTopLeftCornerSize(cornerSize: CornerSize) {
  * @see [RelativeCornerSize]
  */
 fun ShapeableImageView.setTopRightCornerSize(cornerSize: CornerSize) {
-    shapeAppearanceModel = ShapeAppearanceModel.Builder().setAllCorners(RoundedCornerTreatment())
+    shapeAppearanceModel = shapeAppearanceModel.toBuilder()
         .setTopRightCornerSize(cornerSize)
         .build()
 }
@@ -67,7 +67,7 @@ fun ShapeableImageView.setTopRightCornerSize(cornerSize: CornerSize) {
  * @see [RelativeCornerSize]
  */
 fun ShapeableImageView.setBottomLeftCornerSize(cornerSize: CornerSize) {
-    shapeAppearanceModel = ShapeAppearanceModel.Builder().setAllCorners(RoundedCornerTreatment())
+    shapeAppearanceModel = shapeAppearanceModel.toBuilder()
         .setBottomLeftCornerSize(cornerSize)
         .build()
 }
@@ -78,7 +78,7 @@ fun ShapeableImageView.setBottomLeftCornerSize(cornerSize: CornerSize) {
  * @see [RelativeCornerSize]
  */
 fun ShapeableImageView.setBottomRightCornerSize(cornerSize: CornerSize) {
-    shapeAppearanceModel = ShapeAppearanceModel.Builder().setAllCorners(RoundedCornerTreatment())
+    shapeAppearanceModel = shapeAppearanceModel.toBuilder()
         .setBottomRightCornerSize(cornerSize)
         .build()
 }
