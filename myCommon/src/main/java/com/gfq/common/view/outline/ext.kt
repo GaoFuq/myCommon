@@ -13,17 +13,16 @@ import android.view.View
  * 以 View 的正中间为圆心裁剪。
  * @param offset px 裁剪偏移量，offset > 0 ,扩大裁剪范围，反之缩小。
  */
-fun View?.setCircleOutline(offset: Int = 0) {
-    if (this == null) return
+fun View.setCircleOutline(offset: Int = 0) {
     clipToOutline = true
     outlineProvider = CircleOutlineProvider(offset)
 }
+
 /**
  * 更新 View 的圆形裁剪偏移量。
  * @param offset px 裁剪偏移量，offset > 0 ,扩大裁剪范围，反之缩小。
  */
-fun View?.updateCircleOutline(offset: Int) {
-    if (this == null) return
+fun View.updateCircleOutline(offset: Int) {
     if (outlineProvider != null && outlineProvider is CircleOutlineProvider) {
         val outline = outlineProvider as CircleOutlineProvider
         outline.update(offset)
@@ -35,8 +34,7 @@ fun View?.updateCircleOutline(offset: Int) {
  * @param radius 圆角半径 px
  * @param cornerPosition 角的位置
  */
-fun View?.setRoundOutline(radius: Float, cornerPosition: CornerPosition = CornerPosition.all) {
-    if (this == null) return
+fun View.setRoundOutline(radius: Float, cornerPosition: CornerPosition = CornerPosition.all) {
     val provider =
         RoundCornerOutlineProvider(radius = radius, cornerPosition = cornerPosition)
     clipToOutline = true
@@ -47,10 +45,13 @@ fun View?.setRoundOutline(radius: Float, cornerPosition: CornerPosition = Corner
  * 更新 View 的圆角半径。
  * @param radius 圆角半径 px
  */
-fun View?.updateRoundOutline(radius: Float) {
-    if (this == null) return
+fun View.updateRoundOutline(radius: Float) {
     if (outlineProvider != null && outlineProvider is RoundCornerOutlineProvider) {
         val outline = outlineProvider as RoundCornerOutlineProvider
-        outline.update( radius, outline.cornerPosition)
+        outline.update(radius, outline.cornerPosition)
     }
 }
+
+
+fun View.setRoundCorner(radius: Float) = setRoundOutline(radius)
+fun View.setCircle(radius: Float) = setCircleOutline()

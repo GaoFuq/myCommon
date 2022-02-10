@@ -30,15 +30,13 @@ class CircleOutlineProvider(var offset: Int = 0) : ViewOutlineProvider() {
     override fun getOutline(v: View, o: Outline) {
         view = v
         if (v.width == v.height) {
-            o.setRoundRect(0, 0, v.width, v.width, v.width / 2f)
+            o.setRoundRect(0, 0, v.width, v.width, v.width / 2f+ offset)
         } else {
             //取正中间
             val rect = Rect()
             v.getDrawingRect(rect)
-            var radius = min(v.width, v.height) / 2 + offset
-            if (radius <= 0) {
-                radius = 0
-            }
+            val radius = min(v.width, v.height) / 2 + offset
+            if (radius <= 0) return
             o.setRoundRect(rect.centerX() - radius,
                 rect.centerY() - radius,
                 rect.centerX() + radius,
