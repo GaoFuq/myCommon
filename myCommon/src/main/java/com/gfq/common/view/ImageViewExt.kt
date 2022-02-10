@@ -8,10 +8,21 @@ import com.gfq.common.system.isActivityDestroyed
 import com.google.android.material.imageview.ShapeableImageView
 import com.google.android.material.shape.*
 
+import com.gfq.common.view.outline.setRoundCorner
+import com.gfq.common.view.outline.setCircle
+
 /**
  *  2022/2/10 10:48
  * @auth gaofuq
  * @description
+ * 
+ * ShapeableImageView 相关方法：
+ * @see [setRoundCorner]
+ * @see [setCircle]
+ * @see [setTopLeftCornerSize]
+ * @see [setTopRightCornerSize]
+ * @see [setBottomLeftCornerSize]
+ * @see [setBottomRightCornerSize]
  */
 
 fun ImageView.setGif(resourceId: Int, placeholder: Int = 0, error: Int = 0) {
@@ -40,7 +51,7 @@ fun ImageView.setImage(imgSource: Any?, placeholder: Int = 0, error: Int = 0) {
 
 
 /**
- * 单独设置左上角的圆角半径，其他角保持原来的不变
+ * 单独设置左上角的圆角半径，其他角的样式和大小保持原来的不变
  * @see [AbsoluteCornerSize]
  * @see [RelativeCornerSize]
  */
@@ -51,7 +62,7 @@ fun ShapeableImageView.setTopLeftCornerSize(cornerSize: CornerSize) {
 }
 
 /**
- * 单独设置右上角的圆角半径，其他角保持原来的不变
+ * 单独设置右上角的圆角半径，其他角的样式和大小保持原来的不变
  * @see [AbsoluteCornerSize]
  * @see [RelativeCornerSize]
  */
@@ -62,7 +73,7 @@ fun ShapeableImageView.setTopRightCornerSize(cornerSize: CornerSize) {
 }
 
 /**
- * 单独设置左下角的圆角半径，其他角保持原来的不变
+ * 单独设置左下角的圆角半径，其他角的样式和大小保持原来的不变
  * @see [AbsoluteCornerSize]
  * @see [RelativeCornerSize]
  */
@@ -73,7 +84,7 @@ fun ShapeableImageView.setBottomLeftCornerSize(cornerSize: CornerSize) {
 }
 
 /**
- * 单独设置右下角的圆角半径，其他角保持原来的不变
+ * 单独设置右下角的圆角半径，其他角的样式和大小保持原来的不变
  * @see [AbsoluteCornerSize]
  * @see [RelativeCornerSize]
  */
