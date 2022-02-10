@@ -37,12 +37,16 @@ class RoundCornerOutlineProvider(
 
     override fun getOutline(v: View, o: Outline) {
         view = v
-        if(radius<=0)return
         var left = 0
         var top = 0
         var right = v.width
         var bottom = v.height
         val radiusInt = radius.toInt() + 1
+
+        if(radius<=0){
+            radius = 0f
+        }
+
         when (cornerPosition) {
             CornerPosition.all -> {
             }

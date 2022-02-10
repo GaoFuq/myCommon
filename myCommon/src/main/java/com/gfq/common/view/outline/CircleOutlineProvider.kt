@@ -35,8 +35,10 @@ class CircleOutlineProvider(var offset: Int = 0) : ViewOutlineProvider() {
             //取正中间
             val rect = Rect()
             v.getDrawingRect(rect)
-            val radius = min(v.width, v.height) / 2 + offset
-            if (radius <= 0) return
+            var radius = min(v.width, v.height) / 2 + offset
+            if(radius<=0){
+                radius = 1
+            }
             o.setRoundRect(rect.centerX() - radius,
                 rect.centerY() - radius,
                 rect.centerX() + radius,

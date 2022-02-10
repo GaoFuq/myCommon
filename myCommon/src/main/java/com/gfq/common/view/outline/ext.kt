@@ -1,6 +1,10 @@
 package com.gfq.common.view.outline
 
 import android.view.View
+import com.google.android.material.imageview.ShapeableImageView
+import com.google.android.material.shape.RoundedCornerTreatment
+import com.google.android.material.shape.ShapeAppearanceModel
+import com.google.android.material.shape.ShapeAppearanceModel.PILL
 
 /**
  *  2022/1/21 10:36
@@ -53,5 +57,22 @@ fun View.updateRoundOutline(radius: Float) {
 }
 
 
-fun View.setRoundCorner(radius: Float) = setRoundOutline(radius)
-fun View.setCircle(radius: Float) = setCircleOutline()
+fun View.setRoundCorner(radius: Float) {
+    if (this is ShapeableImageView) {
+        shapeAppearanceModel =
+            ShapeAppearanceModel.Builder().setAllCorners(RoundedCornerTreatment())
+                .setAllCornerSizes(radius).build()
+    } else {
+        setRoundOutline(radius)
+    }
+}
+
+fun View.setCircle() {
+    if (this is ShapeableImageView) {
+        shapeAppearanceModel =
+            ShapeAppearanceModel.Builder().setAllCorners(RoundedCornerTreatment())
+                .setAllCornerSizes(PILL).build()
+    } else {
+        setCircleOutline()
+    }
+}

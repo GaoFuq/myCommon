@@ -4,14 +4,9 @@ import android.app.Activity
 import android.util.Base64
 import android.widget.ImageView
 import com.bumptech.glide.Glide
-import com.gfq.common.system.dpF
 import com.gfq.common.system.isActivityDestroyed
-import com.gfq.common.view.outline.setCircleOutline
-import com.gfq.common.view.outline.setRoundOutline
 import com.google.android.material.imageview.ShapeableImageView
-import com.google.android.material.shape.RoundedCornerTreatment
-import com.google.android.material.shape.ShapeAppearanceModel
-import com.tencent.bugly.crashreport.CrashReport
+import com.google.android.material.shape.*
 
 /**
  *  2022/2/10 10:48
@@ -43,10 +38,48 @@ fun ImageView.setImage(imgSource: Any?, placeholder: Int = 0, error: Int = 0) {
     Glide.with(this).load(imgSource).placeholder(placeholder).error(error).into(this)
 }
 
-fun ShapeableImageView.setRoundCorner(radius: Float) {
+
+/**
+ * 单独设置左上角的圆角半径，其他角保持原来的不变
+ * @see [AbsoluteCornerSize]
+ * @see [RelativeCornerSize]
+ */
+fun ShapeableImageView.setTopLeftCornerSize(cornerSize: CornerSize) {
     shapeAppearanceModel = ShapeAppearanceModel.Builder().setAllCorners(RoundedCornerTreatment())
-        .setAllCornerSizes(radius).build()
+        .setTopLeftCornerSize(cornerSize)
+        .build()
 }
 
-fun ImageView.setRoundCorner(radius: Float) = setRoundOutline(radius)
-fun ImageView.setCircle() = setCircleOutline()
+/**
+ * 单独设置右上角的圆角半径，其他角保持原来的不变
+ * @see [AbsoluteCornerSize]
+ * @see [RelativeCornerSize]
+ */
+fun ShapeableImageView.setTopRightCornerSize(cornerSize: CornerSize) {
+    shapeAppearanceModel = ShapeAppearanceModel.Builder().setAllCorners(RoundedCornerTreatment())
+        .setTopRightCornerSize(cornerSize)
+        .build()
+}
+
+/**
+ * 单独设置左下角的圆角半径，其他角保持原来的不变
+ * @see [AbsoluteCornerSize]
+ * @see [RelativeCornerSize]
+ */
+fun ShapeableImageView.setBottomLeftCornerSize(cornerSize: CornerSize) {
+    shapeAppearanceModel = ShapeAppearanceModel.Builder().setAllCorners(RoundedCornerTreatment())
+        .setBottomLeftCornerSize(cornerSize)
+        .build()
+}
+
+/**
+ * 单独设置右下角的圆角半径，其他角保持原来的不变
+ * @see [AbsoluteCornerSize]
+ * @see [RelativeCornerSize]
+ */
+fun ShapeableImageView.setBottomRightCornerSize(cornerSize: CornerSize) {
+    shapeAppearanceModel = ShapeAppearanceModel.Builder().setAllCorners(RoundedCornerTreatment())
+        .setBottomRightCornerSize(cornerSize)
+        .build()
+}
+
