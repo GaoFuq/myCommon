@@ -45,7 +45,7 @@ fun View.setRoundOutline(radius: Float,cornerPosition: CornerPosition = CornerPo
 }
 
 /**
- * 设置View为圆角矩形。
+ * 设置View为圆角矩形 或者 更新圆角半径。
  * 如果View是[ShapeableImageView],则所有角都做圆角处理。
  * 其他View通过设置outline实现。
  */
