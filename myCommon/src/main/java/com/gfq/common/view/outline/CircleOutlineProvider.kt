@@ -12,11 +12,10 @@ import kotlin.math.min
  * @param offset 裁剪偏移量，offset > 0 ,扩大裁剪范围，反之缩小。
  */
 class CircleOutlineProvider(var offset: Int = 0) : ViewOutlineProvider() {
-    private lateinit var view: View
 
-    fun update(offset: Int) {
+    fun update(view:View?,offset: Int) {
         this.offset = offset
-        if (::view.isInitialized) {
+        if (view!=null) {
             if (!view.clipToOutline) {
                 view.clipToOutline = true
             }
@@ -28,7 +27,6 @@ class CircleOutlineProvider(var offset: Int = 0) : ViewOutlineProvider() {
     }
 
     override fun getOutline(v: View, o: Outline) {
-        view = v
         if (v.width == v.height) {
             o.setRoundRect(0, 0, v.width, v.width, v.width / 2f+ offset)
         } else {

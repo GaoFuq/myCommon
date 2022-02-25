@@ -3,7 +3,6 @@ package com.gfq.common.view.outline
 import android.view.View
 import com.google.android.material.imageview.ShapeableImageView
 import com.google.android.material.shape.RoundedCornerTreatment
-import com.google.android.material.shape.ShapeAppearanceModel
 import com.google.android.material.shape.ShapeAppearanceModel.PILL
 
 /**
@@ -24,7 +23,7 @@ fun View.setCircleOutline(offset: Int=0) {
         outlineProvider = CircleOutlineProvider(offset)
     }else {
         val outline = outlineProvider as CircleOutlineProvider
-        outline.update(offset)
+        outline.update(this,offset)
     }
 }
 
@@ -40,7 +39,7 @@ fun View.setRoundOutline(radius: Float,cornerPosition: CornerPosition = CornerPo
         outlineProvider = provider
     }else {
         val outline = outlineProvider as RoundCornerOutlineProvider
-        outline.update(radius, outline.cornerPosition)
+        outline.update(this,radius, outline.cornerPosition)
     }
 }
 

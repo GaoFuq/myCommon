@@ -14,16 +14,14 @@ class RoundCornerOutlineProvider(
     var cornerPosition: CornerPosition = CornerPosition.all,
 ) : ViewOutlineProvider() {
 
-    private lateinit var view: View
-
-
     fun update(
+        view:View?,
         radius: Float,
         cornerPosition: CornerPosition = CornerPosition.all,
     ) {
         this.radius = radius
         this.cornerPosition = cornerPosition
-        if(::view.isInitialized) {
+        if(view!=null) {
             if (!view.clipToOutline) {
                 view.clipToOutline = true
             }
@@ -36,7 +34,6 @@ class RoundCornerOutlineProvider(
 
 
     override fun getOutline(v: View, o: Outline) {
-        view = v
         var left = 0
         var top = 0
         var right = v.width
