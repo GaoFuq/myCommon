@@ -7,7 +7,7 @@ package com.gfq.common.net
  *
  * 初始化了一个默认的 [IRequestStateDialog],[DefaultRequestStateDialog]
  */
-abstract class AbsRequestWithStateDialogViewModel : AbsRequestViewModel() {
+abstract class BaseRequestViewModelWithStateDialog : BaseRequestViewModel() {
     init {
         requestStateDialog = DefaultRequestStateDialog()
         completeDismissDelay = 1000

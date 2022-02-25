@@ -3,6 +3,7 @@ package com.gfq.common.net.simple
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import com.gfq.common.net.BaseRequestViewModelWithStateDialog
 import com.gfq.common.utils.ApiDesc
 import com.gfq.common.utils.HttpLogInterceptor
 import okhttp3.OkHttpClient
@@ -19,7 +20,7 @@ import retrofit2.http.POST
 private interface Api {
     @ApiDesc("appVersion", "获取用户信息")
     @POST("api/getUserInfo")
-    suspend fun getUserInfo(): BaseRespSimple<UserInfoRespSimple>
+    suspend fun getUserInfo(): AbsResponseSimple<UserInfoRespSimple>
 }
 
 //定义2
@@ -39,7 +40,7 @@ private val apiService: Api by lazy { retrofit.create(Api::class.java) }
 
 
 //定义5
-private class TestViewModel : BaseViewModelSimple() {
+private class TestViewModelWithStateDialog : BaseRequestViewModelWithStateDialog() {
     fun getUserInfo() {
         request(
             request = { apiService.getUserInfo() },
@@ -47,7 +48,9 @@ private class TestViewModel : BaseViewModelSimple() {
 
             },
             error = {},
-            special = {},
+            special = {code: Int?, message: String?, data: UserInfoRespSimple? ->
+
+            },
         )
     }
 }
@@ -56,7 +59,7 @@ private class TestViewModel : BaseViewModelSimple() {
 private class SimpleActivity:AppCompatActivity(){
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val vm by viewModels<TestViewModel>()
+        val vm by viewModels<TestViewModelWithStateDialog>()
         vm.getUserInfo()
     }
 }

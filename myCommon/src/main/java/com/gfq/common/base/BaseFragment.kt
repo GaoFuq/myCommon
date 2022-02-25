@@ -40,6 +40,7 @@ abstract class BaseFragment<T : ViewDataBinding>(private val layoutId: Int) : Fr
         navController = try {
             findNavController()
         } catch (e: Exception) {
+            e.printStackTrace()
             Log.w("BaseFragment", "findNavController error")
             null
         }

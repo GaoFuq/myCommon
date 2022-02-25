@@ -17,8 +17,6 @@ import retrofit2.HttpException
 import java.io.IOException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
-import com.gfq.common.net.simple.BaseViewModelSimple
-
 
 
 /**
@@ -26,15 +24,15 @@ import com.gfq.common.net.simple.BaseViewModelSimple
  * @auth gaofuq
  * @description
  *
- * 一个 [AbsRequestViewModel] 持有一个空的 [IRequestStateDialog] 。
+ * 一个 [BaseRequestViewModel] 持有一个空的 [IRequestStateDialog] 。
  * 连续发起多个请求，[IRequestStateDialog] 显示隐藏只会走一次，无法反映出结果是成功还是异常
  *
  * 不需要 loading 弹窗，可以直接继承这个。
- * 需要 loading 弹窗，可以继承 [AbsRequestWithStateDialogViewModel]
+ * 需要 loading 弹窗，可以继承 [BaseRequestViewModelWithStateDialog]
  *
- * 使用例子：@see [BaseViewModelSimple]
+ * 使用例子：@see [BaseViewModelWithStateDialogSimple]
  */
-abstract class AbsRequestViewModel() : ViewModel() {
+open class BaseRequestViewModel() : ViewModel() {
 
     /**
      * 请求状态弹窗 @see [RequestState]
@@ -96,12 +94,12 @@ abstract class AbsRequestViewModel() : ViewModel() {
     override fun onCleared() {
     }
 
-    open  fun <T, Resp : BaseResp<T>> request(
+    open fun <T, Resp : AbsResponse<T>> request(
         request: suspend CoroutineScope.() -> Resp?,
-        success: ((T?) -> Unit)? = null,
-        failed: ((code: Int, message: String?) -> Unit)? = null,
+        success: ((data: T?) -> Unit)? = null,
+        failed: ((code: Int?, message: String?) -> Unit)? = null,
         error: ((ApiException) -> Unit)? = null,
-        special: ((T?) -> Unit)? = null,//特殊情况
+        special: ((code: Int?, message: String?, data: T?) -> Unit)? = null,//特殊情况
     ) {
 
         requestCount++
@@ -118,7 +116,8 @@ abstract class AbsRequestViewModel() : ViewModel() {
                     val apiException = handleException(e)
 
                     requestCount--
-                    updateRequestStateDialogIfNeed<T, Resp>(RequestState.error, apiException = apiException)
+                    updateRequestStateDialogIfNeed<T, Resp>(RequestState.error,
+                        apiException = apiException)
                     error?.invoke(apiException)
                     requestStateDialog?.let { delay(errorDismissDelay) }
                     updateRequestStateDialogIfNeed<T, Resp>(RequestState.dismiss)
@@ -134,15 +133,33 @@ abstract class AbsRequestViewModel() : ViewModel() {
         }
     }
 
-    abstract fun <T, Resp : BaseResp<T>> handleResponse(
+    /**
+     * 默认只处理成功的返回
+     */
+    open fun <T, Resp : AbsResponse<T>> handleResponse(
         response: Resp?,
         success: ((data: T?) -> Unit)?,
-        special: ((data: T?) -> Unit)?,
-        failed: ((code: Int, message: String?) -> Unit)?,
-    )
+        special: ((code: Int?, message: String?, data: T?) -> Unit)?,
+        failed: ((code: Int?, message: String?) -> Unit)?,
+    ) {
+        when {
+            response?.isSpecial() == true -> {
+                special?.invoke(
+                    response.responseCode(),
+                    response.responseMessage(),
+                    response.responseData())
+            }
+            response?.isSuccess() == true -> {
+                success?.invoke(response.responseData())
+            }
+            else -> {
+                failed?.invoke(response?.responseCode(), response?.responseMessage())
+            }
+        }
+    }
 
 
-    private suspend fun <T, Resp : BaseResp<T>> updateRequestStateDialogIfNeed(
+    private suspend fun <T, Resp : AbsResponse<T>> updateRequestStateDialogIfNeed(
         dialogState: RequestState,
         response: Resp? = null,
         apiException: ApiException = ApiException(),
@@ -157,7 +174,8 @@ abstract class AbsRequestViewModel() : ViewModel() {
             }
             RequestState.complete -> {
                 if (requestCount == 0) {
-                    val remainingTime = minimumLoadingTime - (System.currentTimeMillis() - loadingTime)
+                    val remainingTime =
+                        minimumLoadingTime - (System.currentTimeMillis() - loadingTime)
                     if (remainingTime > 0) {
                         delay(remainingTime)
                     }
@@ -166,8 +184,9 @@ abstract class AbsRequestViewModel() : ViewModel() {
                 }
             }
             RequestState.error -> {
-                if (requestCount == 0){
-                    val remainingTime = minimumLoadingTime - (System.currentTimeMillis() - loadingTime)
+                if (requestCount == 0) {
+                    val remainingTime =
+                        minimumLoadingTime - (System.currentTimeMillis() - loadingTime)
                     if (remainingTime > 0) {
                         delay(remainingTime)
                     }

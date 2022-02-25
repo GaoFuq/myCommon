@@ -8,7 +8,7 @@ interface IRequestStateDialog {
 
     fun showLoading(message: String? = "加载中...")
 
-    fun <T, Resp : BaseResp<T>> showComplete(response: Resp?)
+    fun <T, Resp : AbsResponse<T>> showComplete(response: Resp?)
 
     fun showError(error: ApiException)
 
