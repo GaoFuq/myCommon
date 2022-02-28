@@ -3,9 +3,11 @@ package com.gfq.common.net.simple
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.viewModelScope
 import com.gfq.common.net.BaseRequestViewModelWithStateDialog
 import com.gfq.common.utils.ApiDesc
 import com.gfq.common.utils.HttpLogInterceptor
+import com.gfq.common.utils.scheduleAtFixedRate
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

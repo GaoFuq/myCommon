@@ -2,7 +2,6 @@ package com.gfq.common.utils
 
 
 
-
 /**
  *  2022/1/4 13:52
  * @auth gaofuq
@@ -13,4 +12,3 @@ package com.gfq.common.utils
 @MustBeDocumented
 @Retention(AnnotationRetention.RUNTIME)
 annotation class ApiDesc(val methodName:String,val apiDescription: String)
-
