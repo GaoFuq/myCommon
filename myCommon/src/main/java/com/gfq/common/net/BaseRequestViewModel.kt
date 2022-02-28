@@ -2,6 +2,7 @@ package com.gfq.common.net
 
 
 import android.net.ParseException
+import android.view.View
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineScope
@@ -30,7 +31,6 @@ import java.net.UnknownHostException
  * 不需要 loading 弹窗，可以直接继承这个。
  * 需要 loading 弹窗，可以继承 [BaseRequestViewModelWithStateDialog]
  *
- * 使用例子：@see [BaseViewModelWithStateDialogSimple]
  */
 open class BaseRequestViewModel() : ViewModel() {
 
@@ -94,14 +94,18 @@ open class BaseRequestViewModel() : ViewModel() {
     override fun onCleared() {
     }
 
+    /**
+     * @param clickView 点击触发请求的view。传入该view，控制enable属性。
+     */
     open fun <T, Resp : AbsResponse<T>> request(
-        request: suspend CoroutineScope.() -> Resp?,
+        api: suspend CoroutineScope.() -> Resp?,
+        clickView:View?=null,
         success: ((data: T?) -> Unit)? = null,
         failed: ((code: Int?, message: String?) -> Unit)? = null,
         error: ((ApiException) -> Unit)? = null,
         special: ((code: Int?, message: String?, data: T?) -> Unit)? = null,//特殊情况
     ) {
-
+        clickView?.isEnabled=false
         requestCount++
         if (requestCount == 1) {
             loadingTime = System.currentTimeMillis()
@@ -109,21 +113,20 @@ open class BaseRequestViewModel() : ViewModel() {
         }
 
         viewModelScope.launch {
-//            updateRequestStateDialogIfNeed<T, Resp>(RequestState.loading)
-            flow { emit(request()) }    //网络请求
+            flow { emit(api()) }    //网络请求
                 .flowOn(Dispatchers.IO)
                 .catch { e: Throwable? ->//异常捕获处理
+                    clickView?.isEnabled=true
                     val apiException = handleException(e)
-
                     requestCount--
                     updateRequestStateDialogIfNeed<T, Resp>(RequestState.error,
                         apiException = apiException)
                     error?.invoke(apiException)
                     requestStateDialog?.let { delay(errorDismissDelay) }
                     updateRequestStateDialogIfNeed<T, Resp>(RequestState.dismiss)
-
                 } //数据请求返回处理  emit(block()) 返回的数据
                 .collect {
+                    clickView?.isEnabled=true
                     requestCount--
                     updateRequestStateDialogIfNeed<T, Resp>(RequestState.complete, it)
                     handleResponse(it, success, special, failed)

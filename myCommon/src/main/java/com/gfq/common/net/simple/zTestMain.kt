@@ -43,7 +43,7 @@ private val apiService: Api by lazy { retrofit.create(Api::class.java) }
 private class TestViewModelWithStateDialog : BaseRequestViewModelWithStateDialog() {
     fun getUserInfo() {
         request(
-            request = { apiService.getUserInfo() },
+            api = { apiService.getUserInfo() },
             success = {
 
             },
