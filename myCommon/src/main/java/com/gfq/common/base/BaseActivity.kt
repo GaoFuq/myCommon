@@ -15,10 +15,12 @@ abstract class BaseActivity<Binding : ViewDataBinding>(private val layoutId:Int)
     lateinit var actBinding: Binding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        beforeSetContentView()
         actBinding = DataBindingUtil.setContentView<Binding>(this, layoutId)
         injectForIntentExtras()
         initView()
     }
 
     abstract fun initView()
+    open fun beforeSetContentView(){}
 }

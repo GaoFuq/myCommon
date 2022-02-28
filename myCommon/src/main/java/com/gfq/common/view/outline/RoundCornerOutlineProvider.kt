@@ -6,7 +6,7 @@ import android.view.ViewOutlineProvider
 
 /**
  * 圆角 OutlineProvider
- * 可以设置四个角的半径。
+ * 可以设置四个角的半径。但是不能同时设置多个角。
  * @see [CornerPosition]
  */
 class RoundCornerOutlineProvider(
