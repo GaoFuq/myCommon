@@ -9,4 +9,4 @@ import com.gfq.common.system.ActivityManager
  * @description
  * 继承 [GlobalDialog] ,不再显式的传递 context 参数
  */
-open class GlobalDialog :Dialog(ActivityManager.getAllActivities().last())
+open class GlobalDialog(style: Int = 0) : Dialog(ActivityManager.getAllActivities().last(), style)
