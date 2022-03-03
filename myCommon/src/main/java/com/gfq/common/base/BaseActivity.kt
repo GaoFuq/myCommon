@@ -11,7 +11,8 @@ import com.gfq.common.system.injectForIntentExtras
  * @auth gaofuq
  * @description
  */
-abstract class BaseActivity<Binding : ViewDataBinding>(private val layoutId:Int) : AppCompatActivity() {
+abstract class BaseActivity<Binding : ViewDataBinding>(private val layoutId: Int) :
+    AppCompatActivity() {
     lateinit var actBinding: Binding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,5 +23,5 @@ abstract class BaseActivity<Binding : ViewDataBinding>(private val layoutId:Int)
     }
 
     abstract fun initView()
-    open fun beforeSetContentView(){}
+    open fun beforeSetContentView() {}
 }
