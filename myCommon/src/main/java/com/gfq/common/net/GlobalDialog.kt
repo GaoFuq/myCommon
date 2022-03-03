@@ -8,5 +8,6 @@ import com.gfq.common.system.ActivityManager
  * @auth gaofuq
  * @description
  * 继承 [GlobalDialog] ,不再显式的传递 context 参数
+ * @param style [R.style.xxx]
  */
 open class GlobalDialog(style: Int = 0) : Dialog(ActivityManager.getAllActivities().last(), style)
