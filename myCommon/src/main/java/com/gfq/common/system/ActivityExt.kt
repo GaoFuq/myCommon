@@ -13,7 +13,7 @@ import android.view.WindowManager
  * @description
  */
 
-inline fun <reified T : Activity> Context.startActivity(vararg params: Pair<String, Any?>) {
+inline fun <reified T : Activity> Context.openActivity(vararg params: Pair<String, Any?>) {
     startActivity(createIntent<T>(*params))
 }
 
