@@ -15,7 +15,7 @@ import com.gfq.common.system.injectForArguments
 import com.gfq.common.system.log
 
 /**
- *  2021/4/13 14:02
+ * 2021/4/13 14:02
  * @auth gaofuq
  * @description
  */
