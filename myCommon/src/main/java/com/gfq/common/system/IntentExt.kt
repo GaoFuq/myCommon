@@ -12,11 +12,11 @@ import java.io.Serializable
 inline fun <reified T : Any> Context.createIntent(vararg params: Pair<String, Any?>): Intent {
     val intent = Intent(this, T::class.java)
     if (this !is Activity) intent.newTask()
-    if (params.isNotEmpty()) intent.fillIntentArguments(params)
+    if (params.isNotEmpty()) intent.fillParams(params)
     return intent
 }
 
-inline fun Intent.fillIntentArguments(params: Array<out Pair<String, Any?>>) {
+inline fun Intent.fillParams(params: Array<out Pair<String, Any?>>) {
     params.forEach {
         when (val value = it.second) {
             null -> putExtra(it.first, null as Serializable?)
@@ -45,6 +45,41 @@ inline fun Intent.fillIntentArguments(params: Array<out Pair<String, Any?>>) {
             is CharArray -> putExtra(it.first, value)
             is ShortArray -> putExtra(it.first, value)
             is BooleanArray -> putExtra(it.first, value)
+            else -> throw IllegalArgumentException("Intent extra ${it.first} has wrong type ${value.javaClass.name}")
+        }
+        return@forEach
+    }
+}
+
+inline fun Bundle.fillParams(params: Array<out Pair<String, Any?>>) {
+    params.forEach {
+        when (val value = it.second) {
+            null -> putSerializable(it.first, null as Serializable?)
+            is Int -> putInt(it.first, value)
+            is Long -> putLong(it.first, value)
+            is CharSequence -> putCharSequence(it.first, value)
+            is String -> putString(it.first, value)
+            is Float -> putFloat(it.first, value)
+            is Double -> putDouble(it.first, value)
+            is Char -> putChar(it.first, value)
+            is Short -> putShort(it.first, value)
+            is Boolean -> putBoolean(it.first, value)
+            is Serializable -> putSerializable(it.first, value)
+            is Bundle -> putBundle(it.first, value)
+            is Parcelable -> putParcelable(it.first, value)
+            is Array<*> -> when {
+                value.isArrayOf<CharSequence>() -> putSerializable(it.first, value)
+                value.isArrayOf<String>() -> putSerializable(it.first, value)
+                value.isArrayOf<Parcelable>() -> putSerializable(it.first, value)
+                else -> throw IllegalArgumentException("Intent extra ${it.first} has wrong type ${value.javaClass.name}")
+            }
+            is IntArray -> putIntArray(it.first, value)
+            is LongArray -> putLongArray(it.first, value)
+            is FloatArray -> putFloatArray(it.first, value)
+            is DoubleArray -> putDoubleArray(it.first, value)
+            is CharArray -> putCharArray(it.first, value)
+            is ShortArray -> putShortArray(it.first, value)
+            is BooleanArray -> putBooleanArray(it.first, value)
             else -> throw IllegalArgumentException("Intent extra ${it.first} has wrong type ${value.javaClass.name}")
         }
         return@forEach

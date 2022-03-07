@@ -10,7 +10,9 @@ import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
+import com.gfq.common.system.fillParams
 import com.gfq.common.system.injectForArguments
+import com.gfq.common.system.log
 
 /**
  *  2021/4/13 14:02
@@ -34,14 +36,17 @@ abstract class BaseFragment<T : ViewDataBinding>(private val layoutId: Int) : Fr
 
     abstract fun initViews()
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        injectForArguments()
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        injectForArguments()
         navController = try {
             findNavController()
         } catch (e: Exception) {
-            e.printStackTrace()
-            Log.w("BaseFragment", "findNavController error")
+            log("can not find NavController")
             null
         }
         initViews()
@@ -49,6 +54,10 @@ abstract class BaseFragment<T : ViewDataBinding>(private val layoutId: Int) : Fr
 
 
     fun popBack(destinationId: Int = 0, inclusive: Boolean = false) {
+        if (navController == null) {
+            log("can not find NavController")
+            return
+        }
         if (destinationId == 0) {
             navController?.popBackStack()
         } else {
@@ -56,24 +65,14 @@ abstract class BaseFragment<T : ViewDataBinding>(private val layoutId: Int) : Fr
         }
     }
 
-    fun navigate(actionId: Int, extra: Map<String, Any?>? = null) {
-        if (extra != null) {
+    fun navigate(actionId: Int, vararg params: Pair<String, Any?>) {
+        if (navController == null) {
+            log("can not find NavController")
+            return
+        }
+        if (params.isNotEmpty()) {
             val bundle = Bundle()
-            extra.forEach { (key, value) ->
-                if (value != null) {
-                    when (value) {
-                        is String -> {
-                            bundle.putString(key, value)
-                        }
-                        is Int -> {
-                            bundle.putInt(key, value)
-                        }
-                        is Boolean -> {
-                            bundle.putBoolean(key, value)
-                        }
-                    }
-                }
-            }
+            bundle.fillParams(params)
             navController?.navigate(actionId, bundle)
         } else {
             navController?.navigate(actionId)
