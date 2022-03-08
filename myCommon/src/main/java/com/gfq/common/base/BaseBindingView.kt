@@ -3,7 +3,7 @@ package com.gfq.common.base
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
-import android.widget.RelativeLayout
+import android.widget.FrameLayout
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 
@@ -15,7 +15,7 @@ import androidx.databinding.ViewDataBinding
 abstract class BaseBindingView<binding : ViewDataBinding>(
     context: Context,
     attrs: AttributeSet?,
-) : RelativeLayout(context, attrs) {
+) : FrameLayout(context, attrs) {
 
     abstract fun layoutResId(): Int
 
@@ -23,10 +23,8 @@ abstract class BaseBindingView<binding : ViewDataBinding>(
         DataBindingUtil.inflate<binding>(
             LayoutInflater.from(context),
             layoutResId(),
-            null,
-            false
-        ).apply {
-            addView(root)
-        }
+            this,
+            true
+        )
     }
 }
