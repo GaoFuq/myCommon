@@ -16,9 +16,9 @@ abstract class BaseActivity<Binding : ViewDataBinding>(private val layoutId: Int
     lateinit var actBinding: Binding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        injectForIntentExtras()
         beforeSetContentView()
         actBinding = DataBindingUtil.setContentView<Binding>(this, layoutId)
-        injectForIntentExtras()
         initView()
     }
 
