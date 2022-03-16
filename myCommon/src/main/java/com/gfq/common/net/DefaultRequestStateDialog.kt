@@ -26,12 +26,7 @@ open class DefaultRequestStateDialog(style:Int=0): GlobalDialog(style), IRequest
         setContentView(binding.root)
         setCanceledOnTouchOutside(false)
         window?.setBackgroundDrawable(ColorDrawable())
-        window?.updateAttributes {
-            it.width = dp(100)
-            it.height = dp(100)
-            it.dimAmount=0f
-        }
-
+        window?.setDimAmount(0f)
     }
 
     //不可通过返回按钮隐藏
