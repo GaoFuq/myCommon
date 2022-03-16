@@ -83,7 +83,7 @@ open class BaseRequestViewModel() : ViewModel() {
         const val GATEWAY_TIMEOUT_str = "网关超时"
 
 
-        const val UNKNOWN_ERROR_str = "未知错误"
+        const val UNKNOWN_ERROR_str = "出错了"
         const val NOT_AUTH_str = "未授权"
         const val IO_ERROR_str = "网络连接失败"
         const val IO_ERROR_TIMEOUT_str = "网络连接超时"
@@ -132,10 +132,10 @@ open class BaseRequestViewModel() : ViewModel() {
                 .collect {
                     clickView?.isEnabled = true
                     requestCount--
-                    if(it?.isSuccess()==true||it?.isSpecial()==true){
+                    if (it?.isSuccess() == true || it?.isSpecial() == true) {
                         //回调请求完成-成功，默认不显示文本
                         updateRequestStateDialogIfNeed<T, Resp>(RequestState.complete, it)
-                    }else{
+                    } else {
                         //回调请求完成-失败，默认显示错误文本
                         updateRequestStateDialogIfNeed<T, Resp>(RequestState.completeFailed, it)
                     }
@@ -228,13 +228,13 @@ open class BaseRequestViewModel() : ViewModel() {
     private fun handleException(e: Throwable?): ApiException {
 
         if (e == null) return ApiException(customCode = UNKNOWN_ERROR, message = UNKNOWN_ERROR_str)
-        Log.e("BaseRequestViewModel",e.message.toString())
+        Log.e("BaseRequestViewModel", e.message.toString())
         var code: Int? = null
-        var message = UNKNOWN_ERROR_str
+        var message = UNKNOWN_ERROR_str +"\n"+ e.message
         var customCode = UNKNOWN_ERROR
 
         when (e) {
-            is ConnectException->{
+            is ConnectException -> {
                 message = IO_ERROR_str
                 customCode = IO_ERROR
             }
