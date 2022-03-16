@@ -17,6 +17,7 @@ import kotlinx.coroutines.launch
 import org.json.JSONException
 import retrofit2.HttpException
 import java.io.IOException
+import java.net.ConnectException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 
@@ -124,6 +125,7 @@ open class BaseRequestViewModel() : ViewModel() {
                     requestCount--
                     updateRequestStateDialogIfNeed<T, Resp>(RequestState.error,
                         apiException = apiException)
+                    success?.invoke(null)
                     error?.invoke(apiException)
                     requestStateDialog?.let { delay(errorDismissDelay) }
                     updateRequestStateDialogIfNeed<T, Resp>(RequestState.dismiss)
@@ -166,6 +168,7 @@ open class BaseRequestViewModel() : ViewModel() {
                 success?.invoke(response.responseData())
             }
             else -> {
+                success?.invoke(null)
                 failed?.invoke(response?.responseCode(), response?.responseMessage())
             }
         }
@@ -233,6 +236,10 @@ open class BaseRequestViewModel() : ViewModel() {
         var customCode = UNKNOWN_ERROR
 
         when (e) {
+            is ConnectException->{
+                message = IO_ERROR_str
+                customCode = IO_ERROR
+            }
             is HttpException -> {
                 code = e.code()
                 customCode = e.code()

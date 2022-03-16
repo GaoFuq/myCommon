@@ -2,6 +2,9 @@ package com.gfq.common.utils
 
 
 import android.util.Log
+import com.gfq.common.WebActivity
+import com.gfq.common.system.ActivityManager
+import com.gfq.common.system.openActivity
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonParser
 import okhttp3.*
@@ -142,6 +145,8 @@ class HttpLogInterceptor(private val apiServiceList: List<Class<*>>) : Intercept
 
         if (responseContent.startsWith("<!DOCTYPE html>")) {
             Log.e(serialTag, "response is <!DOCTYPE html>")
+//            Log.e(serialTag, "返回 -->：\n$responseContent")
+            ActivityManager.application.openActivity<WebActivity>("html" to responseContent)
         } else {
             val toJson = gson.toJson(JsonParser.parseString(responseContent))
             Log.e(serialTag, "返回 -->：\n$toJson")
