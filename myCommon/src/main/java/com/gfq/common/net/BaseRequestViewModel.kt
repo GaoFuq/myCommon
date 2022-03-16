@@ -125,7 +125,6 @@ open class BaseRequestViewModel() : ViewModel() {
                     requestCount--
                     updateRequestStateDialogIfNeed<T, Resp>(RequestState.error,
                         apiException = apiException)
-                    success?.invoke(null)
                     error?.invoke(apiException)
                     requestStateDialog?.let { delay(errorDismissDelay) }
                     updateRequestStateDialogIfNeed<T, Resp>(RequestState.dismiss)
