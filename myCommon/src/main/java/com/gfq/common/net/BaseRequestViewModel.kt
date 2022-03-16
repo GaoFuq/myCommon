@@ -167,7 +167,6 @@ open class BaseRequestViewModel() : ViewModel() {
                 success?.invoke(response.responseData())
             }
             else -> {
-                success?.invoke(null)
                 failed?.invoke(response?.responseCode(), response?.responseMessage())
             }
         }
