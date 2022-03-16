@@ -2,6 +2,7 @@ package com.gfq.common.net
 
 
 import android.net.ParseException
+import android.util.Log
 import android.view.View
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -40,12 +41,12 @@ open class BaseRequestViewModel() : ViewModel() {
     var requestStateDialog: IRequestStateDialog? = null
 
     /**
-     * 结果是正常时，延迟的时间，用于展示结果信息
+     * 结果成功返回时，dialog隐藏的延迟时间（显示的时间），用于展示结果信息
      */
     var completeDismissDelay: Long = 0
 
     /**
-     * 结果是异常时，延迟的时间，用于展示异常信息
+     * 请求或返回结果是异常时，dialog隐藏的延迟时间（显示的时间），用于展示异常信息
      */
     var errorDismissDelay: Long = 0
 
@@ -84,6 +85,8 @@ open class BaseRequestViewModel() : ViewModel() {
         const val UNKNOWN_ERROR_str = "未知错误"
         const val NOT_AUTH_str = "未授权"
         const val IO_ERROR_str = "网络连接失败"
+        const val IO_ERROR_TIMEOUT_str = "网络连接超时"
+        const val IO_ERROR_UNKNOWN_HOST_str = "未知主机错误"
         const val DATA_PARSE_ERROR_str = "数据解析错误"
 
     }
@@ -99,13 +102,13 @@ open class BaseRequestViewModel() : ViewModel() {
      */
     open fun <T, Resp : AbsResponse<T>> request(
         api: suspend CoroutineScope.() -> Resp?,
-        clickView:View?=null,
+        clickView: View? = null,
         success: ((data: T?) -> Unit)? = null,
         failed: ((code: Int?, message: String?) -> Unit)? = null,
         error: ((ApiException) -> Unit)? = null,
         special: ((code: Int?, message: String?, data: T?) -> Unit)? = null,//特殊情况
     ) {
-        clickView?.isEnabled=false
+        clickView?.isEnabled = false
         requestCount++
         if (requestCount == 1) {
             loadingTime = System.currentTimeMillis()
@@ -116,7 +119,7 @@ open class BaseRequestViewModel() : ViewModel() {
             flow { emit(api()) }    //网络请求
                 .flowOn(Dispatchers.IO)
                 .catch { e: Throwable? ->//异常捕获处理
-                    clickView?.isEnabled=true
+                    clickView?.isEnabled = true
                     val apiException = handleException(e)
                     requestCount--
                     updateRequestStateDialogIfNeed<T, Resp>(RequestState.error,
@@ -126,9 +129,16 @@ open class BaseRequestViewModel() : ViewModel() {
                     updateRequestStateDialogIfNeed<T, Resp>(RequestState.dismiss)
                 } //数据请求返回处理  emit(block()) 返回的数据
                 .collect {
-                    clickView?.isEnabled=true
+                    clickView?.isEnabled = true
                     requestCount--
-                    updateRequestStateDialogIfNeed<T, Resp>(RequestState.complete, it)
+                    if(it?.isSuccess()==true||it?.isSpecial()==true){
+                        //回调请求完成-成功，默认不显示文本
+                        updateRequestStateDialogIfNeed<T, Resp>(RequestState.complete, it)
+                    }else{
+                        //回调请求完成-失败，默认显示错误文本
+                        updateRequestStateDialogIfNeed<T, Resp>(RequestState.completeFailed, it)
+                    }
+
                     handleResponse(it, success, special, failed)
                     requestStateDialog?.let { delay(completeDismissDelay) }
                     updateRequestStateDialogIfNeed<T, Resp>(RequestState.dismiss)
@@ -183,7 +193,16 @@ open class BaseRequestViewModel() : ViewModel() {
                         delay(remainingTime)
                     }
                     requestStateDialog?.showComplete(response)
-
+                }
+            }
+            RequestState.completeFailed -> {
+                if (requestCount == 0) {
+                    val remainingTime =
+                        minimumLoadingTime - (System.currentTimeMillis() - loadingTime)
+                    if (remainingTime > 0) {
+                        delay(remainingTime)
+                    }
+                    requestStateDialog?.showCompleteFailed(response)
                 }
             }
             RequestState.error -> {
@@ -208,7 +227,7 @@ open class BaseRequestViewModel() : ViewModel() {
     private fun handleException(e: Throwable?): ApiException {
 
         if (e == null) return ApiException(customCode = UNKNOWN_ERROR, message = UNKNOWN_ERROR_str)
-
+        Log.e("BaseRequestViewModel",e.message.toString())
         var code: Int? = null
         var message = UNKNOWN_ERROR_str
         var customCode = UNKNOWN_ERROR
@@ -242,13 +261,15 @@ open class BaseRequestViewModel() : ViewModel() {
                     }
                 }
             }
-            is UnknownHostException,
-            is SocketTimeoutException,
-            is IOException,
-            -> {
-                message = IO_ERROR_str
+            is UnknownHostException -> {
+                message = IO_ERROR_UNKNOWN_HOST_str
                 customCode = IO_ERROR
             }
+            is SocketTimeoutException -> {
+                message = IO_ERROR_TIMEOUT_str
+                customCode = IO_ERROR
+            }
+
 
             is JSONException,
             is ParseException,

@@ -1,5 +1,4 @@
 <resources>
-    <string name="app_name">Common</string>
     <string name="top_sheet_behavior" translatable="false">com.github.techisfun.android.topsheet.TopSheetBehavior</string>
     <string name="request_loading_state_default_text">加载中…</string>
     <string name="request_complete_state_default_text">加载完成</string>

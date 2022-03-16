@@ -1,5 +1,7 @@
 package com.gfq.common.net
 
+import com.gfq.common.R
+
 /**
  * 2021/4/19 11:09
  * @auth gaofuq
@@ -9,7 +11,7 @@ package com.gfq.common.net
  */
 abstract class BaseRequestViewModelWithStateDialog : BaseRequestViewModel() {
     init {
-        requestStateDialog = DefaultRequestStateDialog()
+        requestStateDialog = DefaultRequestStateDialog(R.style.FullTransparentNoDimDialog)
         completeDismissDelay = 1000
         errorDismissDelay = 1500
         minimumLoadingTime = 800
