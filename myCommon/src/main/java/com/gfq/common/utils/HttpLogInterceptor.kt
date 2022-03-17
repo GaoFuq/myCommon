@@ -21,9 +21,9 @@ import kotlin.jvm.internal.Intrinsics
  * @auth gaofuq
  * @description
  *
-    OkHttpClient.Builder()
-        .addInterceptor(HttpLogInterceptor(listOf(ClassName::class.java)))
-        .build()
+OkHttpClient.Builder()
+.addInterceptor(HttpLogInterceptor(listOf(ClassName::class.java)))
+.build()
  *
  */
 class HttpLogInterceptor(private val apiServiceList: List<Class<*>>) : Interceptor {
@@ -41,12 +41,9 @@ class HttpLogInterceptor(private val apiServiceList: List<Class<*>>) : Intercept
         val requestBody = request.body
         val response = chain.proceed(request)
 
-
         val requestContent = "请求 --> ${request.method}   ${request.url}"
 
         val headers = request.headers
-        //请求的描述信息
-        val apiDescription = parseApiDescription()
 
         //请求头
         headerSb.append("请求头: { ")
@@ -79,7 +76,6 @@ class HttpLogInterceptor(private val apiServiceList: List<Class<*>>) : Intercept
             val responseContent = responseBody.string()
             try {
                 log(
-                    apiDescription,
                     headerSb.toString(),
                     requestContent,
                     responseContent,
@@ -95,21 +91,9 @@ class HttpLogInterceptor(private val apiServiceList: List<Class<*>>) : Intercept
         return response
     }
 
-    private fun parseApiDescription(): String {
-        val desc = "没有接口描述，请在接口方法上添加 ApiDesc 注解"
-        apiServiceList.forEach { clazz ->
-            clazz.methods.forEach { method->
-                val apiDesc = method.getAnnotation(ApiDesc::class.java)
-                apiDesc?.let {
-                    if(method.name == apiDesc.methodName){
-                        return apiDesc.apiDescription
-                    }
-                }
 
-            }
-        }
-        return desc
-    }
+
+
 
     private fun isIgnoreRequestBody(it: MediaType, requestBodySb: StringBuilder): Boolean {
         var isIgnore = false
@@ -129,7 +113,6 @@ class HttpLogInterceptor(private val apiServiceList: List<Class<*>>) : Intercept
     }
 
     private fun log(
-        apiDescription: String,
         headers: String,
         requestContent: String,
         responseContent: String,
@@ -138,7 +121,6 @@ class HttpLogInterceptor(private val apiServiceList: List<Class<*>>) : Intercept
         val serialNumber = atomicInteger.incrementAndGet()
         val serialTag = "$TAG$serialNumber"
         Log.e(serialTag, dvdLine)
-        Log.e(serialTag, apiDescription)
         Log.e(serialTag, requestContent)
         Log.e(serialTag, headers)
         Log.e(serialTag, requestBodyContent)
