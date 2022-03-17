@@ -19,7 +19,7 @@ abstract class BaseBindingView<binding : ViewDataBinding>(
 
     abstract fun layoutResId(): Int
 
-   protected val vBinding by lazy {
+   val vBinding by lazy {
         DataBindingUtil.inflate<binding>(
             LayoutInflater.from(context),
             layoutResId(),
