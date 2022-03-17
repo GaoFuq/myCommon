@@ -39,23 +39,18 @@ class LogInterceptor() : Interceptor {
         val requestContent = "请求 --> ${request.method}   ${request.url}"
 
         val headers = request.headers
-        var apiDescriptionStr =""
         if (headers.size > 0) {
-            apiDescriptionStr = headers.names().firstOrNull { it == apiDesc }?:"无接口说明"
             //请求头
             headerSb.append("请求头: { ")
             headers.forEach {
-                if (it.first != apiDesc) {
-                    headerSb.append(it.first).append(":").append(it.second).append("; ")
-                }
+                headerSb.append(it.first).append(":").append(it.second).append("; ")
             }
             headerSb.append("}")
         }
 
         //body
-        val requestNew = request.newBuilder().removeHeader(apiDesc).build()
-        val requestBody = requestNew.body
-        val response = chain.proceed(requestNew)
+        val requestBody = request.body
+        val response = chain.proceed(request)
 
         //请求体
         if (requestBody != null) {
@@ -80,7 +75,7 @@ class LogInterceptor() : Interceptor {
             val contentType = responseBody.contentType()
             val responseContent = responseBody.string()
             try {
-                log(apiDescriptionStr,
+                log(
                     headerSb.toString(),
                     requestContent,
                     responseContent,
@@ -115,7 +110,6 @@ class LogInterceptor() : Interceptor {
     }
 
     private fun log(
-        apiDescription: String,
         headers: String,
         requestContent: String,
         responseContent: String,
@@ -124,10 +118,13 @@ class LogInterceptor() : Interceptor {
         val serialNumber = atomicInteger.incrementAndGet()
         val serialTag = "$TAG$serialNumber"
         Log.e(serialTag, dvdLine)
-        Log.e(serialTag, apiDescription)
         Log.e(serialTag, requestContent)
-        Log.e(serialTag, headers)
-        Log.e(serialTag, requestBodyContent)
+        if(headers.isNotEmpty()) {
+            Log.e(serialTag, headers)
+        }
+        if(requestBodyContent.isNotEmpty()) {
+            Log.e(serialTag, requestBodyContent)
+        }
 
         if (responseContent.startsWith("<!DOCTYPE html>")) {
             Log.e(serialTag, "response is <!DOCTYPE html>")
@@ -140,7 +137,6 @@ class LogInterceptor() : Interceptor {
     }
 
     companion object {
-        const val apiDesc = "LogApiDescription"
         private const val TAG = "【HTTP】"
         private const val dvdLine =
             "----------------------------------------------------------------------------------------------------------------------"
