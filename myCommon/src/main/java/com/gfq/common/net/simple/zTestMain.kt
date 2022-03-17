@@ -1,16 +1,16 @@
 package com.gfq.common.net.simple
 
 import android.os.Bundle
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.viewModelScope
 import com.gfq.common.net.BaseRequestViewModelWithStateDialog
 import com.gfq.common.utils.ApiDesc
+import com.gfq.common.utils.ApiDescInterceptor
 import com.gfq.common.utils.HttpLogInterceptor
 import com.gfq.common.utils.scheduleAtFixedRate
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.Headers
 import retrofit2.http.POST
 
 /**
@@ -20,7 +20,8 @@ import retrofit2.http.POST
  */
 //定义1
 private interface Api {
-    @ApiDesc("appVersion", "获取用户信息")
+    @Headers("${ApiDescInterceptor.MethodName}:getUserInfo")
+    @ApiDesc( "获取用户信息")
     @POST("api/getUserInfo")
     suspend fun getUserInfo(): AbsResponseSimple<UserInfoRespSimple>
 }
@@ -58,10 +59,10 @@ private class TestViewModelWithStateDialog : BaseRequestViewModelWithStateDialog
 }
 
 //使用
-private class SimpleActivity:AppCompatActivity(){
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        val vm by viewModels<TestViewModelWithStateDialog>()
-        vm.getUserInfo()
-    }
-}
+//private  class SimpleActivity:AppCompatActivity(){
+//    override fun onCreate(savedInstanceState: Bundle?) {
+//        super.onCreate(savedInstanceState)
+////        val vm by viewModels<TestViewModelWithStateDialog>()
+////        vm.getUserInfo()
+//    }
+//}
