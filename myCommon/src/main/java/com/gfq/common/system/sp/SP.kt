@@ -7,6 +7,7 @@ import com.alibaba.fastjson.JSON
 import com.gfq.common.system.ActivityManager
 import java.io.File
 import com.gfq.common.system.sp.simple.SPCache
+import com.gfq.common.utils.FileUtil
 
 /**
  * 示例：[SPCache]
@@ -144,6 +145,27 @@ object SP {
             map[name] = all
         }
         return map
+    }
+
+    /**
+     * 获取指定SP文件的大小
+     */
+    fun getCacheSize(spTableName: String):String{
+        require(spTableName.isNotEmpty()) { KEY_IS_EMPTY_EXCEPTION }
+        val spFile = File("data/data/${ActivityManager.application.packageName}/shared_prefs", "$spTableName.xml")
+        return FileUtil.getFormatSize(FileUtil.getFolderSize(spFile).toDouble())
+    }
+
+    /**
+     * 获取全部SP文件的大小
+     */
+    fun getAllSPCacheSize():String{
+        var totalSize = 0L
+        getAllSPTableNames().forEach {
+            val spFile = File("data/data/${ActivityManager.application.packageName}/shared_prefs", "$it.xml")
+            totalSize+= FileUtil.getFolderSize(spFile)
+        }
+        return FileUtil.getFormatSize(totalSize.toDouble())
     }
 
     /**

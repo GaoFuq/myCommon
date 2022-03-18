@@ -93,7 +93,10 @@ open class BaseRequestViewModel() : ViewModel() {
     }
 
     private var requestCount = 0
-
+    private var isShowDialogLoading: Boolean = true
+    private var isShowDialogCompleteSuccess: Boolean = false
+    private var isShowDialogCompleteFailed: Boolean = true
+    private var isShowDialogError: Boolean = true
 
     override fun onCleared() {
     }
@@ -104,16 +107,27 @@ open class BaseRequestViewModel() : ViewModel() {
     open fun <T, Resp : AbsResponse<T>> request(
         api: suspend CoroutineScope.() -> Resp?,
         clickView: View? = null,
+        isShowDialogLoading: Boolean = true,
+        isShowDialogCompleteSuccess: Boolean = false,
+        isShowDialogCompleteFailed: Boolean = true,
+        isShowDialogError: Boolean = true,
         success: ((data: T?) -> Unit)? = null,
         failed: ((code: Int?, message: String?) -> Unit)? = null,
         error: ((ApiException) -> Unit)? = null,
         special: ((code: Int?, message: String?, data: T?) -> Unit)? = null,//特殊情况
     ) {
         clickView?.isEnabled = false
+        this.isShowDialogLoading = isShowDialogLoading
+        this.isShowDialogCompleteSuccess = isShowDialogCompleteSuccess
+        this.isShowDialogCompleteFailed = isShowDialogCompleteFailed
+        this.isShowDialogError = isShowDialogError
+
         requestCount++
         if (requestCount == 1) {
             loadingTime = System.currentTimeMillis()
-            requestStateDialog?.showLoading()
+            if (isShowDialogLoading) {
+                requestStateDialog?.showLoading()
+            }
         }
 
         viewModelScope.launch {
@@ -133,10 +147,10 @@ open class BaseRequestViewModel() : ViewModel() {
                     clickView?.isEnabled = true
                     requestCount--
                     if (it?.isSuccess() == true || it?.isSpecial() == true) {
-                        //回调请求完成-成功，默认不显示文本
+                        //回调请求完成-成功，默认不显示dialog
                         updateRequestStateDialogIfNeed<T, Resp>(RequestState.complete, it)
                     } else {
-                        //回调请求完成-失败，默认显示错误文本
+                        //回调请求完成-失败，默认显示dialog错误文本
                         updateRequestStateDialogIfNeed<T, Resp>(RequestState.completeFailed, it)
                     }
 
@@ -193,7 +207,9 @@ open class BaseRequestViewModel() : ViewModel() {
                     if (remainingTime > 0) {
                         delay(remainingTime)
                     }
-                    requestStateDialog?.showComplete(response)
+                    if (isShowDialogCompleteSuccess) {
+                        requestStateDialog?.showComplete(response)
+                    }
                 }
             }
             RequestState.completeFailed -> {
@@ -203,7 +219,9 @@ open class BaseRequestViewModel() : ViewModel() {
                     if (remainingTime > 0) {
                         delay(remainingTime)
                     }
-                    requestStateDialog?.showCompleteFailed(response)
+                    if (isShowDialogCompleteFailed) {
+                        requestStateDialog?.showCompleteFailed(response)
+                    }
                 }
             }
             RequestState.error -> {
@@ -213,7 +231,9 @@ open class BaseRequestViewModel() : ViewModel() {
                     if (remainingTime > 0) {
                         delay(remainingTime)
                     }
-                    requestStateDialog?.showError(apiException)
+                    if (isShowDialogError) {
+                        requestStateDialog?.showError(apiException)
+                    }
                 }
             }
             RequestState.dismiss -> {
@@ -230,7 +250,7 @@ open class BaseRequestViewModel() : ViewModel() {
         if (e == null) return ApiException(customCode = UNKNOWN_ERROR, message = UNKNOWN_ERROR_str)
         Log.e("BaseRequestViewModel", e.message.toString())
         var code: Int? = null
-        var message = UNKNOWN_ERROR_str +"\n"+ e.message
+        var message = UNKNOWN_ERROR_str + "\n" + e.message
         var customCode = UNKNOWN_ERROR
 
         when (e) {
