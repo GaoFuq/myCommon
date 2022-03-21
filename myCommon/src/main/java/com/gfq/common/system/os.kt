@@ -6,11 +6,9 @@ import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
 import android.content.res.Resources
-import android.graphics.Rect
 import android.os.*
 import android.provider.Settings
 import android.telephony.TelephonyManager
-import android.util.Log
 import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
@@ -20,11 +18,7 @@ import android.widget.EditText
 import androidx.annotation.RequiresPermission
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
-import com.luck.picture.lib.tools.ScreenUtils
-import com.orhanobut.logger.AndroidLogAdapter
-import com.orhanobut.logger.Logger
-import com.orhanobut.logger.PrettyFormatStrategy
-import java.lang.Exception
+
 
 /**
  *  2021/12/31 10:19
@@ -185,3 +179,17 @@ fun Context.getStatusBarHeight(): Int {
     return if (result == 0) dp(25) else result
 }
 
+fun isApkExist(context: Context, packageName: String?): Boolean {
+    return if (packageName == null || "" == packageName) false else try {
+        val info = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            context.packageManager.getApplicationInfo(packageName,
+                PackageManager.MATCH_UNINSTALLED_PACKAGES)
+        } else {
+            context.packageManager.getApplicationInfo(packageName,
+                PackageManager.GET_UNINSTALLED_PACKAGES)
+        }
+        true
+    } catch (e: PackageManager.NameNotFoundException) {
+        false
+    }
+}
