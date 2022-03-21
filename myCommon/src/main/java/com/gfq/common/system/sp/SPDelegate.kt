@@ -92,5 +92,9 @@ open class SPDelegate<T>(
 
         SP.get(spTableName).put(dataKeyName!!, value)
     }
+
+    fun clear() = SP.clear(spTableName)
+
+    fun getCacheSize() = SP.getCacheSize(spTableName)
 }
 

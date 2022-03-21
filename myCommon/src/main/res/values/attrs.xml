@@ -1,4 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <declare-styleable name="BaseTitleBarLayout">
+        <attr name="titleBar_backIcon" format="color|reference"/>
+        <attr name="titleBar_rightIcon" format="color|reference"/>
+
+        <attr name="titleBar_title" format="string|reference"/>
+        <attr name="titleBar_titleColor" format="color|reference"/>
+        <attr name="titleBar_titleSize" format="dimension|reference"/>
+        <attr name="titleBar_titleBold" format="boolean"/>
+        <attr name="titleBar_titleBackground" format="reference"/>
+
+        <attr name="titleBar_rightText" format="string|reference"/>
+        <attr name="titleBar_rightTextColor" format="color|reference"/>
+        <attr name="titleBar_rightTextSize" format="dimension|reference"/>
+        <attr name="titleBar_rightTextBold" format="boolean"/>
+        <attr name="titleBar_rightTextBackground" format="reference"/>
+
+    </declare-styleable>
+
+
+    <declare-styleable name="RichItemLayout">
+        <attr name="richItem_title" format="string|reference"/>
+        <attr name="richItem_titleBold" format="boolean"/>
+        <attr name="richItem_contentBold" format="boolean"/>
+        <attr name="richItem_icon" format="color|reference"/>
+        <attr name="richItem_content" format="string|reference"/>
+        <attr name="richItem_contentHint" format="string|reference"/>
+        <attr name="richItem_titleColor" format="color|reference"/>
+        <attr name="richItem_contentColor" format="color|reference"/>
+        <attr name="richItem_titleSize" format="dimension|reference"/>
+        <attr name="richItem_contentSize" format="dimension|reference"/>
+        <attr name="richItem_rightArrow" format="color|reference"/>
+        <attr name="richItem_contentGravity">
+            <enum name="start" value="0" />
+            <enum name="end" value="1" />
+        </attr>
+    </declare-styleable>
 
 </resources>
