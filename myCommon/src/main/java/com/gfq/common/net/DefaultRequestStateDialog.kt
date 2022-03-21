@@ -30,9 +30,9 @@ open class DefaultRequestStateDialog(style:Int=0): GlobalDialog(style), IRequest
     }
 
     //不可通过返回按钮隐藏
-    override fun onBackPressed() {
-
-    }
+//    override fun onBackPressed() {
+//
+//    }
 
     override fun showLoading(message: String?) {
         Log.e("stateDialog","showLoading")
