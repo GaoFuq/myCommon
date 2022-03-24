@@ -12,7 +12,6 @@ import com.gfq.common.system.ActivityManager
 import com.gfq.common.system.log
 import okhttp3.*
 import java.io.*
-import java.lang.Exception
 
 /**
  *  2022/1/28 15:16
@@ -42,12 +41,17 @@ val externalMovies by lazy { ActivityManager.application.getExternalFilesDir(Env
 fun downloadFile(
     url: String,
     saveDir: String? = externalDownload?.path,
-    saveFileName: String? = null,
+    saveFileName: String? = url.getFileName(),
     autoOpen: Boolean = false,
     onProgress: ((Int) -> Unit)? = null,
-    success: ((file:File) -> Unit)? = null,
+    success: ((file: File) -> Unit)? = null,
     failed: (() -> Unit)? = null,
 ) {
+    val oldFile = File(saveDir + File.separator + saveFileName)
+    if (oldFile.exists() && autoOpen) {
+        oldFile.open()
+        return
+    }
     val startTime = System.currentTimeMillis()
     log("downloadFile startTime = $startTime")
     val okHttpClient = OkHttpClient()
@@ -68,7 +72,7 @@ fun downloadFile(
             try {
                 `is` = response.body!!.byteStream()
                 val total = response.body!!.contentLength()
-                val file = File(saveDir, saveFileName ?: getFileNameFromUrl(url))
+                val file = File(saveDir, saveFileName)
                 fos = FileOutputStream(file)
                 var sum: Long = 0
                 while (`is`.read(buf).also { len = it } != -1) {
@@ -206,3 +210,5 @@ fun File?.open() {
     }
     ActivityManager.application.startActivity(intent);
 }
+
+
