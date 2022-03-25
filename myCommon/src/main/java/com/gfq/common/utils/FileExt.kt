@@ -49,6 +49,8 @@ fun downloadFile(
 ) {
     val oldFile = File(saveDir + File.separator + saveFileName)
     if (oldFile.exists() && autoOpen) {
+        log("downloadFile exist oldFile = ${oldFile.path}")
+        success?.invoke(oldFile)
         oldFile.open()
         return
     }
