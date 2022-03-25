@@ -137,29 +137,52 @@ abstract class BaseInputFilter : InputFilter {
 /**
  * 去除空格
  */
-class InputFilterNoWhiteSpace : BaseInputFilter() {
+class InputFilterExcludeWhiteSpace : BaseInputFilter() {
     override fun keepCondition(char: Char) = !char.isWhitespace()
 }
 
 /**
  * 去除数字
  */
-class InputFilterNoDigit : BaseInputFilter() {
+class InputFilterExcludeDigit : BaseInputFilter() {
     override fun keepCondition(char: Char) = !char.isDigit()
 }
 
 /**
+ * 只要数字
+ */
+class InputFilterOnlyDigit : BaseInputFilter() {
+    override fun keepCondition(char: Char) = char.isDigit()
+}
+
+/**
+ * 只要字母
+ */
+class InputFilterOnlyLetter : BaseInputFilter() {
+    override fun keepCondition(char: Char) = char.isLetter()
+}
+
+
+/**
  * 去除中文字符
  */
-class InputFilterNoChineseCharacter : BaseInputFilter() {
+class InputFilterExcludeChineseCharacter : BaseInputFilter() {
     override fun keepCondition(char: Char) = !char.isChineseCharacter()
 }
+
+/**
+ * 只要中文字符
+ */
+class InputFilterOnlyChineseCharacter : BaseInputFilter() {
+    override fun keepCondition(char: Char) = char.isChineseCharacter()
+}
+
 
 /**
  * 去除特殊字符（包括emoji,空格等）
  * 只留下数字，字母，汉字
  */
-class InputFilterNoSpecialCharacters : BaseInputFilter() {
+class InputFilterExcludeSpecialCharacters : BaseInputFilter() {
     override fun keepCondition(char: Char) = !char.isChineseCharacterOrDigitOrLetter()
 }
 
@@ -168,7 +191,7 @@ class InputFilterNoSpecialCharacters : BaseInputFilter() {
 /**
  * 去除emoji表情
  */
-class InputFilterNoEmoji : InputFilter {
+class InputFilterExcludeEmoji : InputFilter {
     override fun filter(
         source: CharSequence?,
         start: Int,
@@ -189,14 +212,14 @@ class InputFilterNoEmoji : InputFilter {
 
 
 /**
- * 去除 指定字符
+ * 不包括指定字符（去除指定字符）
  */
-class InputFilterRemove(private val arr: Array<Char>)  : BaseInputFilter() {
+class InputFilterExclude(private val arr: Array<Char>)  : BaseInputFilter() {
     override fun keepCondition(char: Char) = arr.all { char != it }
 }
 
 /**
- * 只要 指定字符
+ * 只要指定字符
  */
 class InputFilterOnly(private val arr: Array<Char>) : BaseInputFilter() {
     override fun keepCondition(char: Char) = arr.any { char == it }
