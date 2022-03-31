@@ -1,3 +1,4 @@
+/*
 package com.gfq.common.other
 
 import android.app.Activity
@@ -10,11 +11,13 @@ import com.xgr.wechatpay.wxpay.WXPay
 import com.xgr.wechatpay.wxpay.WXPayInfoImpli
 
 
+*/
 /**
  *  2021/4/28 10:23
  * @auth gaofuq
  * @description
- */
+ *//*
+
 fun wxpay(
     act: Activity,
     timestamp: String,
@@ -93,4 +96,4 @@ fun alipay(
             cancel.invoke()
         }
     })
-}
+}*/

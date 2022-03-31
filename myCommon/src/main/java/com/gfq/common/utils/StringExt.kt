@@ -81,7 +81,7 @@ fun CharSequence?.isLetter(): Boolean {
  */
 fun CharSequence?.isLetterOrDigit(): Boolean {
     if (this == null) return false
-    return this.toString().toCharArray().all { it.isLetterOrDigit() }
+    return this.toString().toCharArray().all { it.isLetter() || it.isDigit() }
 }
 
 /**

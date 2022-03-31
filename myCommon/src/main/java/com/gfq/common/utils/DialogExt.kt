@@ -2,9 +2,6 @@ package com.gfq.common.utils
 
 import android.app.Dialog
 import android.view.View
-import androidx.core.view.OnApplyWindowInsetsListener
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 
 
 /**
