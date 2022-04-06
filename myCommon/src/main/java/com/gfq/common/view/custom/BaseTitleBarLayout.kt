@@ -35,7 +35,7 @@ class BaseTitleBarLayout(context: Context, attrs: AttributeSet?) :
         val title = arr.getString(R.styleable.BaseTitleBarLayout_titleBar_title)
         val titleColor =
             arr.getColor(R.styleable.BaseTitleBarLayout_titleBar_titleColor, Color.BLACK)
-        val titleSize = arr.getDimension(R.styleable.BaseTitleBarLayout_titleBar_titleSize, 16f)
+        val titleSize = arr.getDimensionPixelSize(R.styleable.BaseTitleBarLayout_titleBar_titleSize, 16)
         val titleBold = arr.getBoolean(R.styleable.BaseTitleBarLayout_titleBar_titleBold, true)
         val titleBackground =
             arr.getDrawable(R.styleable.BaseTitleBarLayout_titleBar_titleBackground)
@@ -44,7 +44,7 @@ class BaseTitleBarLayout(context: Context, attrs: AttributeSet?) :
         val rightTextColor =
             arr.getColor(R.styleable.BaseTitleBarLayout_titleBar_rightTextColor, Color.BLACK)
         val rightTextSize =
-            arr.getDimension(R.styleable.BaseTitleBarLayout_titleBar_rightTextSize, 14f)
+            arr.getDimensionPixelSize(R.styleable.BaseTitleBarLayout_titleBar_rightTextSize, 14)
         val rightTextBold =
             arr.getBoolean(R.styleable.BaseTitleBarLayout_titleBar_rightTextBold, false)
         val rightTextBackground =
@@ -59,7 +59,7 @@ class BaseTitleBarLayout(context: Context, attrs: AttributeSet?) :
             tvTitleBarTitle.run {
                 text = title
                 setTextColor(titleColor)
-                setTextSize(TypedValue.COMPLEX_UNIT_PX,titleSize)
+                setTextSize(TypedValue.COMPLEX_UNIT_PX,titleSize.toFloat())
                 typeface = setTypeFace(titleBold)
                 background = titleBackground
             }
@@ -68,7 +68,7 @@ class BaseTitleBarLayout(context: Context, attrs: AttributeSet?) :
                 addViewToRight(TextView(context).apply {
                     text = rightText
                     setTextColor(rightTextColor)
-                    setTextSize(TypedValue.COMPLEX_UNIT_PX,rightTextSize)
+                    setTextSize(TypedValue.COMPLEX_UNIT_PX,rightTextSize.toFloat())
                     typeface = setTypeFace(rightTextBold)
                     background = rightTextBackground
                     gravity = Gravity.CENTER
