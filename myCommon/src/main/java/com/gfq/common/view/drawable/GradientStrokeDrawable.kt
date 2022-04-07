@@ -1,4 +1,4 @@
-package com.gfq.common.view
+package com.gfq.common.view.drawable
 
 import android.graphics.*
 import android.graphics.drawable.Drawable
