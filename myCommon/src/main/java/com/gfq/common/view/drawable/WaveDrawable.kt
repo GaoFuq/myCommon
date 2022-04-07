@@ -12,8 +12,13 @@ import kotlin.random.Random
 /**
  *  2022/4/7 9:43
  * @auth gaofuq
- * @description
+ * @description 两道波纹的drawable
  */
+/*
+        val wave = WaveDrawable()
+        binding.imageParentLayout.background = wave
+        binding.image.doOnPreDraw { wave.startWave(it.width/2f)  }
+*/
 class WaveDrawable : Drawable() {
     private var mBounds: Rect? = null
     private val paint1 = Paint(Paint.ANTI_ALIAS_FLAG)
@@ -45,6 +50,12 @@ class WaveDrawable : Drawable() {
         this.startRadius = startRadius
         this.endRadius = endRadius
         startWave1()
+    }
+
+
+    fun setWaveColor(color:Int){
+        paint1.color=color
+        paint2.color=color
     }
 
     private fun startWave1() {
