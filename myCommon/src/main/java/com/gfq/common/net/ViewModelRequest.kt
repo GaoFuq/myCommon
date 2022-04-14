@@ -10,10 +10,7 @@ import com.google.gson.JsonParseException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import org.json.JSONException
 import retrofit2.HttpException
@@ -35,7 +32,7 @@ import java.net.UnknownHostException
  *
  */
 open class ViewModelRequest() : ViewModel() {
-
+    private val TAG = javaClass.simpleName
     /**
      * 请求状态弹窗 @see [RequestState]
      */
@@ -111,6 +108,7 @@ open class ViewModelRequest() : ViewModel() {
         isShowDialogCompleteSuccess: Boolean = false,
         isShowDialogCompleteFailed: Boolean = true,
         isShowDialogError: Boolean = true,
+        retryCount: Int = 2,
         success: ((data: T?) -> Unit)? = null,
         failed: ((code: Int?, message: String?) -> Unit)? = null,
         error: ((ApiException) -> Unit)? = null,
@@ -133,6 +131,10 @@ open class ViewModelRequest() : ViewModel() {
         viewModelScope.launch {
             flow { emit(api()) }    //网络请求
                 .flowOn(Dispatchers.IO)
+                .retryWhen { cause, attempt ->
+                    Log.e(TAG, cause.message.toString()+ " retry - $attempt")
+                    attempt < retryCount
+                }
                 .catch { e: Throwable? ->//异常捕获处理
                     clickView?.isEnabled = true
                     val apiException = handleException(e)
@@ -248,7 +250,7 @@ open class ViewModelRequest() : ViewModel() {
     private fun handleException(e: Throwable?): ApiException {
 
         if (e == null) return ApiException(customCode = UNKNOWN_ERROR, message = UNKNOWN_ERROR_str)
-        Log.e("BaseRequestViewModel", e.message.toString())
+        Log.e(TAG, e.message.toString())
         var code: Int? = null
         var message = UNKNOWN_ERROR_str + "\n" + e.message
         var customCode = UNKNOWN_ERROR
