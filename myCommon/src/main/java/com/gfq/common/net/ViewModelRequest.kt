@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.View
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.gson.JsonParseException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -16,7 +17,6 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import org.json.JSONException
 import retrofit2.HttpException
-import java.io.IOException
 import java.net.ConnectException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
@@ -27,14 +27,14 @@ import java.net.UnknownHostException
  * @auth gaofuq
  * @description
  *
- * 一个 [BaseRequestViewModel] 持有一个空的 [IRequestStateDialog] 。
+ * 一个 [ViewModelRequest] 持有一个空的 [IRequestStateDialog] 。
  * 连续发起多个请求，[IRequestStateDialog] 显示隐藏只会走一次，无法反映出结果是成功还是异常
  *
  * 不需要 loading 弹窗，可以直接继承这个。
- * 需要 loading 弹窗，可以继承 [BaseRequestViewModelWithStateDialog]
+ * 需要 loading 弹窗，可以继承 [ViewModelRequestWithDialog]
  *
  */
-open class BaseRequestViewModel() : ViewModel() {
+open class ViewModelRequest() : ViewModel() {
 
     /**
      * 请求状态弹窗 @see [RequestState]
@@ -298,6 +298,7 @@ open class BaseRequestViewModel() : ViewModel() {
 
             is JSONException,
             is ParseException,
+            is JsonParseException,
             -> {
                 message = DATA_PARSE_ERROR_str
                 customCode = DATA_PARSE_ERROR
