@@ -1,5 +1,6 @@
 package com.gfq.common.net
 
+import android.app.Activity
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
@@ -40,7 +41,7 @@ open class DefaultRequestStateDialog(style:Int=0): GlobalDialog(style), IRequest
     override fun <T, Resp : AbsResponse<T>> showComplete(response: Resp?) {
         Log.e("stateDialog","showComplete ${response?.responseMessage()}")
         //默认不显示任何文本
-        if(!isShowing) {
+        if(checkLeak() && !isShowing) {
            show()
         }
     }
@@ -49,7 +50,7 @@ open class DefaultRequestStateDialog(style:Int=0): GlobalDialog(style), IRequest
         Log.e("stateDialog","showCompleteFailed ${response?.responseMessage()}")
         //默认显示返回的错误信息
         binding.tvState.text = response?.responseMessage()
-        if(!isShowing) {
+        if(checkLeak() && !isShowing) {
             show()
         }
     }
@@ -58,19 +59,26 @@ open class DefaultRequestStateDialog(style:Int=0): GlobalDialog(style), IRequest
     override fun showError(error: ApiException) {
         Log.e("stateDialog","showError")
         binding.tvState.text = error.message
-        if(!isShowing) {
+        if(checkLeak() && !isShowing) {
             show()
         }
     }
 
 
     override fun dismissStateDialog() {
-        if(isShowing) {
+        if(checkLeak() && isShowing) {
             Log.e("stateDialog","dismissStateDialog")
             dismiss()
         }
     }
 
+    fun checkLeak():Boolean{
+        if(context is Activity){
+            val act = context as Activity
+            return !act.isFinishing && !act.isDestroyed
+        }
+        return false
+    }
 
 
 }

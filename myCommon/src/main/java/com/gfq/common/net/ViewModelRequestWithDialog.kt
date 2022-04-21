@@ -11,9 +11,11 @@ import com.gfq.common.R
  */
 abstract class ViewModelRequestWithDialog : ViewModelRequest() {
     init {
-        requestStateDialog = DefaultRequestStateDialog(R.style.FullTransparentNoDimDialog)
-        completeDismissDelay = 1000
-        errorDismissDelay = 1500
-        minimumLoadingTime = 800
+        requestDelegate.run {
+            requestStateDialog = DefaultRequestStateDialog(R.style.FullTransparentNoDimDialog)
+            completeDismissDelay = 1000
+            errorDismissDelay = 1500
+            minimumLoadingTime = 800
+        }
     }
 }
