@@ -9,13 +9,8 @@ import com.gfq.common.R
  *
  * 初始化了一个默认的 [IRequestStateDialog],[DefaultRequestStateDialog]
  */
-abstract class ViewModelRequestWithDialog : ViewModelRequest() {
+open class ViewModelRequestWithDialog : ViewModelRequest() {
     init {
-        requestDelegate.run {
-            requestStateDialog = DefaultRequestStateDialog(R.style.FullTransparentNoDimDialog)
-            completeDismissDelay = 1000
-            errorDismissDelay = 1500
-            minimumLoadingTime = 800
-        }
+        requestDelegate.stateDialog = DefaultRequestStateDialog(R.style.FullTransparentNoDimDialog)
     }
 }

@@ -3,7 +3,6 @@ package com.gfq.common.net
 import android.net.ParseException
 import android.util.Log
 import android.view.View
-import androidx.lifecycle.viewModelScope
 import com.google.gson.JsonParseException
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
@@ -19,7 +18,6 @@ import java.net.UnknownHostException
  * @description
  */
 /**
- * 持有一个空的 [IRequestStateDialog] 。
  * 连续发起多个请求，[IRequestStateDialog] 显示隐藏只会走一次。
  *
  * 可以在能拿到 CoroutineScope 的地方直接实例化使用。
@@ -29,22 +27,22 @@ open class RequestDelegate(
     /**
      * 请求状态弹窗 @see [RequestState]
      */
-    var requestStateDialog: IRequestStateDialog? = null,
+    var stateDialog: IRequestStateDialog? = null,
 
     /**
      * 结果成功返回时，dialog隐藏的延迟时间（显示的时间），用于展示结果信息
      */
-    var completeDismissDelay: Long = 0,
+    var completeDismissDelay: Long = 1000,
 
     /**
      * 请求或返回结果是异常时，dialog隐藏的延迟时间（显示的时间），用于展示异常信息
      */
-    var errorDismissDelay: Long = 0,
+    var errorDismissDelay: Long = 1500,
 
     /**
      * loading 显示的最少时间，用于展示loading
      */
-    var minimumLoadingTime: Long = 0,
+    var minimumLoadingTime: Long = 800,
 ) {
 
 
@@ -86,7 +84,7 @@ open class RequestDelegate(
         if (requestCount == 1) {
             loadingTime = System.currentTimeMillis()
             if (isShowDialogLoading) {
-                requestStateDialog?.showLoading()
+                stateDialog?.showLoading()
             }
         }
 
@@ -104,7 +102,7 @@ open class RequestDelegate(
                     updateRequestStateDialogIfNeed<T, Resp>(RequestState.error,
                         apiException = apiException)
                     error?.invoke(apiException)
-                    requestStateDialog?.let { delay(errorDismissDelay) }
+                    stateDialog?.let { delay(errorDismissDelay) }
                     updateRequestStateDialogIfNeed<T, Resp>(RequestState.dismiss)
                 } //数据请求返回处理  emit(block()) 返回的数据
                 .collect {
@@ -119,7 +117,7 @@ open class RequestDelegate(
                     }
 
                     handleResponse(it, success, special, failed)
-                    requestStateDialog?.let { delay(completeDismissDelay) }
+                    stateDialog?.let { delay(completeDismissDelay) }
                     updateRequestStateDialogIfNeed<T, Resp>(RequestState.dismiss)
                 }
         }
@@ -156,11 +154,11 @@ open class RequestDelegate(
         response: Resp? = null,
         apiException: ApiException = ApiException(),
     ) {
-        if (requestStateDialog == null) return
+        if (stateDialog == null) return
         when (dialogState) {
             RequestState.loading -> {
                 if (requestCount == 1) {
-                    requestStateDialog?.showLoading()
+                    stateDialog?.showLoading()
                 }
 
             }
@@ -172,7 +170,7 @@ open class RequestDelegate(
                         delay(remainingTime)
                     }
                     if (isShowDialogCompleteSuccess) {
-                        requestStateDialog?.showComplete(response)
+                        stateDialog?.showComplete(response)
                     }
                 }
             }
@@ -184,7 +182,7 @@ open class RequestDelegate(
                         delay(remainingTime)
                     }
                     if (isShowDialogCompleteFailed) {
-                        requestStateDialog?.showCompleteFailed(response)
+                        stateDialog?.showCompleteFailed(response)
                     }
                 }
             }
@@ -196,13 +194,13 @@ open class RequestDelegate(
                         delay(remainingTime)
                     }
                     if (isShowDialogError) {
-                        requestStateDialog?.showError(apiException)
+                        stateDialog?.showError(apiException)
                     }
                 }
             }
             RequestState.dismiss -> {
                 if (requestCount == 0) {
-                    requestStateDialog?.dismissStateDialog()
+                    stateDialog?.dismissStateDialog()
                 }
             }
         }
