@@ -3,10 +3,7 @@ package com.gfq.common.net.simple
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.http.*
-import com.gfq.common.net.buildMultipartList
-import com.gfq.common.net.buildMultipartBody
-import com.gfq.common.net.buildRequestBodyMap
-
+import com.gfq.common.net.UploadFileHelper
 /**
  *  2022/4/22 9:07
  * @auth gaofuq
@@ -30,7 +27,7 @@ internal interface ApiServiceSimple {
 
 
     /**
-     * @see [buildMultipartList]
+     * @see [UploadFileHelper.buildMultipartList]
      */
     @POST("")
     @Multipart
@@ -40,7 +37,7 @@ internal interface ApiServiceSimple {
     ): BaseResponseSimple<Any?>
 
     /**
-     * @see [buildRequestBodyMap]
+     * @see [UploadFileHelper.buildRequestBodyMap]
      */
     @POST("")
     @Multipart
@@ -50,7 +47,7 @@ internal interface ApiServiceSimple {
     ): BaseResponseSimple<Any?>
 
     /**
-     * @see [buildMultipartBody]
+     * @see [UploadFileHelper.buildMultipartBody]
      */
     @POST("")
     @Multipart
