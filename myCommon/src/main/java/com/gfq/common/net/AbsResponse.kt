@@ -1,9 +1,9 @@
 package com.gfq.common.net
-import com.gfq.common.net.simple.AbsResponseSimple
+import com.gfq.common.net.simple.BaseResponseSimple
 
 /**
  * 数据包装基类
- * 例子 @see [AbsResponseSimple]
+ * 例子 @see [BaseResponseSimple]
  */
 abstract class AbsResponse<T>{
 

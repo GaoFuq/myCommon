@@ -1,22 +1,10 @@
 package com.gfq.common.net
 
 
-import android.net.ParseException
-import android.util.Log
 import android.view.View
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.gson.JsonParseException
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
-import org.json.JSONException
-import retrofit2.HttpException
-import java.net.ConnectException
-import java.net.SocketTimeoutException
-import java.net.UnknownHostException
 
 
 /**
@@ -57,9 +45,6 @@ open class ViewModelRequest() : ViewModel() {
             special)
     }
 }
-
-
-
 
 
 

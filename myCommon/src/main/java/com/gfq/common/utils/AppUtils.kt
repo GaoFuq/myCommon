@@ -20,6 +20,7 @@ object AppUtils {
     /**
      * 版本名称
      */
+    @JvmStatic
     fun getVersionName(context: Context) =
             try {
                 val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
@@ -31,6 +32,7 @@ object AppUtils {
     /**
      * 版本号码
      */
+    @JvmStatic
     fun getVersionCode(context: Context) =
             try {
                 val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
@@ -42,6 +44,7 @@ object AppUtils {
     /**
      * 签名信息
      */
+    @JvmStatic
     fun getSign(context: Context) =
             try {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
@@ -56,6 +59,7 @@ object AppUtils {
     /**
      * 渠道号码
      */
+    @JvmStatic
     fun getDownSource(context: Context) =
             try {
                 context.packageManager.getApplicationInfo(context.packageName, PackageManager.GET_META_DATA).metaData?.getString("UMENG_CHANNEL")
@@ -70,6 +74,7 @@ object AppUtils {
      * @param context     上下文
      * @return 是否存在
      */
+    @JvmStatic
     fun isRunForeground(context: Context?, packageName: String = context?.packageName ?: ""): Boolean =
             context?.getSystemService<ActivityManager>()?.runningAppProcesses?.any {
                 it.processName == packageName && it.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND
@@ -82,6 +87,7 @@ object AppUtils {
      * @param context     上下文
      * @return 是否存在
      */
+    @JvmStatic
     fun isRunBackground(context: Context?, packageName: String = context?.packageName ?: ""): Boolean =
             context?.getSystemService<ActivityManager>()?.runningAppProcesses?.any {
                 it.processName == packageName && it.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_BACKGROUND
@@ -94,6 +100,7 @@ object AppUtils {
      * @param serviceClass 需要判断的服务类
      * @return
      */
+    @JvmStatic
     fun isServiceRunning(context: Context, serviceClass: Class<*>): Boolean {
         val runningServices = context.getSystemService<ActivityManager>()?.getRunningServices(Integer.MAX_VALUE)// 参数表示需要获取的正在运行的服务数量，这里我们取最大值
         if (runningServices != null && runningServices.isNotEmpty()) {
@@ -115,6 +122,7 @@ object AppUtils {
      * @param context 上下文
      * @return uid
      */
+    @JvmStatic
     private fun getUid(context: Context?): Int {
         if (context == null) {
             return -1
@@ -137,6 +145,7 @@ object AppUtils {
      * @param activity
      * @return
      */
+    @JvmStatic
     fun getTopBarHeight(activity: Activity): Int {
         return activity.window.findViewById<View>(Window.ID_ANDROID_CONTENT).top
     }
@@ -146,6 +155,7 @@ object AppUtils {
      *
      * @param context
      */
+    @JvmStatic
     fun gotoAppDetailSettingActivity(context: Context) {
         val localIntent = Intent()
         localIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -163,6 +173,7 @@ object AppUtils {
      * @param context 上下文
      * @return 进程名称
      */
+    @JvmStatic
     fun getProcessName(context: Context): String {
         context.getSystemService<ActivityManager>()?.runningAppProcesses?.apply {
             for (processInfo in this) {
@@ -174,6 +185,7 @@ object AppUtils {
         return ""
     }
 
+    @JvmStatic
     fun exitApp(context: Context?) {
         context?.let {
             val startMain = Intent(Intent.ACTION_MAIN)

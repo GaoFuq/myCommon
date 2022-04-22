@@ -2,7 +2,7 @@ package com.gfq.common.net.simple
 
 import com.gfq.common.net.AbsResponse
 
-internal open class AbsResponseSimple<T> : AbsResponse<T>() {
+internal open class BaseResponseSimple<T> : AbsResponse<T>() {
     val status: Int? = null
     val msg: String? = null
     val `data`: T? = null
