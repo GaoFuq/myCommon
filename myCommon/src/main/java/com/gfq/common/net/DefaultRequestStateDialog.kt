@@ -58,10 +58,8 @@ open class DefaultRequestStateDialog(style: Int = 0) : GlobalDialog(style = styl
 
 
     override fun dismissStateDialog() {
-        if (checkLeak() && isShowing) {
-            Log.e("stateDialog", "dismissStateDialog")
-            dismiss()
-        }
+        Log.e("stateDialog", "dismissStateDialog")
+        dismiss()
     }
 
     fun checkLeak(): Boolean {
@@ -80,8 +78,8 @@ open class DefaultRequestStateDialog(style: Int = 0) : GlobalDialog(style = styl
     }
 
     fun checkAndShow(msg: String?) {
+        binding.tvState.text = msg
         if (checkLeak() && !isShowing) {
-            binding.tvState.text = msg
             show()
         }
     }
