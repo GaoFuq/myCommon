@@ -44,6 +44,10 @@ open class ViewModelRequest() : ViewModel() {
             error,
             special)
     }
+
+    fun showStateDialog(msg:String?){
+        requestDelegate.stateDialog?.showLoading(msg)
+    }
 }
 
 

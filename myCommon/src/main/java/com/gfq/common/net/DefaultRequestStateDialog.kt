@@ -13,11 +13,12 @@ import com.gfq.common.databinding.DefaultRequestStateDialogLayoutBinding
  * [ViewModelRequest] 中使用的默认 dialog 。
  * 默认宽高 100dp，遮罩透明，黑色背景，点击外部不隐藏。
  */
-open class DefaultRequestStateDialog(style:Int=0): GlobalDialog(style), IRequestStateDialog {
-    protected val binding = DataBindingUtil.inflate<DefaultRequestStateDialogLayoutBinding>(LayoutInflater.from(context),
-        R.layout.default_request_state_dialog_layout,
-        null,
-        false)
+open class DefaultRequestStateDialog(style: Int = 0) : GlobalDialog(style), IRequestStateDialog {
+    protected val binding =
+        DataBindingUtil.inflate<DefaultRequestStateDialogLayoutBinding>(LayoutInflater.from(context),
+            R.layout.default_request_state_dialog_layout,
+            null,
+            false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,52 +34,48 @@ open class DefaultRequestStateDialog(style:Int=0): GlobalDialog(style), IRequest
 //    }
 
     override fun showLoading(message: String?) {
-        Log.e("stateDialog","showLoading")
-        binding.tvState.text = message
-        show()
+        Log.e("stateDialog", "showLoading")
+        checkAndShow(message)
     }
 
     override fun <T, Resp : AbsResponse<T>> showComplete(response: Resp?) {
-        Log.e("stateDialog","showComplete ${response?.responseMessage()}")
-        //默认不显示任何文本
-        if(checkLeak() && !isShowing) {
-           show()
-        }
+        Log.e("stateDialog", "showComplete ${response?.responseMessage()}")
+        checkAndShow(response?.responseMessage())
     }
 
     override fun <T, Resp : AbsResponse<T>> showCompleteFailed(response: Resp?) {
-        Log.e("stateDialog","showCompleteFailed ${response?.responseMessage()}")
+        Log.e("stateDialog", "showCompleteFailed ${response?.responseMessage()}")
         //默认显示返回的错误信息
-        binding.tvState.text = response?.responseMessage()
-        if(checkLeak() && !isShowing) {
-            show()
-        }
+        checkAndShow(response?.responseMessage())
     }
 
 
     override fun showError(error: String?) {
-        Log.e("stateDialog","showError")
-        binding.tvState.text = error
-        if(checkLeak() && !isShowing) {
-            show()
-        }
+        Log.e("stateDialog", "showError")
+        checkAndShow(error)
     }
 
 
     override fun dismissStateDialog() {
-        if(checkLeak() && isShowing) {
-            Log.e("stateDialog","dismissStateDialog")
+        if (checkLeak() && isShowing) {
+            Log.e("stateDialog", "dismissStateDialog")
             dismiss()
         }
     }
 
-    fun checkLeak():Boolean{
-        if(context is Activity){
+    fun checkLeak(): Boolean {
+        if (context is Activity) {
             val act = context as Activity
             return !act.isFinishing && !act.isDestroyed
         }
         return false
     }
 
+    fun checkAndShow(msg: String?) {
+        if (checkLeak() && !isShowing) {
+            binding.tvState.text = msg
+            show()
+        }
+    }
 
 }
