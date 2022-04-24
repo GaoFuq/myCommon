@@ -1,6 +1,7 @@
 package com.gfq.common.net
 
 import android.app.Activity
+import android.content.ContextWrapper
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
@@ -13,7 +14,7 @@ import com.gfq.common.databinding.DefaultRequestStateDialogLayoutBinding
  * [ViewModelRequest] 中使用的默认 dialog 。
  * 默认宽高 100dp，遮罩透明，黑色背景，点击外部不隐藏。
  */
-open class DefaultRequestStateDialog(style: Int = 0) : GlobalDialog(style), IRequestStateDialog {
+open class DefaultRequestStateDialog(style: Int = 0) : GlobalDialog(style = style), IRequestStateDialog {
     protected val binding =
         DataBindingUtil.inflate<DefaultRequestStateDialogLayoutBinding>(LayoutInflater.from(context),
             R.layout.default_request_state_dialog_layout,
@@ -64,9 +65,16 @@ open class DefaultRequestStateDialog(style: Int = 0) : GlobalDialog(style), IReq
     }
 
     fun checkLeak(): Boolean {
-        if (context is Activity) {
-            val act = context as Activity
-            return !act.isFinishing && !act.isDestroyed
+        if (mContext is Activity) {
+            return !mContext.isFinishing && !mContext.isDestroyed
+        }
+
+        if (context is ContextWrapper) {
+            val wrapper = context as ContextWrapper
+            if (wrapper.baseContext is Activity) {
+                val act = wrapper.baseContext as Activity
+                return !act.isFinishing && !act.isDestroyed
+            }
         }
         return false
     }

@@ -1,6 +1,7 @@
 package com.gfq.common.net
 
 import android.app.Dialog
+import android.content.Context
 import com.gfq.common.system.ActivityManager
 
 /**
@@ -10,4 +11,7 @@ import com.gfq.common.system.ActivityManager
  * 继承 [GlobalDialog] ,不再显式的传递 context 参数
  * @param style [R.style.xxx]
  */
-open class GlobalDialog(style: Int = 0) : Dialog(ActivityManager.getAllActivities().last(), style)
+open class GlobalDialog(
+    val mContext: Context = ActivityManager.getAllActivities().last(),
+    style: Int = 0,
+) : Dialog(mContext, style)
