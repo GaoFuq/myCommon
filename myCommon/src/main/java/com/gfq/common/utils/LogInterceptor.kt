@@ -51,7 +51,6 @@ class LogInterceptor() : Interceptor {
         //body
         val requestBody = request.body
         val response = chain.proceed(request)
-
         //请求体
         if (requestBody != null) {
             val buffer = Buffer()

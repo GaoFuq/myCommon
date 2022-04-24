@@ -6,11 +6,11 @@ import android.view.View
 import com.google.gson.JsonParseException
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
+import okhttp3.OkHttpClient
 import org.json.JSONException
 import retrofit2.HttpException
-import java.net.ConnectException
-import java.net.SocketTimeoutException
-import java.net.UnknownHostException
+import java.io.IOException
+import java.net.*
 
 /**
  *  2022/4/21 17:24
@@ -108,14 +108,13 @@ open class RequestDelegate(
                 .collect {
                     clickView?.isEnabled = true
                     requestCount--
-                    if (it?.isSuccess() == true || it?.isSpecial() == true) {
+                    if (it?.isSuccess() == true) {
                         //回调请求完成-成功，默认不显示dialog
                         updateRequestStateDialogIfNeed<T, Resp>(RequestState.complete, it)
                     } else {
                         //回调请求完成-失败，默认显示dialog错误文本
                         updateRequestStateDialogIfNeed<T, Resp>(RequestState.completeFailed, it)
                     }
-
                     handleResponse(it, success, special, failed)
                     stateDialog?.let { delay(completeDismissDelay) }
                     updateRequestStateDialogIfNeed<T, Resp>(RequestState.dismiss)
@@ -152,7 +151,7 @@ open class RequestDelegate(
     private suspend fun <T, Resp : AbsResponse<T>> updateRequestStateDialogIfNeed(
         dialogState: RequestState,
         response: Resp? = null,
-        apiException: ApiException = ApiException(),
+        apiException: ApiException? = null,
     ) {
         if (stateDialog == null) return
         when (dialogState) {
@@ -194,7 +193,7 @@ open class RequestDelegate(
                         delay(remainingTime)
                     }
                     if (isShowDialogError) {
-                        stateDialog?.showError(apiException)
+                        stateDialog?.showError(apiException?.message ?: "出错了")
                     }
                 }
             }
@@ -209,52 +208,62 @@ open class RequestDelegate(
 
     private fun handleException(e: Throwable?): ApiException {
 
-        if (e == null) return ApiException(customCode = UNKNOWN_ERROR, message = UNKNOWN_ERROR_str)
-        Log.e(TAG, e.message.toString())
+        if (e == null) return ApiException(message = ERROR_str)
+        Log.e(TAG, "handleException " + e.message.toString())
         var code: Int? = null
-        var message = UNKNOWN_ERROR_str + "\n" + e.message
-        var customCode = UNKNOWN_ERROR
+        var message = e.message
 
         when (e) {
             is ConnectException -> {
                 message = IO_ERROR_str
-                customCode = IO_ERROR
             }
             is HttpException -> {
                 code = e.code()
-                customCode = e.code()
                 when (e.code()) {
-                    UNAUTHORIZED, FORBIDDEN -> {
-                        customCode = NOT_AUTH
-                        message = NOT_AUTH_str
+                    HttpURLConnection.HTTP_BAD_REQUEST -> {
+                        message = HTTP_BAD_REQUEST_MSG
                     }
-                    NOT_FOUND -> {
-                        message = NOT_FOUND_str
+                    HttpURLConnection.HTTP_UNAUTHORIZED -> {
+                        message = HTTP_UNAUTHORIZED_MSG
                     }
-                    REQUEST_TIMEOUT -> {
-                        message = REQUEST_TIMEOUT_str
+                    HttpURLConnection.HTTP_FORBIDDEN -> {
+                        message = HTTP_FORBIDDEN_MSG
                     }
-                    INTERNAL_SERVER_ERROR -> {
-                        message = INTERNAL_SERVER_ERROR_str
+                    HttpURLConnection.HTTP_NOT_FOUND -> {
+                        message = HTTP_NOT_FOUND_MSG
                     }
-                    BAD_GATEWAY -> {
-                        message = BAD_GATEWAY_str
+                    HttpURLConnection.HTTP_BAD_METHOD -> {
+                        message = HTTP_BAD_METHOD_MSG
                     }
-                    SERVICE_UNAVAILABLE -> {
-                        message = SERVICE_UNAVAILABLE_str
+                    HttpURLConnection.HTTP_INTERNAL_ERROR -> {
+                        message = HTTP_INTERNAL_ERROR_MSG
                     }
-                    GATEWAY_TIMEOUT -> {
-                        message = GATEWAY_TIMEOUT_str
+                    HttpURLConnection.HTTP_BAD_GATEWAY -> {
+                        message = HTTP_BAD_GATEWAY_MSG
+                    }
+                    HttpURLConnection.HTTP_UNAVAILABLE -> {
+                        message = HTTP_UNAVAILABLE_MSG
+                    }
+                    HttpURLConnection.HTTP_GATEWAY_TIMEOUT -> {
+                        message = HTTP_GATEWAY_TIMEOUT_MSG
+                    }
+                    HttpURLConnection.HTTP_VERSION -> {
+                        message = HTTP_VERSION_MSG
+                    }
+                    in 400..500 -> {
+                        message = HTTP_BAD_REQUEST_MSG
+                    }
+                    in 500..600 ->{
+                        message = HTTP_INTERNAL_ERROR_MSG
                     }
                 }
             }
+
             is UnknownHostException -> {
                 message = IO_ERROR_UNKNOWN_HOST_str
-                customCode = IO_ERROR
             }
             is SocketTimeoutException -> {
                 message = IO_ERROR_TIMEOUT_str
-                customCode = IO_ERROR
             }
 
 
@@ -263,53 +272,50 @@ open class RequestDelegate(
             is JsonParseException,
             -> {
                 message = DATA_PARSE_ERROR_str
-                customCode = DATA_PARSE_ERROR
             }
             else -> {
-                customCode = UNKNOWN_ERROR
-                message = UNKNOWN_ERROR_str
+                message = ERROR_str
             }
 
         }
 
-        return ApiException(code, customCode, message)
+
+        return ApiException(code,  message)
     }
 
     fun cancel() {
         job?.cancel()
     }
 
+
     companion object {
-        const val UNAUTHORIZED = 401
-        const val FORBIDDEN = 403
-        const val NOT_FOUND = 404
-        const val REQUEST_TIMEOUT = 408
-        const val INTERNAL_SERVER_ERROR = 500
-        const val BAD_GATEWAY = 502
-        const val SERVICE_UNAVAILABLE = 503
-        const val GATEWAY_TIMEOUT = 504
 
+        const val ERROR_str = "出错了"
 
-        const val UNKNOWN_ERROR = 666_111_0
-        const val NOT_AUTH = 666_111_1
-        const val IO_ERROR = 666_111_2
-        const val DATA_PARSE_ERROR = 666_111_3
-
-
-        const val NOT_FOUND_str = "服务器不可访问"
-        const val REQUEST_TIMEOUT_str = "请求超时"
-        const val INTERNAL_SERVER_ERROR_str = "服务器错误"
-        const val BAD_GATEWAY_str = "网关错误"
-        const val SERVICE_UNAVAILABLE_str = "访问了不可获取的资源"
-        const val GATEWAY_TIMEOUT_str = "网关超时"
-
-
-        const val UNKNOWN_ERROR_str = "出错了"
-        const val NOT_AUTH_str = "未授权"
         const val IO_ERROR_str = "网络连接失败"
         const val IO_ERROR_TIMEOUT_str = "网络连接超时"
         const val IO_ERROR_UNKNOWN_HOST_str = "未知主机错误"
         const val DATA_PARSE_ERROR_str = "数据解析错误"
+
+
+
+        const val HTTP_BAD_REQUEST_MSG = "错误的请求"
+        const val HTTP_UNAUTHORIZED_MSG = "没有访问权限"
+        const val HTTP_FORBIDDEN_MSG = "禁止访问"
+
+        const val HTTP_NOT_FOUND_MSG = "找不到资源\n not found"
+
+        //对于请求所标识的资源，不允许使用请求行中所指定的方法。请确保为所请求的资源设置了正确的 MIME 类型。
+        //如果问题依然存在，请与服务器的管理员联系。
+        const val HTTP_BAD_METHOD_MSG = " 不允许此方法"
+
+
+        const val HTTP_INTERNAL_ERROR_MSG = "服务器内部错误 "
+        const val HTTP_BAD_GATEWAY_MSG = "网关错误 "
+        const val HTTP_UNAVAILABLE_MSG = "服务器忙\n暂时不可用"
+        const val HTTP_GATEWAY_TIMEOUT_MSG = "网关超时"
+        const val HTTP_VERSION_MSG = "HTTP版本不受支持"
+
 
     }
 }

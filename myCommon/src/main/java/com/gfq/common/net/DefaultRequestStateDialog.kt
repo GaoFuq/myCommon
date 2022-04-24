@@ -56,9 +56,9 @@ open class DefaultRequestStateDialog(style:Int=0): GlobalDialog(style), IRequest
     }
 
 
-    override fun showError(error: ApiException) {
+    override fun showError(error: String?) {
         Log.e("stateDialog","showError")
-        binding.tvState.text = error.message
+        binding.tvState.text = error
         if(checkLeak() && !isShowing) {
             show()
         }

@@ -21,7 +21,7 @@ interface IRequestStateDialog {
     /**
      * 请求或返回数据失败，发生异常时回调
      */
-    fun showError(error: ApiException)
+    fun showError(error: String?)
 
     fun dismissStateDialog()
 }
