@@ -21,14 +21,14 @@ object UploadFileHelper {
 
     @JvmStatic
     fun buildMultipartList(
-        params: Map<String, String>,
         fileKeyName: String,
+        params: Map<String, String>?=null,
         fileValuePaths: List<String>,
         onProgress: ((bytesWritten: Long, contentLength: Long, progress: Long, isDone: Boolean) -> Unit)? = null,
     ): List<MultipartBody.Part> {
         val parts: MutableList<MultipartBody.Part> = ArrayList()
         //拼接参数键值对
-        params.forEach { (key, value) ->
+        params?.forEach { (key, value) ->
             parts.add(MultipartBody.Part.createFormData(key, value))
         }
         //拼接文件
@@ -49,14 +49,14 @@ object UploadFileHelper {
 
     @JvmStatic
     fun buildMultipartBody(
-        params: Map<String, String>,
         fileKeyName: String,
+        params: Map<String, String>?=null,
         fileValuePaths: List<String>,
         onProgress: ((bytesWritten: Long, contentLength: Long, progress: Long, isDone: Boolean) -> Unit)? = null,
     ): MultipartBody {
         val multipartBodybuilder = MultipartBody.Builder().setType(MultipartBody.FORM)
         //拼接参数键值对
-        params.forEach { (key, value) ->
+        params?.forEach { (key, value) ->
             multipartBodybuilder.addFormDataPart(key,value)
         }
         //拼接文件
@@ -75,14 +75,14 @@ object UploadFileHelper {
 
     @JvmStatic
     fun buildRequestBodyMap(
-        params: Map<String, String>,
         fileKeyName: String,
+        params: Map<String, String>?=null,
         fileValuePaths: List<String>,
         onProgress: ((bytesWritten: Long, contentLength: Long, progress: Long, isDone: Boolean) -> Unit)? = null,
     ): Map<String, RequestBody> {
         val bodyMap: MutableMap<String, RequestBody> = HashMap()
         //拼接参数键值对
-        params.forEach { (key, value) ->
+        params?.forEach { (key, value) ->
             bodyMap[key] = value.toRequestBody("text/plain; charset=utf-8".toMediaTypeOrNull())
         }
         //拼接文件

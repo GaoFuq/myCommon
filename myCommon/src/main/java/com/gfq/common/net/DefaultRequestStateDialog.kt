@@ -7,6 +7,10 @@ import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.OnLifecycleEvent
 import com.gfq.common.R
 import com.gfq.common.databinding.DefaultRequestStateDialogLayoutBinding
 
@@ -14,7 +18,7 @@ import com.gfq.common.databinding.DefaultRequestStateDialogLayoutBinding
  * [ViewModelRequest] 中使用的默认 dialog 。
  * 默认宽高 100dp，遮罩透明，黑色背景，点击外部不隐藏。
  */
-open class DefaultRequestStateDialog(style: Int = 0) : GlobalDialog(style = style), IRequestStateDialog {
+open class DefaultRequestStateDialog(style: Int = 0) : GlobalDialog(style = style), IRequestStateDialog ,LifecycleObserver{
     protected val binding =
         DataBindingUtil.inflate<DefaultRequestStateDialogLayoutBinding>(LayoutInflater.from(context),
             R.layout.default_request_state_dialog_layout,
@@ -27,6 +31,10 @@ open class DefaultRequestStateDialog(style: Int = 0) : GlobalDialog(style = styl
         setCanceledOnTouchOutside(false)
         window?.setBackgroundDrawable(ColorDrawable())
         window?.setDimAmount(0f)
+
+        if(mContext is LifecycleOwner){
+            mContext.lifecycle.addObserver(this)
+        }
     }
 
     //不可通过返回按钮隐藏
@@ -62,7 +70,7 @@ open class DefaultRequestStateDialog(style: Int = 0) : GlobalDialog(style = styl
         dismiss()
     }
 
-    fun checkLeak(): Boolean {
+    fun check(): Boolean {
         if (mContext is Activity) {
             return !mContext.isFinishing && !mContext.isDestroyed
         }
@@ -79,9 +87,14 @@ open class DefaultRequestStateDialog(style: Int = 0) : GlobalDialog(style = styl
 
     fun checkAndShow(msg: String?) {
         binding.tvState.text = msg
-        if (checkLeak() && !isShowing) {
+        if (check() && !isShowing) {
             show()
         }
     }
 
+    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+    fun dismissThis(){
+        Log.e("stateDialog", "on destroy dismissThis")
+        dismiss()
+    }
 }
