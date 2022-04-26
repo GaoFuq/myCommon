@@ -1,7 +1,5 @@
 package com.gfq.common.system.sp
 
-import com.gfq.common.system.sp.simple.SPCache
-
 internal data class SPDataWrapper(
     val sp_g_f_q_dataClassName: String,
     val sp_g_f_q_dataKeyName: String,

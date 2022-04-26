@@ -2,53 +2,42 @@ package com.gfq.common.system.sp
 
 import android.annotation.SuppressLint
 import android.util.Log
-import com.gfq.common.system.sp.simple.SPCache
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
+import com.gfq.common.system.sp.simple.KotlinUseSimple
+import java.lang.RuntimeException
 
 /**
  * 属性委托类
- * 示例：[SPCache]
+ * 示例：[KotlinUseSimple]
  *
  * 使用模板：
  * class AnySP <T> (def:T?) : SPDelegate<T>("AnySp",def)
  * class UserSP: SPDelegate<User>("user")
  *
- * 自定义数据量示例：[SPData]
+ * 自定义数据示例：[SPData]
  * 注意：
  * 1.基本数据类型的key和声明的变量名称相同。
  * 2.自定义数据类型的key是[SPData.dataKeyName]
  *
  * 声明：
- * 1.自定义数据类的默认值是 null ；
- * 2.基本类型数据的默认值需要手动指定。
- * var isLogin by AnySP(def = false)
- * var user by UserSP()//user的默认值=null
+ * 默认值需要在创建时提供；
  *
  * 使用：(每次调用获取到的数据都是sp表中最新的值)
  * Log.e("tag",isLogin.toString())
  * Log.e("tag",user.toString())
- *
- * 赋值：(实现SPData的类调用save方法，会直接把sp中对应的值覆盖掉)
- * isLogin = true
- * user = User("name")
- * User("name").save()
- *
- * 自定义数据类-新数据的保存：
- * val uData = User("name")
- * uData.save()
- *
- * 自定义数据类-老数据的更新：
- * val uData = User("name")
- * uData.save()
  */
 @SuppressLint("ApplySharedPref")
-open class SPDelegate<T>(
-    private var spTableName: String = "defTable",
-    private val default: T? = null,
+open class SPTableDelegate<T>(
+    private val default: T,
+    private var spTableName: String = defaultSPTableName,
 ) : ReadWriteProperty<Any?, T?> {
     private val TAG = "SPDelegate"
     private var dataKeyName: String? = null
+
+    companion object {
+        const val defaultSPTableName = "defSPTable"
+    }
 
     init {
         Log.i(TAG, "init spTableName = $spTableName ")
@@ -74,12 +63,8 @@ open class SPDelegate<T>(
         Log.i(TAG, "--------------------------------")
     }
 
-    override fun getValue(thisRef: Any?, property: KProperty<*>): T? {
-        return if (dataKeyName == null) {
-            SP.get(spTableName).get(property.name, default)
-        } else {
-            SP.get(spTableName).get(dataKeyName!!, default)
-        }
+    override fun getValue(thisRef: Any?, property: KProperty<*>): T {
+        return getOrDefault(dataKeyName ?: property.name)
     }
 
     override fun setValue(thisRef: Any?, property: KProperty<*>, value: T?) {
@@ -89,12 +74,35 @@ open class SPDelegate<T>(
         } else {
             this.dataKeyName = property.name
         }
-
         SP.get(spTableName).put(dataKeyName!!, value)
     }
 
     fun clear() = SP.clear(spTableName)
 
     fun getCacheSize() = SP.getCacheSize(spTableName)
+
+    /**
+     * java 自定义数据类型数据调用该方法获取最新值
+     */
+    fun getOrDefault(): T {
+        if (default is SPData) {
+            return SP.get(spTableName).getOrDefault(default.dataKeyName, default)
+        } else {
+            throw RuntimeException("getOrDefault() 方法返回的数据类型必须实现 SPData 接口")
+        }
+    }
+
+    /**
+     * java 基本类型数据调用该方法获取最新值。
+     * @param dataKeyName 必须和定义的字段名一致
+     */
+    fun getOrDefault(dataKeyName: String): T {
+        if (default is SPData) {
+            return getOrDefault()
+        } else {
+            return SP.get(spTableName).getOrDefault(dataKeyName, default)
+        }
+    }
+
 }
 

@@ -6,17 +6,15 @@ import androidx.annotation.RequiresApi
 import com.alibaba.fastjson.JSON
 import com.gfq.common.system.ActivityManager
 import java.io.File
-import com.gfq.common.system.sp.simple.SPCache
 import com.gfq.common.utils.FileUtil
 
 /**
- * 示例：[SPCache]
  *
  * 管理包里面所有的[SharedPreferences]数据，类比数据库中的表 。
- * @see [SPDelegate]
+ * @see [SPTableDelegate]
  *
  * 注意：
- * 1.属性委托[SPDelegate]声明的变量，每次调用获取到的数据都是sp表中最新的值。
+ * 1.属性委托[SPTableDelegate]声明的变量，每次调用获取到的数据都是sp表中最新的值。
  * 2.实现[SPData]的数据类，调用[SPData.save]方法，会直接把sp中对应的值覆盖掉,所以1所述成立。
  * 3.基本数据类型的key和声明的变量名称相同。
  * 4.实现[SPData]的自定义数据类型的key是[SPData.dataKeyName]
@@ -68,16 +66,28 @@ object SP {
     internal fun getSaveAllSp() = get(ActivityManager.application.packageName + nameSuffix)
 
     /**
-     * 通过sp名称获取[SharedPreferences]实例
+     * 通过名称获取[SharedPreferences]实例。
      */
-    fun get(name: String) = ActivityManager.application.getSharedPreferences(name, 0)!!
+    @JvmStatic
+    fun get(spTableName: String) = ActivityManager.application.getSharedPreferences(spTableName, 0)!!
 
     @RequiresApi(Build.VERSION_CODES.N)
-    fun deleteSP(name: String) = ActivityManager.application.deleteSharedPreferences(name)
+    @JvmStatic
+    fun deleteSP(spTableName: String) = ActivityManager.application.deleteSharedPreferences(spTableName)
+
+    /**
+     * 如果[dataKeyName]存在，则返回对应类型的数据，如果转换数据类型失败，则返回 default。
+     * 如果[dataKeyName]不存在，则返回 default。
+     */
+    @JvmStatic
+    fun <T> getOrDefault(spTableName:String,dataKeyName: String, default: T): T {
+        return get(spTableName).getOrDefault(dataKeyName,default)
+    }
 
     /**
      * 保存/更新
      */
+    @JvmStatic
     fun save(spTableName: String, dataKeyName: String, any: Any?) {
         get(spTableName).put(dataKeyName, any)
     }
@@ -85,6 +95,7 @@ object SP {
     /**
      * 获取所有SP表单名称的集合
      */
+    @JvmStatic
     fun getAllSPTableNames(): List<String> {
         val spTableCount = getSaveAllSp().getInt(spTableCount, 0)
         val list = mutableListOf<String>()
@@ -101,6 +112,7 @@ object SP {
      * key：sp表单名称
      * value：该sp表单的所有数据json字符串
      */
+    @JvmStatic
     fun getSPTableDataByName(spTableName: String): Map<String, Any?> {
         val map = mutableMapOf<String, Map<String, Any?>>()
         val all = get(spTableName).all.toMutableMap()
@@ -125,6 +137,7 @@ object SP {
      * key：sp表单名称
      * value：所有sp表单的所有数据的json字符串
      */
+    @JvmStatic
     fun getAllSPTableData(): Map<String, Any?> {
         val list = getAllSPTableNames()
         val map = mutableMapOf<String, Map<String, Any?>>()
@@ -150,6 +163,7 @@ object SP {
     /**
      * 获取指定SP文件的大小
      */
+    @JvmStatic
     fun getCacheSize(spTableName: String):String{
         require(spTableName.isNotEmpty()) { KEY_IS_EMPTY_EXCEPTION }
         val spFile = File("data/data/${ActivityManager.application.packageName}/shared_prefs", "$spTableName.xml")
@@ -159,6 +173,7 @@ object SP {
     /**
      * 获取全部SP文件的大小
      */
+    @JvmStatic
     fun getAllSPCacheSize():String{
         var totalSize = 0L
         getAllSPTableNames().forEach {
@@ -171,6 +186,7 @@ object SP {
     /**
      * 清空指定名称的 sp 表单里面的数据
      */
+    @JvmStatic
     fun clear(spTableName: String) {
         require(spTableName.isNotEmpty()) { KEY_IS_EMPTY_EXCEPTION }
         get(spTableName).edit().clear().apply()
@@ -180,6 +196,7 @@ object SP {
     /**
      * 清空所有 sp 表单里面的数据
      */
+    @JvmStatic
     fun clearAll() {
         getAllSPTableNames().forEach { spTableName ->
             get(spTableName).edit().clear().apply()
@@ -189,6 +206,7 @@ object SP {
     /**
      * 删除指定名称的 sp 表单
      */
+    @JvmStatic
     fun delete(spTableName: String) {
         require(spTableName.isNotEmpty()) { KEY_IS_EMPTY_EXCEPTION }
         val spFile =
@@ -216,6 +234,7 @@ object SP {
     /**
      * 删除所有 sp 表单
      */
+    @JvmStatic
     fun deleteAll() {
         getAllSPTableNames().forEach { spTableName ->
             delete(spTableName)

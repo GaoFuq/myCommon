@@ -15,12 +15,12 @@ internal val KEY_IS_EMPTY_EXCEPTION = "key is empty"
 
 
 /**
- * 如果[key]存在，则返回对应类型的数据，如果转换数据类型失败，则返回[default]。
- * 如果[key]不存在，则返回[default]；
+ * 如果[key]存在，则返回对应类型的数据，如果转换数据类型失败，则返回 null。
+ * 如果[key]不存在，则返回 null。
  */
 @Suppress("UNCHECKED_CAST")
-@Throws(IllegalArgumentException::class, NullPointerException::class,Exception::class)
-fun <T> SharedPreferences.get(key: String, default: T?): T? {
+@Throws(IllegalArgumentException::class, NullPointerException::class, Exception::class)
+fun <T> SharedPreferences.getOrNull(key: String): T? {
     require(key.isNotEmpty()) { KEY_IS_EMPTY_EXCEPTION }
     all?.forEach {
         if (it.key == key) {
@@ -35,7 +35,8 @@ fun <T> SharedPreferences.get(key: String, default: T?): T? {
                         Log.i("get", "dataClassName = ${spDataWrapper.sp_g_f_q_dataClassName}")
                         Log.i("get", "dataKeyName = ${spDataWrapper.sp_g_f_q_dataKeyName}")
                         Log.i("get", "dataValue = ${spDataWrapper.sp_g_f_q_dataValue}")
-                        JSON.parseObject(spDataWrapper.sp_g_f_q_dataValue, Class.forName(spDataWrapper.sp_g_f_q_dataClassName)) as? T
+                        JSON.parseObject(spDataWrapper.sp_g_f_q_dataValue,
+                            Class.forName(spDataWrapper.sp_g_f_q_dataClassName)) as? T
                     } else {
                         it.value as T
                     }
@@ -43,12 +44,25 @@ fun <T> SharedPreferences.get(key: String, default: T?): T? {
                     it.value as T
                 }
             } catch (i: Exception) {
-                default
+                null
             }
         }
     }
-    return default
+    return null
 }
+
+
+/**
+ * 如果[key]存在，则返回对应类型的数据，如果转换数据类型失败，则返回 default。
+ * 如果[key]不存在，则返回 default。
+ */
+@Suppress("UNCHECKED_CAST")
+@Throws(IllegalArgumentException::class, NullPointerException::class, Exception::class)
+fun <T> SharedPreferences.getOrDefault(key: String, default: T): T {
+    return getOrNull(key) ?: default
+}
+
+
 
 /**
  * 如果[key]已经存在，则会覆盖数据
