@@ -60,8 +60,7 @@ class JavaUseSimple {
 
         @Override
         public void save() {
-            SPData.super.save();
-            //或者 SPData.DefaultImpls.save(this);
+            SPData.DefaultImpls.save(this);
         }
     }
 
