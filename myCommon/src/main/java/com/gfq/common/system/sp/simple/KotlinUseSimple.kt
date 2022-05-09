@@ -40,9 +40,9 @@ internal class KotlinUseSimple {
         val userSPTable by UserSPTable()
         //4.1 使用代理类 存
         userSPTable.run {
-            name = "name"
-            age = 18
-            save()
+            name = "name" //存name
+            age = 18//存age
+//            save() //不需要再调用save
         }
         //4.1 使用代理类 取
         val name = userSPTable.name

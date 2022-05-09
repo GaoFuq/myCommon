@@ -10,8 +10,12 @@ import android.webkit.MimeTypeMap
 import androidx.core.content.FileProvider
 import com.gfq.common.system.ActivityManager
 import com.gfq.common.system.log
+import com.gfq.common.system.loge
 import okhttp3.*
 import java.io.*
+import java.text.DecimalFormat
+import java.text.NumberFormat
+import java.util.*
 
 /**
  *  2022/1/28 15:16
@@ -214,3 +218,12 @@ fun File?.open() {
 }
 
 
+
+fun formatSizeInMB(sizeInBytes: Long): Float {
+    val df = NumberFormat.getNumberInstance(Locale.US) as DecimalFormat
+    df.applyPattern("0.0")
+    var result = df.format((sizeInBytes.toFloat() / 1024 / 1024).toDouble())
+    loge("getSizeInMB: $result M")
+    result = result.replace(",".toRegex(), ".") // in some case , 0.0 will be 0,0
+    return java.lang.Float.valueOf(result)
+}
