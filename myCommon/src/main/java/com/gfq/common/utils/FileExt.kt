@@ -9,7 +9,6 @@ import android.provider.MediaStore
 import android.webkit.MimeTypeMap
 import androidx.core.content.FileProvider
 import com.gfq.common.system.ActivityManager
-import com.gfq.common.system.log
 import com.gfq.common.system.loge
 import okhttp3.*
 import java.io.*
@@ -52,29 +51,45 @@ fun downloadFile(
     success: ((file: File) -> Unit)? = null,
     failed: (() -> Unit)? = null,
 ) {
-    val oldFile = File(saveDir + File.separator + saveFileName)
 
-    if (oldFile.exists()) {
-        if (!isOverrideOldFile) {
-            log("downloadFile exist oldFile = ${oldFile.path}")
-            success?.invoke(oldFile)
-            if (autoOpen) {
-                oldFile.open()
-            }
-            return
-        }
-    }else{
-        oldFile.createNewFile()
+    val saveDirTp = if (saveDir.isNullOrEmpty()) {
+        loge("downloadFile saveDir isNullOrEmpty , changed to default dir")
+        externalDownload?.path
+    } else {
+        saveDir
     }
 
+    if(saveFileName.isNullOrEmpty()){
+        loge("downloadFile saveFileName isNullOrEmpty , $saveFileName")
+        failed?.let { mainThread { it.invoke() } }
+        return
+    }
+
+    val oldFile = File(saveDirTp + File.separator + saveFileName)
+
+    if (oldFile.exists() && !isOverrideOldFile) {
+        loge("downloadFile exist oldFile = ${oldFile.path}")
+        success?.invoke(oldFile)
+        if (autoOpen) {
+            oldFile.open()
+        }
+        return
+    }
+    saveDirTp?.let {
+        val dir = File(it)
+        if (!dir.exists()) {
+            dir.mkdirs()
+        }
+    }
+
+    loge("downloadFile start url = $url")
     val startTime = System.currentTimeMillis()
-    log("downloadFile startTime = $startTime")
     val okHttpClient = OkHttpClient()
     val request: Request = Request.Builder().url(url).build()
     okHttpClient.newCall(request).enqueue(object : Callback {
         override fun onFailure(call: Call, e: IOException) {
-            log("downloadFile failed ")
-            mainThread { failed?.invoke() }
+            loge("downloadFile failed ${e.message}")
+            failed?.let { mainThread { it.invoke() } }
             e.printStackTrace()
         }
 
@@ -87,7 +102,7 @@ fun downloadFile(
             try {
                 `is` = response.body!!.byteStream()
                 val total = response.body!!.contentLength()
-                val file = File(saveDir, saveFileName)
+                val file = File(saveDirTp, saveFileName)
                 fos = FileOutputStream(file)
                 var sum: Long = 0
                 while (`is`.read(buf).also { len = it } != -1) {
@@ -95,12 +110,12 @@ fun downloadFile(
                     sum += len.toLong()
                     val progress = (sum * 1.0f / total * 100).toInt()
                     // 下载中
-                    mainThread { onProgress?.invoke(progress) }
+                    onProgress?.let { mainThread { it.invoke(progress) } }
                 }
                 fos.flush()
                 mainThread { success?.invoke(file) }
 
-                log("downloadFile success cost time = ${(System.currentTimeMillis() - startTime)}")
+                loge("downloadFile success cost time = ${(System.currentTimeMillis() - startTime)}, save path = ${file.path}")
 
                 if (file.canInsertMediaStore()) {
                     file.insertMediaStore()
@@ -109,17 +124,15 @@ fun downloadFile(
                     file.open()
                 }
             } catch (e: Exception) {
-                log("downloadFile failed onResponse handle failed")
+                loge("downloadFile failed onResponse handle failed ${e.message}")
                 mainThread { failed?.invoke() }
                 e.printStackTrace()
             } finally {
                 try {
                     `is`?.close()
-                } catch (e: IOException) {
-                }
-                try {
                     fos?.close()
                 } catch (e: IOException) {
+                    e.printStackTrace()
                 }
             }
         }

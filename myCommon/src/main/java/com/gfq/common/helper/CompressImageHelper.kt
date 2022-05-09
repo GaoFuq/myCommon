@@ -11,9 +11,6 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
-import java.text.DecimalFormat
-import java.text.NumberFormat
-import java.util.*
 
 /**
  *  2022/5/6 11:42
@@ -28,7 +25,11 @@ object CompressImageHelper {
         saveDir: String = cacheDir.path,
         fileSaveName: String = "compressed_${path.getFileName()}",
     ): String {
+
+        if (!File(path).exists()) throw RuntimeException("源文件不存在，path = $path")
+
         val mimeType = path.getMimeType() ?: return path
+
         if (mimeType == "image/gif") {
             return path
         }
@@ -48,11 +49,13 @@ object CompressImageHelper {
             stream)
         tagBitmap.recycle()
         val compressPath = "$saveDir/$fileSaveName"
-        val dir = File(compressPath)
+        val dir = File(saveDir)
         if (!dir.exists()) {
-           dir.createNewFile()
+            dir.mkdirs()
         }
-        loge("file compressed size = ${formatSizeInMB(stream.size().toLong())} , compressPath = $compressPath")
+        loge("file compressed size = ${
+            formatSizeInMB(stream.size().toLong())
+        } , compressPath = $compressPath")
         var fos: FileOutputStream? = null
         try {
             fos = FileOutputStream(compressPath)
