@@ -47,17 +47,26 @@ fun downloadFile(
     saveDir: String? = externalDownload?.path,
     saveFileName: String? = url.getFileName(),
     autoOpen: Boolean = false,
+    isOverrideOldFile: Boolean = false,
     onProgress: ((Int) -> Unit)? = null,
     success: ((file: File) -> Unit)? = null,
     failed: (() -> Unit)? = null,
 ) {
     val oldFile = File(saveDir + File.separator + saveFileName)
-    if (oldFile.exists() && autoOpen) {
-        log("downloadFile exist oldFile = ${oldFile.path}")
-        success?.invoke(oldFile)
-        oldFile.open()
-        return
+
+    if (oldFile.exists()) {
+        if (!isOverrideOldFile) {
+            log("downloadFile exist oldFile = ${oldFile.path}")
+            success?.invoke(oldFile)
+            if (autoOpen) {
+                oldFile.open()
+            }
+            return
+        }
+    }else{
+        oldFile.createNewFile()
     }
+
     val startTime = System.currentTimeMillis()
     log("downloadFile startTime = $startTime")
     val okHttpClient = OkHttpClient()
@@ -216,7 +225,6 @@ fun File?.open() {
     }
     ActivityManager.application.startActivity(intent);
 }
-
 
 
 fun formatSizeInMB(sizeInBytes: Long): Float {
