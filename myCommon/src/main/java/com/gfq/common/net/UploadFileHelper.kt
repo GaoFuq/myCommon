@@ -31,15 +31,15 @@ object UploadFileHelper {
         params?.forEach { (key, value) ->
             parts.add(MultipartBody.Part.createFormData(key, value))
         }
+
         //拼接文件
         for (index in fileValuePaths.indices) {
             val path = fileValuePaths[index]
             val requestBody = File(path).asRequestBody(path.getMimeType()?.toMediaType())
             val part = if (onProgress == null) {
-                MultipartBody.Part.createFormData(fileKeyName, path, requestBody)
+                MultipartBody.Part.createFormData(fileKeyName, path.getFileName(), requestBody)
             } else {
-                MultipartBody.Part.createFormData(fileKeyName,
-                    path,
+                MultipartBody.Part.createFormData(fileKeyName, path.getFileName(),
                     RequestBodyProgress(requestBody, onProgress))
             }
             parts.add(part)
