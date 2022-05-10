@@ -24,7 +24,7 @@ object UploadFileHelper {
         fileKeyName: String,
         params: Map<String, String>?=null,
         fileValuePaths: List<String>,
-        onProgress: ((bytesWritten: Long, contentLength: Long, progress: Long, isDone: Boolean) -> Unit)? = null,
+        onProgress: ((progress: Long) -> Unit)? = null,
     ): List<MultipartBody.Part> {
         val parts: MutableList<MultipartBody.Part> = ArrayList()
         //拼接参数键值对
@@ -52,7 +52,7 @@ object UploadFileHelper {
         fileKeyName: String,
         params: Map<String, String>?=null,
         fileValuePaths: List<String>,
-        onProgress: ((bytesWritten: Long, contentLength: Long, progress: Long, isDone: Boolean) -> Unit)? = null,
+        onProgress: ((progress: Long) -> Unit)? = null,
     ): MultipartBody {
         val multipartBodybuilder = MultipartBody.Builder().setType(MultipartBody.FORM)
         //拼接参数键值对
@@ -78,7 +78,7 @@ object UploadFileHelper {
         fileKeyName: String,
         params: Map<String, String>?=null,
         fileValuePaths: List<String>,
-        onProgress: ((bytesWritten: Long, contentLength: Long, progress: Long, isDone: Boolean) -> Unit)? = null,
+        onProgress: ((progress: Long) -> Unit)? = null,
     ): Map<String, RequestBody> {
         val bodyMap: MutableMap<String, RequestBody> = HashMap()
         //拼接参数键值对

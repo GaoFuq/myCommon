@@ -9,12 +9,15 @@ import java.io.IOException
 
 /**
  * 1.上传进度回调<br>
- * 2.间隔100ms，防止频繁回调，上层无用的刷新<br>
+ * 2.间隔30ms，防止频繁回调，上层无用的刷新<br>
  */
 class RequestBodyProgress(
     private val delegate: RequestBody?,
-    private val onProgress: (bytesWritten: Long, contentLength: Long, progress: Long, isDone: Boolean) -> Unit,
+    private val intervals: Long = 30L,
+    private val onProgress: ((progress: Long) -> Unit),
 ) : RequestBody() {
+    constructor(delegate: RequestBody, onProgress: (progress: Long) -> Unit) :
+            this(delegate, 30L, onProgress)
 
 
     override fun contentType(): MediaType? = delegate?.contentType()
@@ -54,11 +57,11 @@ class RequestBodyProgress(
             //增加当前写入的字节数
             bytesWritten += byteCount
             val curTime = System.currentTimeMillis()
-            //每100毫秒刷新一次数据,防止频繁无用的刷新
-            if (curTime - lastRefreshUiTime >= 100 || bytesWritten == contentLength) {
+            //每 intervals 毫秒刷新一次数据,防止频繁无用的刷新
+            if (curTime - lastRefreshUiTime >= intervals || bytesWritten == contentLength) {
                 val progress = bytesWritten * 100 / contentLength
                 mainThread {
-                    onProgress(bytesWritten, contentLength, progress, bytesWritten == contentLength)
+                    onProgress(progress)
                 }
                 lastRefreshUiTime = System.currentTimeMillis()
             }
