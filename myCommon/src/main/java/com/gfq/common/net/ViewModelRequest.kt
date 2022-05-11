@@ -30,7 +30,7 @@ open class ViewModelRequest() : ViewModel() {
         success: ((data: T?) -> Unit)? = null,
         failed: ((code: Int?, message: String?) -> Unit)? = null,
         error: ((ApiException) -> Unit)? = null,
-        special: ((code: Int?, message: String?, data: T?) -> Unit)? = null,//特殊情况
+        special: ((code: Int?, data: T?,message: String? ) -> Unit)? = null,//特殊情况
     ) {
         requestDelegate.request(api,
             clickView,
@@ -44,6 +44,8 @@ open class ViewModelRequest() : ViewModel() {
             error,
             special)
     }
+
+
 
     fun showStateDialog(msg:String?){
         requestDelegate.stateDialog?.showLoading(msg)

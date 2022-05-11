@@ -30,5 +30,8 @@ abstract class AbsResponse<T>{
      */
     open fun isSpecial():Boolean = false /* return code == 1 || code == 2 */
 
-
+    /**
+     * 统一处理特殊状态码
+     */
+    open fun handleSpecial(code:Int?,data:T?,message:String?){}
 }

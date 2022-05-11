@@ -60,6 +60,7 @@ open class RequestDelegate(
 
     /**
      * @param clickView 点击触发请求的view。传入该view，控制enable属性。
+     * @sample special 不为空时，会代替[AbsResponse.handleSpecial]执行。
      */
     open fun <T, Resp : AbsResponse<T>> request(
         api: suspend CoroutineScope.() -> Resp?,
@@ -72,7 +73,7 @@ open class RequestDelegate(
         success: ((data: T?) -> Unit)? = null,
         failed: ((code: Int?, message: String?) -> Unit)? = null,
         error: ((ApiException) -> Unit)? = null,
-        special: ((code: Int?, message: String?, data: T?) -> Unit)? = null,//特殊情况
+        special: ((code: Int?,  data: T?,message: String?) -> Unit)? = null,//特殊情况
     ) {
         clickView?.isEnabled = false
         this.isShowDialogLoading = isShowDialogLoading
@@ -128,15 +129,20 @@ open class RequestDelegate(
     open fun <T, Resp : AbsResponse<T>> handleResponse(
         response: Resp?,
         success: ((data: T?) -> Unit)?,
-        special: ((code: Int?, message: String?, data: T?) -> Unit)?,
+        special: ((code: Int?,  data: T?,message: String?) -> Unit)?,
         failed: ((code: Int?, message: String?) -> Unit)?,
     ) {
         when {
             response?.isSpecial() == true -> {
-                special?.invoke(
-                    response.responseCode(),
-                    response.responseMessage(),
-                    response.responseData())
+                if (special == null) {
+                    response.handleSpecial(response.responseCode(),
+                        response.responseData(),
+                        response.responseMessage())
+                } else {
+                    special(response.responseCode(),
+                        response.responseData(),
+                        response.responseMessage())
+                }
             }
             response?.isSuccess() == true -> {
                 success?.invoke(response.responseData())
@@ -253,7 +259,7 @@ open class RequestDelegate(
                     in 400..500 -> {
                         message = HTTP_BAD_REQUEST_MSG
                     }
-                    in 500..600 ->{
+                    in 500..600 -> {
                         message = HTTP_INTERNAL_ERROR_MSG
                     }
                 }
@@ -280,7 +286,7 @@ open class RequestDelegate(
         }
 
 
-        return ApiException(code,  message)
+        return ApiException(code, message)
     }
 
     fun cancel() {
@@ -296,7 +302,6 @@ open class RequestDelegate(
         const val IO_ERROR_TIMEOUT_str = "网络连接超时"
         const val IO_ERROR_UNKNOWN_HOST_str = "未知主机错误"
         const val DATA_PARSE_ERROR_str = "数据解析错误"
-
 
 
         const val HTTP_BAD_REQUEST_MSG = "错误的请求"

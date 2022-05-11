@@ -13,4 +13,12 @@ internal open class BaseResponseSimple<T> : AbsResponse<T>() {
     override fun responseMessage(): String? =msg
 
     override fun isSpecial(): Boolean  = status == 1 || status == 2
+
+    override fun handleSpecial(code: Int?, data: T?, message: String?) {
+        when(code){
+            1->{}
+            2->{}
+            else->{}
+        }
+    }
 }
