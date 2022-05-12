@@ -19,6 +19,7 @@ abstract class BaseActivity<Binding : ViewDataBinding>(private val layoutId: Int
         injectForIntentExtras()
         beforeSetContentView()
         actBinding = DataBindingUtil.setContentView<Binding>(this, layoutId)
+        supportActionBar?.hide()
         initView()
     }
 

@@ -101,7 +101,6 @@ class BaseTitleBarLayout(context: Context, attrs: AttributeSet?) :
     }
 
 
-
     fun addViewToRight(view: View) {
         vBinding.titleBarRightContainer.removeAllViews()
         vBinding.titleBarRightContainer.addView(view, -2, -1)

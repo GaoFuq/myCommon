@@ -19,13 +19,14 @@ abstract class BaseTitleBarActivity<Binding : ViewDataBinding>(private val layou
 
     lateinit var actBinding: Binding
 
-    var titleBarLayout : BaseTitleBarLayout?=null
+    private var titleBarLayout : BaseTitleBarLayout?=null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         injectForIntentExtras()
         beforeSetContentView()
-
+        supportActionBar?.hide()
         val linearLayout = LinearLayout(this)
         setContentView(linearLayout)
         linearLayout.orientation = LinearLayout.VERTICAL
@@ -41,4 +42,6 @@ abstract class BaseTitleBarActivity<Binding : ViewDataBinding>(private val layou
     abstract fun initView()
 
     open fun beforeSetContentView() {}
+
+    fun getTitleBarBinding() = titleBarLayout?.vBinding
 }
