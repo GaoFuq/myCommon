@@ -42,6 +42,53 @@ fun View.invisible() {
 
 
 /**
+ * 显示或隐藏
+ * @param b 显示条件
+ */
+fun View.visibleOrGone(b: Boolean) {
+    if (b) {
+        visible()
+    } else {
+        gone()
+    }
+}
+
+/**
+ * 隐藏或显示
+ * @param b 隐藏条件
+ */
+fun View.goneOrVisible(b: Boolean) {
+    visibleOrGone(!b)
+}
+
+/**
+ * 显示或不显示
+ * @param b 显示条件
+ */
+fun View.visibleOrInvisible(b: Boolean) {
+    if (b) {
+        visible()
+    } else {
+        invisible()
+    }
+}
+
+/**
+ * 不显示或显示
+ * @param b 不显示条件
+ */
+fun View.invisibleOrVisible(b: Boolean) {
+    if (b) {
+        invisible()
+    } else {
+        visible()
+    }
+}
+
+
+
+
+/**
  * 是否滑动到底部
  */
 fun RecyclerView.isScrolled2Bottom() = !canScrollVertically(1)
@@ -50,7 +97,6 @@ fun RecyclerView.isScrolled2Bottom() = !canScrollVertically(1)
  * 是否滑动到顶部
  */
 fun RecyclerView.isScrolled2Top() = !canScrollVertically(-1)
-
 
 
 /**
