@@ -1,4 +1,4 @@
-package com.gfq.common.view.topsheetdialog;
+package com.gfq.common.dialog.topsheetdialog;
 
 import android.app.Dialog;
 import android.os.Bundle;

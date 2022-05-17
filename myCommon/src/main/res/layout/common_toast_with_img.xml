@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingTop="20dp"
+        android:paddingBottom="20dp"
+        android:paddingStart="22dp"
+        android:paddingEnd="22dp"
+        android:gravity="center"
+        android:background="@drawable/common_toast_img_msg">
+
+        <ImageView
+            android:id="@+id/ivToastImg"
+            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+           />
+
+        <TextView
+            android:id="@+id/tvToastMsg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:gravity="center"
+            android:textColor="#fff"
+            tools:text="哈喽宝宝" />
+    </LinearLayout>
+</layout>

@@ -1,4 +1,4 @@
-package com.gfq.common.view.topsheetdialog;
+package com.gfq.common.dialog.topsheetdialog;
 
 /*
  * Copyright (C) 2015 The Android Open Source Project

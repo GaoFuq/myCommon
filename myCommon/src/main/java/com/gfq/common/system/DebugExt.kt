@@ -8,7 +8,7 @@ import com.orhanobut.logger.Logger
  * @auth gaofuq
  * @description
  */
-fun toast(msg: String?) {
+fun toastNormal(msg: String?) {
     Toast.makeText(ActivityManager.application, msg, Toast.LENGTH_SHORT).show()
 }
 
