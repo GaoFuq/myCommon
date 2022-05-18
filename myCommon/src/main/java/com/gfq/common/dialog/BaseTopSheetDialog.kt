@@ -46,7 +46,7 @@ abstract class BaseTopSheetDialog<T : ViewDataBinding>(
 
 
     fun setRadius(r: Float, pos: CornerPosition = CornerPosition.top) {
-        dialogBinding.root.setRoundOutline(dpF(r), CornerPosition.top)
+        dialogBinding.root.setRoundOutline(dpF(r),pos)
     }
 
     fun setCircle() {
