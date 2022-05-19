@@ -3,6 +3,7 @@ package com.gfq.common.net
 import android.net.ParseException
 import android.util.Log
 import android.view.View
+import androidx.lifecycle.*
 import com.google.gson.JsonParseException
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
@@ -22,8 +23,7 @@ import java.net.*
  *
  * 可以在能拿到 CoroutineScope 的地方直接实例化使用。
  */
-open class RequestDelegate(
-    private val scope: CoroutineScope,
+class RequestDelegate(
     /**
      * 请求状态弹窗 @see [RequestState]
      */
@@ -43,8 +43,26 @@ open class RequestDelegate(
      * loading 显示的最少时间，用于展示loading
      */
     var minimumLoadingTime: Long = 800,
-) {
+) :LifecycleObserver{
 
+    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+    fun onDestroy(){
+        lifecycleOwner?.lifecycle?.removeObserver(this)
+        job?.cancel()
+    }
+
+    private lateinit var scope: CoroutineScope
+    private var lifecycleOwner: LifecycleOwner?=null
+
+    constructor(lifecycleOwner: LifecycleOwner) : this(){
+        this.lifecycleOwner=lifecycleOwner
+        this.scope=lifecycleOwner.lifecycleScope
+        this.lifecycleOwner?.lifecycle?.addObserver(this)
+    }
+
+    constructor(scope: CoroutineScope) : this(){
+        this.scope=scope
+    }
 
     private val TAG = javaClass.simpleName
 
@@ -62,7 +80,7 @@ open class RequestDelegate(
      * @param clickView 点击触发请求的view。传入该view，控制enable属性。
      * @sample special 不为空时，会代替[AbsResponse.handleSpecial]执行。
      */
-    open fun <T, Resp : AbsResponse<T>> request(
+    fun <T, Resp : AbsResponse<T>> request(
         api: suspend CoroutineScope.() -> Resp?,
         clickView: View? = null,
         isShowDialogLoading: Boolean = true,
@@ -73,7 +91,7 @@ open class RequestDelegate(
         success: ((data: T?) -> Unit)? = null,
         failed: ((code: Int?, message: String?) -> Unit)? = null,
         error: ((ApiException) -> Unit)? = null,
-        special: ((code: Int?,  data: T?,message: String?) -> Unit)? = null,//特殊情况
+        special: ((code: Int?, data: T?, message: String?) -> Unit)? = null,//特殊情况
     ) {
         clickView?.isEnabled = false
         this.isShowDialogLoading = isShowDialogLoading
@@ -88,6 +106,7 @@ open class RequestDelegate(
                 stateDialog?.showLoading()
             }
         }
+        if (!scope.isActive) return
 
         job = scope.launch {
             flow { emit(api()) }    //网络请求
@@ -126,10 +145,10 @@ open class RequestDelegate(
     /**
      * 默认只处理成功的返回
      */
-    open fun <T, Resp : AbsResponse<T>> handleResponse(
+    fun <T, Resp : AbsResponse<T>> handleResponse(
         response: Resp?,
         success: ((data: T?) -> Unit)?,
-        special: ((code: Int?,  data: T?,message: String?) -> Unit)?,
+        special: ((code: Int?, data: T?, message: String?) -> Unit)?,
         failed: ((code: Int?, message: String?) -> Unit)?,
     ) {
         when {
@@ -288,6 +307,7 @@ open class RequestDelegate(
 
         return ApiException(code, message)
     }
+
 
     fun cancel() {
         job?.cancel()
