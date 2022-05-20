@@ -4,6 +4,7 @@ import android.net.ParseException
 import android.util.Log
 import android.view.View
 import androidx.lifecycle.*
+import com.gfq.common.system.loge
 import com.google.gson.JsonParseException
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
@@ -43,25 +44,32 @@ class RequestDelegate(
      * loading 显示的最少时间，用于展示loading
      */
     var minimumLoadingTime: Long = 800,
-) :LifecycleObserver{
+) : LifecycleObserver {
 
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-    fun onDestroy(){
+    fun onDestroy() {
         lifecycleOwner?.lifecycle?.removeObserver(this)
         job?.cancel()
+        loge("RequestDelegate job auto cancel")
     }
 
     private lateinit var scope: CoroutineScope
-    private var lifecycleOwner: LifecycleOwner?=null
+    private var lifecycleOwner: LifecycleOwner? = null
 
-    constructor(lifecycleOwner: LifecycleOwner) : this(){
-        this.lifecycleOwner=lifecycleOwner
-        this.scope=lifecycleOwner.lifecycleScope
+    constructor(
+        lifecycleOwner: LifecycleOwner,
+        stateDialog: IRequestStateDialog? = null
+    ) : this(stateDialog = stateDialog) {
+        this.lifecycleOwner = lifecycleOwner
+        this.scope = lifecycleOwner.lifecycleScope
         this.lifecycleOwner?.lifecycle?.addObserver(this)
     }
 
-    constructor(scope: CoroutineScope) : this(){
-        this.scope=scope
+    constructor(
+        scope: CoroutineScope,
+        stateDialog: IRequestStateDialog? = null,
+    ) : this(stateDialog = stateDialog) {
+        this.scope = scope
     }
 
     private val TAG = javaClass.simpleName
