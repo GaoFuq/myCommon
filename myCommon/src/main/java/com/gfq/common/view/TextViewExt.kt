@@ -7,13 +7,7 @@ package com.gfq.common.view
  * @description
  */
 import android.graphics.Paint
-import android.text.Spannable
-import android.text.SpannableString
-import android.text.style.ForegroundColorSpan
 import android.widget.TextView
-import androidx.annotation.ColorRes
-import androidx.annotation.DrawableRes
-import androidx.core.content.ContextCompat
 
 inline fun TextView.setDelLine() {
     this.paint.flags = Paint.STRIKE_THRU_TEXT_FLAG

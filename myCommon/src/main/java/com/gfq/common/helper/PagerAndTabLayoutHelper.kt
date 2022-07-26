@@ -42,11 +42,11 @@ class PagerAndTabLayoutHelper(
                 if (tab?.position == position) {
                     tabView?.textSize = tabSelectedTextSize
                     if (isTabSelectedBold) {
-                        tabView?.setTypeface(Typeface.DEFAULT_BOLD)
+                        tabView?.paint?.isFakeBoldText=true
                     }
                 } else {
                     tabView?.textSize = tabTextSize
-                    tabView?.setTypeface(Typeface.DEFAULT)
+                    tabView?.paint?.isFakeBoldText=false
                 }
             }
         }
