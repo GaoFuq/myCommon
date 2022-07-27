@@ -1,4 +1,5 @@
 @file:Suppress("NOTHING_TO_INLINE")
+
 package com.gfq.common.view
 
 /**
@@ -9,14 +10,27 @@ package com.gfq.common.view
 import android.graphics.Paint
 import android.widget.TextView
 
-inline fun TextView.setDelLine() {
-    this.paint.flags = Paint.STRIKE_THRU_TEXT_FLAG
+inline fun TextView.styleDeleteLine() {
+    paintFlags = paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
 }
 
-inline fun TextView.setBold() {
-    this.paint.flags = Paint.FAKE_BOLD_TEXT_FLAG
+inline fun TextView.styleDeleteLineNot() {
+    paintFlags = paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
 }
 
-inline fun TextView.setUnderLine() {
-    this.paint.flags = Paint.UNDERLINE_TEXT_FLAG
+
+inline fun TextView.styleBold() {
+    paintFlags = paintFlags or Paint.FAKE_BOLD_TEXT_FLAG
+}
+
+inline fun TextView.styleBoldNot() {
+    paintFlags = paintFlags and Paint.FAKE_BOLD_TEXT_FLAG.inv()
+}
+
+inline fun TextView.styleUnderLine() {
+    paintFlags = paintFlags or Paint.UNDERLINE_TEXT_FLAG
+}
+
+inline fun TextView.styleUnderLineNot() {
+    paintFlags = paintFlags and Paint.UNDERLINE_TEXT_FLAG.inv()
 }
