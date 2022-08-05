@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.os.Bundle
 import android.view.Window
 import android.view.WindowManager
 
@@ -13,8 +14,8 @@ import android.view.WindowManager
  * @description
  */
 
-inline fun <reified T : Activity> Context.openActivity(vararg params: Pair<String, Any?>) {
-    startActivity(createIntent<T>(*params))
+inline fun <reified T : Activity> Context.openActivity(bundle: Bundle?=null) {
+    startActivity(createIntent<T>(bundle))
 }
 
 

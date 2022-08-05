@@ -7,11 +7,11 @@ import android.view.ViewGroup;
  * 方便给View做宽高改变动画的辅助类
  * ObjectAnimator.ofInt(viewWrapper,"height",view.height,0).start()
  */
-public class ViewWrapper {
+public class ViewAttr {
 
     private View view;
 
-    public ViewWrapper(View target) {
+    public ViewAttr(View target) {
         view = target;
     }
 

@@ -10,9 +10,9 @@ import androidx.customview.widget.ViewDragHelper
 /**
  *  2022/5/23 17:40
  * @auth gaofuq
- * @description
+ * @description ViewDragHelper 示例
  */
-class PullDownReboundLayout(
+internal class PullDownReboundLayout(
     context: Context,
     attrs: AttributeSet?,
 ) : LinearLayout(context, attrs) {

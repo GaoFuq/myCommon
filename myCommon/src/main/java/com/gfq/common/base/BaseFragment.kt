@@ -1,7 +1,6 @@
 package com.gfq.common.base
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,7 +9,6 @@ import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
-import com.gfq.common.system.fillParams
 import com.gfq.common.system.injectForArguments
 import com.gfq.common.system.log
 
@@ -52,6 +50,12 @@ abstract class BaseFragment<T : ViewDataBinding>(private val layoutId: Int) : Fr
         initViews()
     }
 
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        DataBindingUtil.findBinding<T>(requireView())?.let {
+            fragBinding = it
+        }
+    }
 
     fun popBack(destinationId: Int = 0, inclusive: Boolean = false) {
         if (navController == null) {
@@ -65,17 +69,11 @@ abstract class BaseFragment<T : ViewDataBinding>(private val layoutId: Int) : Fr
         }
     }
 
-    fun navigate(actionId: Int, vararg params: Pair<String, Any?>) {
+    fun navigate(actionId: Int, bundle: Bundle? = null) {
         if (navController == null) {
             log("can not find NavController")
             return
         }
-        if (params.isNotEmpty()) {
-            val bundle = Bundle()
-            bundle.fillParams(params)
-            navController?.navigate(actionId, bundle)
-        } else {
-            navController?.navigate(actionId)
-        }
+        navController?.navigate(actionId, bundle)
     }
 }
