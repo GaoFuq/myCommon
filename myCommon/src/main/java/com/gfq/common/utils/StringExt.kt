@@ -12,6 +12,14 @@ import android.text.Spanned
 import android.util.Log
 import java.util.regex.Pattern
 
+fun String?.isEmail(): Boolean {
+    this?:return false
+    val regExp = "^(\\w)+(\\.\\w+)*@(\\w)+((\\.\\w+)+)$"
+    val p = Pattern.compile(regExp)
+    val m = p.matcher(this)
+    return m.matches()
+}
+
 /**
  * 字符串是否包含中文汉字或者中文标点
  */
