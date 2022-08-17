@@ -8,8 +8,8 @@ import okio.*
 import java.io.IOException
 
 /**
- * 1.上传进度回调<br>
- * 2.间隔30ms，防止频繁回调，上层无用的刷新<br>
+ * 1.上传进度回调
+ * 2.间隔30ms，防止频繁回调，上层无用的刷新
  */
 class RequestBodyProgress(
     private val delegate: RequestBody?,

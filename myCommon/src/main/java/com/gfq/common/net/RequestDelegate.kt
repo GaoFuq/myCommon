@@ -8,10 +8,8 @@ import com.gfq.common.system.loge
 import com.google.gson.JsonParseException
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import okhttp3.OkHttpClient
 import org.json.JSONException
 import retrofit2.HttpException
-import java.io.IOException
 import java.net.*
 
 /**
@@ -25,10 +23,14 @@ import java.net.*
  * 可以在能拿到 CoroutineScope 的地方直接实例化使用。
  */
 class RequestDelegate(
+
+    var stateView: IStateView? = null,
+
     /**
      * 请求状态弹窗 @see [RequestState]
      */
     var stateDialog: IRequestStateDialog? = null,
+
 
     /**
      * 结果成功返回时，dialog隐藏的延迟时间（显示的时间），用于展示结果信息
@@ -55,11 +57,13 @@ class RequestDelegate(
 
     private lateinit var scope: CoroutineScope
     private var lifecycleOwner: LifecycleOwner? = null
+//    private var stateView: IStateView? = null
 
     constructor(
         lifecycleOwner: LifecycleOwner,
-        stateDialog: IRequestStateDialog? = null
-    ) : this(stateDialog = stateDialog) {
+        stateView: IStateView? = null,
+        stateDialog: IRequestStateDialog? = null,
+    ) : this(stateDialog = stateDialog, stateView = stateView) {
         this.lifecycleOwner = lifecycleOwner
         this.scope = lifecycleOwner.lifecycleScope
         this.lifecycleOwner?.lifecycle?.addObserver(this)
@@ -67,8 +71,9 @@ class RequestDelegate(
 
     constructor(
         scope: CoroutineScope,
+        stateView: IStateView? = null,
         stateDialog: IRequestStateDialog? = null,
-    ) : this(stateDialog = stateDialog) {
+    ) : this(stateDialog = stateDialog, stateView = stateView) {
         this.scope = scope
     }
 
@@ -95,7 +100,8 @@ class RequestDelegate(
         isShowDialogCompleteSuccess: Boolean = false,
         isShowDialogCompleteFailed: Boolean = true,
         isShowDialogError: Boolean = true,
-        retryCount: Int = 2,
+        retryCount: Int = 1,
+        retryDelay: Long = 0L,
         success: ((data: T?) -> Unit)? = null,
         failed: ((code: Int?, message: String?) -> Unit)? = null,
         error: ((ApiException) -> Unit)? = null,
@@ -121,10 +127,13 @@ class RequestDelegate(
                 .flowOn(Dispatchers.IO)
                 .retryWhen { cause, attempt ->
                     Log.e(TAG, cause.message.toString() + " retry - $attempt")
+                    delay(retryDelay)
+                    Log.e(TAG, cause.message.toString() + " retryDelay - $retryDelay")
                     attempt < retryCount
                 }
                 .catch { e: Throwable? ->//异常捕获处理
                     clickView?.isEnabled = true
+                    showStateViewIfNeed<T, Resp>(e, null)
                     val apiException = handleException(e)
                     requestCount--
                     updateRequestStateDialogIfNeed<T, Resp>(RequestState.error,
@@ -135,6 +144,7 @@ class RequestDelegate(
                 } //数据请求返回处理  emit(block()) 返回的数据
                 .collect {
                     clickView?.isEnabled = true
+                    showStateViewIfNeed<T, Resp>(null, it)
                     requestCount--
                     if (it?.isSuccess() == true) {
                         //回调请求完成-成功，默认不显示dialog
@@ -147,6 +157,29 @@ class RequestDelegate(
                     stateDialog?.let { delay(completeDismissDelay) }
                     updateRequestStateDialogIfNeed<T, Resp>(RequestState.dismiss)
                 }
+        }
+    }
+
+    private fun <T, Resp : AbsResponse<T>> showStateViewIfNeed(e: Throwable?, resp: Resp?) {
+        stateView?.let {
+            if (e != null) {
+                it.showStateErrorView()
+            } else {
+                if (resp == null) {
+                    it.showStateEmptyView()
+                    return@let
+                }
+                if (resp.responseData() == null) {
+                    it.showStateEmptyView()
+                    return@let
+                }
+                if (resp.responseData() is Collection<*>) {
+                    val temp = resp.responseData() as Collection<*>
+                    if (temp.isNullOrEmpty()) {
+                        it.showStateEmptyView()
+                    }
+                }
+            }
         }
     }
 
@@ -192,7 +225,6 @@ class RequestDelegate(
                 if (requestCount == 1) {
                     stateDialog?.showLoading()
                 }
-
             }
             RequestState.complete -> {
                 if (requestCount == 0) {
