@@ -55,4 +55,10 @@
 //    annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
     kapt 'com.github.bumptech.glide:compiler:4.11.0' // gradle 7+ 使用 kapt
     
+     //圆形控件
+    implementation 'de.hdodenhof:circleimageview:3.1.0'
+    //event
+    implementation 'org.greenrobot:eventbus:3.2.0'
+     implementation 'com.makeramen:roundedimageview:2.3.0'//圆角图片
+    
 ```
