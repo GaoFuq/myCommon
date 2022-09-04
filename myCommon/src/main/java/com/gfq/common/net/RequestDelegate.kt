@@ -4,12 +4,12 @@ import android.net.ParseException
 import android.util.Log
 import android.view.View
 import androidx.lifecycle.*
-import com.gfq.common.system.loge
 import com.google.gson.JsonParseException
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import org.json.JSONException
 import retrofit2.HttpException
+import java.io.IOException
 import java.net.*
 
 /**
@@ -23,6 +23,7 @@ import java.net.*
  * 可以在能拿到 CoroutineScope 的地方直接实例化使用。
  */
 class RequestDelegate(
+    var scope: CoroutineScope = GlobalScope,
 
     var stateView: IStateView? = null,
 
@@ -48,36 +49,44 @@ class RequestDelegate(
     var minimumLoadingTime: Long = 800,
 ) : LifecycleObserver {
 
+    private val TAG = "【${javaClass.simpleName}】"
+
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
     fun onDestroy() {
         lifecycleOwner?.lifecycle?.removeObserver(this)
         job?.cancel()
-        loge("RequestDelegate job auto cancel")
+        Log.d(TAG, "RequestDelegate job auto cancel")
     }
 
-    private lateinit var scope: CoroutineScope
     private var lifecycleOwner: LifecycleOwner? = null
-//    private var stateView: IStateView? = null
 
     constructor(
         lifecycleOwner: LifecycleOwner,
-        stateView: IStateView? = null,
-        stateDialog: IRequestStateDialog? = null,
-    ) : this(stateDialog = stateDialog, stateView = stateView) {
+    ) : this(stateDialog = null, stateView = null) {
         this.lifecycleOwner = lifecycleOwner
         this.scope = lifecycleOwner.lifecycleScope
         this.lifecycleOwner?.lifecycle?.addObserver(this)
     }
 
     constructor(
-        scope: CoroutineScope,
-        stateView: IStateView? = null,
-        stateDialog: IRequestStateDialog? = null,
-    ) : this(stateDialog = stateDialog, stateView = stateView) {
-        this.scope = scope
+        lifecycleOwner: LifecycleOwner,
+        stateDialog: IRequestStateDialog,
+    ) : this(stateDialog = stateDialog, stateView = null) {
+        this.lifecycleOwner = lifecycleOwner
+        this.scope = lifecycleOwner.lifecycleScope
+        this.lifecycleOwner?.lifecycle?.addObserver(this)
     }
 
-    private val TAG = javaClass.simpleName
+    constructor(
+        lifecycleOwner: LifecycleOwner,
+        stateDialog: IRequestStateDialog,
+        stateView: IStateView,
+    ) : this(stateDialog = stateDialog, stateView = stateView) {
+        this.lifecycleOwner = lifecycleOwner
+        this.scope = lifecycleOwner.lifecycleScope
+        this.lifecycleOwner?.lifecycle?.addObserver(this)
+    }
+
 
 
     private var loadingTime: Long = 0 //实际loading时间
@@ -100,12 +109,14 @@ class RequestDelegate(
         isShowDialogCompleteSuccess: Boolean = false,
         isShowDialogCompleteFailed: Boolean = true,
         isShowDialogError: Boolean = true,
-        retryCount: Int = 1,
+        retryCount: Int = 0,
         retryDelay: Long = 0L,
+        retryCondition: (Throwable) -> Boolean = { it is IOException },
         success: ((data: T?) -> Unit)? = null,
         failed: ((code: Int?, message: String?) -> Unit)? = null,
         error: ((ApiException) -> Unit)? = null,
         special: ((code: Int?, data: T?, message: String?) -> Unit)? = null,//特殊情况
+        handleResponseBySelf: ((Resp?) -> Unit)? = null,//更特殊的情况，自己处理。success，failed，error，special都不会走。
     ) {
         clickView?.isEnabled = false
         this.isShowDialogLoading = isShowDialogLoading
@@ -129,15 +140,17 @@ class RequestDelegate(
                     Log.e(TAG, cause.message.toString() + " retry - $attempt")
                     delay(retryDelay)
                     Log.e(TAG, cause.message.toString() + " retryDelay - $retryDelay")
-                    attempt < retryCount
+                    attempt < retryCount && retryCondition(cause)
                 }
                 .catch { e: Throwable? ->//异常捕获处理
                     clickView?.isEnabled = true
                     showStateViewIfNeed<T, Resp>(e, null)
                     val apiException = handleException(e)
                     requestCount--
-                    updateRequestStateDialogIfNeed<T, Resp>(RequestState.error,
-                        apiException = apiException)
+                    updateRequestStateDialogIfNeed<T, Resp>(
+                        RequestState.error,
+                        apiException = apiException
+                    )
                     error?.invoke(apiException)
                     stateDialog?.let { delay(errorDismissDelay) }
                     updateRequestStateDialogIfNeed<T, Resp>(RequestState.dismiss)
@@ -153,12 +166,13 @@ class RequestDelegate(
                         //回调请求完成-失败，默认显示dialog错误文本
                         updateRequestStateDialogIfNeed<T, Resp>(RequestState.completeFailed, it)
                     }
-                    handleResponse(it, success, special, failed)
+                    handleResponse(it, success, special, failed, handleResponseBySelf)
                     stateDialog?.let { delay(completeDismissDelay) }
                     updateRequestStateDialogIfNeed<T, Resp>(RequestState.dismiss)
                 }
         }
     }
+
 
     private fun <T, Resp : AbsResponse<T>> showStateViewIfNeed(e: Throwable?, resp: Resp?) {
         stateView?.let {
@@ -191,17 +205,26 @@ class RequestDelegate(
         success: ((data: T?) -> Unit)?,
         special: ((code: Int?, data: T?, message: String?) -> Unit)?,
         failed: ((code: Int?, message: String?) -> Unit)?,
+        handleResponseBySelf: ((Resp?) -> Unit)? = null,//更特殊的情况，自己处理
     ) {
+        if (handleResponseBySelf != null) {
+            handleResponseBySelf.invoke(response)
+            return
+        }
         when {
             response?.isSpecial() == true -> {
                 if (special == null) {
-                    response.handleSpecial(response.responseCode(),
+                    response.handleSpecial(
+                        response.responseCode(),
                         response.responseData(),
-                        response.responseMessage())
+                        response.responseMessage()
+                    )
                 } else {
-                    special(response.responseCode(),
+                    special(
+                        response.responseCode(),
                         response.responseData(),
-                        response.responseMessage())
+                        response.responseMessage()
+                    )
                 }
             }
             response?.isSuccess() == true -> {
@@ -372,7 +395,7 @@ class RequestDelegate(
 
         //对于请求所标识的资源，不允许使用请求行中所指定的方法。请确保为所请求的资源设置了正确的 MIME 类型。
         //如果问题依然存在，请与服务器的管理员联系。
-        const val HTTP_BAD_METHOD_MSG = " 不允许此方法"
+        const val HTTP_BAD_METHOD_MSG = "不允许此方法"
 
 
         const val HTTP_INTERNAL_ERROR_MSG = "服务器内部错误 "

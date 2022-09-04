@@ -6,7 +6,7 @@ import com.gfq.common.system.ActivityManager
 import com.gfq.common.view.setImage
 import com.gfq.common.view.visible
 
-object MyToast : BaseToast<CommonToastWithImgBinding>(R.layout.common_toast_with_img) {
+object MBindingToast : BaseBindingToast<CommonToastWithImgBinding>(R.layout.common_toast_with_img) {
     override fun bindView(bean: ToastDataBean) {
 
         bean.icon?.let {

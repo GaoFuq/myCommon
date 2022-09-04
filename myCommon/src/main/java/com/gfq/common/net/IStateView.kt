@@ -34,7 +34,7 @@ interface IStateView {
     val stateEmptyView: View
     val stateErrorView: View
 
-    fun click2Refresh(){}
+    fun clickAction(){}
 
     fun showStateEmptyView() {
         reset()
@@ -52,11 +52,11 @@ interface IStateView {
         stateViewContainer.removeView(stateErrorView)
         val temp = stateEmptyView.findViewWithTag<View>(R.string.stateViewRefreshTag)
         if (!temp.hasOnClickListeners()) {
-            temp.setOnClickListener { click2Refresh() }
+            temp.setOnClickListener { clickAction() }
         }
         val temp2 = stateErrorView.findViewWithTag<View>(R.string.stateViewRefreshTag)
         if (!temp2.hasOnClickListeners()) {
-            temp2.setOnClickListener { click2Refresh() }
+            temp2.setOnClickListener { clickAction() }
         }
     }
 }

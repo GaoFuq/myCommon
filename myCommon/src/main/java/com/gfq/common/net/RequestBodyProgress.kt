@@ -19,8 +19,10 @@ class RequestBodyProgress(
     constructor(delegate: RequestBody, onProgress: (progress: Long) -> Unit) :
             this(delegate, 30L, onProgress)
 
+    private var isComplete = false
 
     override fun contentType(): MediaType? = delegate?.contentType()
+
 
     override fun writeTo(sink: BufferedSink) {
         delegate?.let {
@@ -53,6 +55,9 @@ class RequestBodyProgress(
         @Throws(IOException::class)
         override fun write(source: Buffer, byteCount: Long) {
             super.write(source, byteCount)
+
+            if(isComplete)return//writeTo 方法可能会被多个Interceptor调用，导致多次回调onProgress
+
             if (contentLength <= 0) contentLength = contentLength() //获得contentLength的值，后续不再调用
             //增加当前写入的字节数
             bytesWritten += byteCount
@@ -65,6 +70,7 @@ class RequestBodyProgress(
                 }
                 lastRefreshUiTime = System.currentTimeMillis()
             }
+            isComplete =  bytesWritten == contentLength
         }
     }
 

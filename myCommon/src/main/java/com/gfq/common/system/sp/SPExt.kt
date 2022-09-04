@@ -12,6 +12,7 @@ import com.alibaba.fastjson.JSON
 
 
 internal val KEY_IS_EMPTY_EXCEPTION = "key is empty"
+internal val SP_TAG = "【SPDelegate】"
 
 
 /**
@@ -32,9 +33,9 @@ fun <T> SharedPreferences.getOrNull(key: String): T? {
                         && str.contains(SP.dataValue)
                     ) {
                         val spDataWrapper = JSON.parseObject(str, SPDataWrapper::class.java)
-                        Log.i("get", "dataClassName = ${spDataWrapper.sp_g_f_q_dataClassName}")
-                        Log.i("get", "dataKeyName = ${spDataWrapper.sp_g_f_q_dataKeyName}")
-                        Log.i("get", "dataValue = ${spDataWrapper.sp_g_f_q_dataValue}")
+                        Log.i(SP_TAG, "get: dataClassName = ${spDataWrapper.sp_g_f_q_dataClassName}")
+                        Log.i(SP_TAG, "get: dataKeyName = ${spDataWrapper.sp_g_f_q_dataKeyName}")
+                        Log.i(SP_TAG, "get: dataValue = ${spDataWrapper.sp_g_f_q_dataValue}")
                         JSON.parseObject(spDataWrapper.sp_g_f_q_dataValue,
                             Class.forName(spDataWrapper.sp_g_f_q_dataClassName)) as? T
                     } else {
@@ -86,7 +87,7 @@ fun SharedPreferences.put(key: String, value: Any?) {
                         val spDataWrapper =
                             SPDataWrapper(value.javaClass.name, key, JSON.toJSONString(value))
                         val jsonStr = JSON.toJSONString(spDataWrapper)
-                        Log.i("put", jsonStr)
+                        Log.i(SP_TAG, "put: $jsonStr")
                         putString(key, jsonStr)
                     }
                 }?.apply()

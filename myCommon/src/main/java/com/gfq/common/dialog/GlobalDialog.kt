@@ -1,4 +1,4 @@
-package com.gfq.common.net
+package com.gfq.common.dialog
 
 import android.app.Dialog
 import android.content.Context

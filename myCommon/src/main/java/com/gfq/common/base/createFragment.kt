@@ -8,7 +8,7 @@ import androidx.fragment.app.Fragment
  * @auth gaofuq
  * @description
  */
-inline fun <reified T : Fragment> createFragment(args: Bundle? = null): T {
+inline fun <reified T : Fragment> createFt(args: Bundle? = null): T {
     val mFragment: T = T::class.java.newInstance()
     mFragment.arguments = args
     return mFragment

@@ -7,6 +7,7 @@ import android.content.IntentFilter
 import android.os.Bundle
 import android.view.Window
 import android.view.WindowManager
+import androidx.fragment.app.Fragment
 
 /**
  *  2021/12/30 9:29
@@ -16,6 +17,11 @@ import android.view.WindowManager
 
 inline fun <reified T : Activity> Context.openActivity(bundle: Bundle?=null) {
     startActivity(createIntent<T>(bundle))
+}
+
+
+inline fun <reified T : Activity> Fragment.openActivity(bundle: Bundle?=null) {
+    startActivity(this.context?.createIntent<T>(bundle))
 }
 
 

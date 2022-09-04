@@ -13,13 +13,13 @@ import android.view.View
 /**
  * 点击事件防抖动
  */
-inline fun View.setDebounceClick(limitTime: Long = 500L, crossinline onClick: () -> Unit) {
+inline fun View.setDebounceClick(limitTime: Long = 500L, crossinline onClick: (View) -> Unit) {
     var lastClickTime = 0L
     setOnClickListener {
         val currentTime = System.currentTimeMillis()
         if (currentTime - lastClickTime > limitTime) {
             lastClickTime = currentTime
-            onClick()
+            onClick(it)
         }
     }
 }

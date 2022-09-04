@@ -4,9 +4,12 @@ package com.gfq.common.system
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
+import android.provider.Settings
+import androidx.fragment.app.FragmentActivity
 import java.io.Serializable
 
 inline fun <reified T : Any> Context.createIntent(bundle: Bundle?=null): Intent {
@@ -14,6 +17,19 @@ inline fun <reified T : Any> Context.createIntent(bundle: Bundle?=null): Intent 
     if (this !is Activity) intent.newTask()
     bundle?.let { intent.putExtras(it) }
     return intent
+}
+
+fun toSystemSetting(context: Context?) {
+    val intent = Intent()
+    intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+    intent.data = Uri.parse("package:${context?.packageName}")
+    context?.startActivity(intent)
+}
+
+fun Intent.home() = apply {
+    action = Intent.ACTION_MAIN
+    addCategory(Intent.CATEGORY_HOME)
+    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED)
 }
 
 

@@ -2,15 +2,16 @@ package com.gfq.common.toast
 
 import android.view.Gravity
 import android.view.LayoutInflater
-import android.view.View
 import android.widget.Toast
+import androidx.databinding.DataBindingUtil
+import androidx.databinding.ViewDataBinding
 import com.gfq.common.system.ActivityManager
 import com.gfq.common.utils.mainThread
 
-abstract class BaseToast(private val layoutId: Int) {
+abstract class BaseBindingToast<T : ViewDataBinding>(private val layoutId: Int) {
     private var lastToast: Toast? = null
-    abstract fun bindView(view: View?,bean: ToastDataBean)
-    var view:View?=null
+    lateinit var toastBinding: T
+    abstract fun bindView(bean: ToastDataBean)
 
     private fun createToast(
         bean: ToastDataBean,
@@ -19,14 +20,19 @@ abstract class BaseToast(private val layoutId: Int) {
         yOffset: Int = 0,
     ): Toast {
         val currentToast = Toast.makeText(ActivityManager.application, "", Toast.LENGTH_SHORT)
-        view = LayoutInflater.from(ActivityManager.application).inflate(layoutId,null,false)
-        bindView(view, bean)
+        toastBinding = DataBindingUtil.inflate(
+            LayoutInflater.from(ActivityManager.application),
+            layoutId,
+            null,
+            false
+        )
+        bindView(bean)
 
         if (lastToast != null) {
             lastToast!!.cancel()
         }
         lastToast = currentToast
-        currentToast.view = view
+        currentToast.view = toastBinding.root
         currentToast.setGravity(gravity, xOffset, yOffset)
         return currentToast
     }

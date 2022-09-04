@@ -5,6 +5,7 @@ import android.view.View
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineScope
+import java.io.IOException
 
 
 /**
@@ -26,8 +27,9 @@ open class ViewModelRequest() : ViewModel() {
         isShowDialogCompleteSuccess: Boolean = false,
         isShowDialogCompleteFailed: Boolean = true,
         isShowDialogError: Boolean = true,
-        retryCount: Int = 1,
+        retryCount: Int = 0,
         retryDelay: Long = 0L,
+        retryCondition: (Throwable) -> Boolean = { it is IOException },
         success: ((data: T?) -> Unit)? = null,
         failed: ((code: Int?, message: String?) -> Unit)? = null,
         error: ((ApiException) -> Unit)? = null,
@@ -41,6 +43,7 @@ open class ViewModelRequest() : ViewModel() {
             isShowDialogError,
             retryCount,
             retryDelay,
+            retryCondition,
             success,
             failed,
             error,

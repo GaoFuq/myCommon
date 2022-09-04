@@ -31,22 +31,26 @@ internal class KotlinUseSimple {
     ) : SPData
 
     //3.定义代理类，必须给默认值
-    internal class UserSPTable : SPTableDelegate<UserBeanSimple>(default = UserBeanSimple())
+    internal class UserSPTable : SPTableDelegate<UserBeanSimple>(default = UserBeanSimple(),spTableName = UserTable.SP_TABLE_NAME)
 
 
     //4.自定义数据类型存取数据
     internal fun saveAndGetData() {
         //4.1 使用代理类
         val userSPTable by UserSPTable()
+
         //4.1 使用代理类 存
         userSPTable.run {
-            name = "name" //存name
-            age = 18//存age
-//            save() //不需要再调用save
+            name = "name"
+            age = 18
+            save()
         }
+
+
         //4.1 使用代理类 取
-        val name = userSPTable.name
-        val age = userSPTable.age
+        val userInfo = userSPTable
+        val name = userInfo.name
+        val age = userInfo.age
 
         //4.2 网络获取的数据存入
         val bean = getUserFromNet()

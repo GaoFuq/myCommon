@@ -31,6 +31,7 @@
               android:layout_width="wrap_content"
               android:layout_height="wrap_content"
               android:textColor="@color/request_state_dialog_default_text_color"
+              android:textSize="@dimen/sp14"
               android:text="@string/request_loading_state_default_text"/>
       </LinearLayout>
 

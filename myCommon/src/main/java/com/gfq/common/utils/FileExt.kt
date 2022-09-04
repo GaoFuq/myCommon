@@ -6,6 +6,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
+import android.util.Log
 import android.webkit.MimeTypeMap
 import androidx.core.content.FileProvider
 import com.gfq.common.system.ActivityManager
@@ -37,6 +38,7 @@ val externalMovies by lazy { ActivityManager.application.getExternalFilesDir(Env
  * @param saveDir 文件保存的目录路径，默认[externalDownload]
  * @param saveFileName 文件保存名称，默认原名称
  * @param autoOpen 文件下载完成后，是否自动打开
+ * @param isInsertMediaStore 如果下载的文件是图片、音频、视频，是否插入到图库
  * @param onProgress 下载进度回调
  * @param success 下载成功回调
  * @param failed 下载失败回调
@@ -47,20 +49,21 @@ fun downloadFile(
     saveFileName: String? = url.getFileName(),
     autoOpen: Boolean = false,
     isOverrideOldFile: Boolean = false,
+    isInsertMediaStore: Boolean = true,
     onProgress: ((Int) -> Unit)? = null,
     success: ((file: File) -> Unit)? = null,
     failed: (() -> Unit)? = null,
 ) {
-
+    val TAG = "【downloadFile】"
     val saveDirTp = if (saveDir.isNullOrEmpty()) {
-        loge("downloadFile saveDir isNullOrEmpty , changed to default dir")
+        Log.d(TAG, "saveDir isNullOrEmpty , changed to default dir")
         externalDownload?.path
     } else {
         saveDir
     }
 
-    if(saveFileName.isNullOrEmpty()){
-        loge("downloadFile saveFileName isNullOrEmpty , $saveFileName")
+    if (saveFileName.isNullOrEmpty()) {
+        Log.d(TAG, "saveFileName isNullOrEmpty , $saveFileName")
         failed?.let { mainThread { it.invoke() } }
         return
     }
@@ -68,7 +71,7 @@ fun downloadFile(
     val oldFile = File(saveDirTp + File.separator + saveFileName)
 
     if (oldFile.exists() && !isOverrideOldFile) {
-        loge("downloadFile exist oldFile = ${oldFile.path}")
+        Log.d(TAG, "exist oldFile = ${oldFile.path}")
         success?.invoke(oldFile)
         if (autoOpen) {
             oldFile.open()
@@ -82,13 +85,13 @@ fun downloadFile(
         }
     }
 
-    loge("downloadFile start url = $url")
+    Log.d(TAG, "start url = $url")
     val startTime = System.currentTimeMillis()
     val okHttpClient = OkHttpClient()
     val request: Request = Request.Builder().url(url).build()
     okHttpClient.newCall(request).enqueue(object : Callback {
         override fun onFailure(call: Call, e: IOException) {
-            loge("downloadFile failed ${e.message}")
+            Log.d(TAG, "failed ${e.message}")
             failed?.let { mainThread { it.invoke() } }
             e.printStackTrace()
         }
@@ -115,16 +118,16 @@ fun downloadFile(
                 fos.flush()
                 mainThread { success?.invoke(file) }
 
-                loge("downloadFile success cost time = ${(System.currentTimeMillis() - startTime)}, save path = ${file.path}")
+                Log.d(TAG, "success cost time = ${(System.currentTimeMillis() - startTime)}, save path = ${file.path}")
 
-                if (file.canInsertMediaStore()) {
+                if (file.canInsertMediaStore() && isInsertMediaStore) {
                     file.insertMediaStore()
                 }
                 if (autoOpen) {
                     file.open()
                 }
             } catch (e: Exception) {
-                loge("downloadFile failed onResponse handle failed ${e.message}")
+                Log.d(TAG, "failed onResponse handle failed ${e.message}")
                 mainThread { failed?.invoke() }
                 e.printStackTrace()
             } finally {

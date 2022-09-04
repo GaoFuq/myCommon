@@ -10,6 +10,7 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonParser
 import okhttp3.*
 import okhttp3.ResponseBody.Companion.toResponseBody
+import okhttp3.logging.HttpLoggingInterceptor
 import okio.Buffer
 import java.io.EOFException
 import java.io.IOException
@@ -40,17 +41,31 @@ class LogInterceptor() : Interceptor {
         val requestContent = "请求 --> ${request.method}   ${request.url}"
 
         val headers = request.headers
-        if (headers.size > 0) {
-            //请求头
-            headerSb.append("请求头: { ")
-            headers.forEach {
-                headerSb.append(it.first).append(":").append(it.second).append("; ")
-            }
-            headerSb.append("}")
-        }
 
         //body
         val requestBody = request.body
+        if (requestBody != null) {
+            // Request body headers are only present when installed as a network interceptor. When not
+            // already present, force them to be included (if available) so their values are known.
+            requestBody.contentType()?.let {
+                if (headers["Content-Type"] == null) {
+                    headerSb.appendLine("Content-Type: $it")
+                }
+            }
+            if (requestBody.contentLength() != -1L) {
+                if (headers["Content-Length"] == null) {
+                    headerSb.appendLine("Content-Length: ${requestBody.contentLength()}")
+                }
+            }
+        }
+
+        for (i in 0 until headers.size) {
+            headerSb.appendLine("请求头: { ")
+            val value = headers.value(i)
+            headerSb.appendLine(headers.name(i) + ": " + value)
+            headerSb.append("}")
+        }
+
         val response = chain.proceed(request)
         //请求体
         if (requestBody != null) {

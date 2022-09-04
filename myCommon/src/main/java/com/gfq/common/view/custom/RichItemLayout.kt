@@ -15,7 +15,7 @@ import com.gfq.common.databinding.RichItemLayoutBinding
  * @auth gaofuq
  * @description
  */
-class RichItemLayout(context: Context, attrs: AttributeSet?) :
+internal class RichItemLayout(context: Context, attrs: AttributeSet?) :
     BaseBindingView<RichItemLayoutBinding>(context, attrs) {
 
     override fun layoutResId(): Int = R.layout.rich_item_layout

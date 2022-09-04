@@ -3,10 +3,11 @@ package com.gfq.common.dialog
 import android.content.res.Resources
 import android.view.Gravity
 import android.view.View
+import androidx.annotation.DimenRes
 import androidx.core.view.updateLayoutParams
 import com.gfq.common.R
-import com.gfq.common.system.dpF
 import com.gfq.common.system.updateAttributes
+import com.gfq.common.utils.dpF
 import com.gfq.common.view.outline.CornerPosition
 import com.gfq.common.view.outline.setCircle
 import com.gfq.common.view.outline.setRoundOutline
@@ -44,8 +45,8 @@ fun BottomSheetDialog.setDismissOnTouchOutside(boo: Boolean) {
     }
 }
 
-fun BottomSheetDialog.setRadius(r: Float, pos: CornerPosition = CornerPosition.top) {
-    findViewById<View>(R.id.design_bottom_sheet)?.setRoundOutline(dpF(r), pos)
+fun BottomSheetDialog.setRadius(@DimenRes id: Int, pos: CornerPosition = CornerPosition.top) {
+    findViewById<View>(R.id.design_bottom_sheet)?.setRoundOutline(context.dpF(id), pos)
 }
 
 fun BottomSheetDialog.setCircle() {

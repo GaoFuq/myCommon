@@ -1,6 +1,7 @@
-package com.gfq.common.net
+package com.gfq.common.dialog
 
 import android.app.Activity
+import android.content.Context
 import android.content.ContextWrapper
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -13,26 +14,35 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.OnLifecycleEvent
 import com.gfq.common.R
 import com.gfq.common.databinding.DefaultRequestStateDialogLayoutBinding
+import com.gfq.common.net.AbsResponse
+import com.gfq.common.net.IRequestStateDialog
+import com.gfq.common.system.ActivityManager
+import com.gfq.common.net.ViewModelRequest
 
 /**
  * [ViewModelRequest] 中使用的默认 dialog 。
  * 默认宽高 100dp，遮罩透明，黑色背景，点击外部不隐藏。
  */
-open class DefaultRequestStateDialog(style: Int = 0) : GlobalDialog(style = style), IRequestStateDialog ,LifecycleObserver{
+open class DefaultRequestStateDialog(
+    context: Context = ActivityManager.getAllActivities().last(),
+    style: Int = 0
+) : GlobalDialog(context, style), IRequestStateDialog, LifecycleObserver {
+    private val TAG = "【RequestStateDialog】"
     protected val binding =
-        DataBindingUtil.inflate<DefaultRequestStateDialogLayoutBinding>(LayoutInflater.from(context),
+        DataBindingUtil.inflate<DefaultRequestStateDialogLayoutBinding>(
+            LayoutInflater.from(context),
             R.layout.default_request_state_dialog_layout,
             null,
-            false)
+            false
+        )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
         setCanceledOnTouchOutside(false)
         window?.setBackgroundDrawable(ColorDrawable())
-        window?.setDimAmount(0f)
 
-        if(mContext is LifecycleOwner){
+        if (mContext is LifecycleOwner) {
             mContext.lifecycle.addObserver(this)
         }
     }
@@ -43,30 +53,30 @@ open class DefaultRequestStateDialog(style: Int = 0) : GlobalDialog(style = styl
 //    }
 
     override fun showLoading(message: String?) {
-        Log.e("stateDialog", "showLoading")
+        Log.e(TAG, "showLoading")
         checkAndShow(message)
     }
 
     override fun <T, Resp : AbsResponse<T>> showComplete(response: Resp?) {
-        Log.e("stateDialog", "showComplete ${response?.responseMessage()}")
+        Log.e(TAG, "showComplete ${response?.responseMessage()}")
         checkAndShow(response?.responseMessage())
     }
 
     override fun <T, Resp : AbsResponse<T>> showCompleteFailed(response: Resp?) {
-        Log.e("stateDialog", "showCompleteFailed ${response?.responseMessage()}")
+        Log.e(TAG, "showCompleteFailed ${response?.responseMessage()}")
         //默认显示返回的错误信息
         checkAndShow(response?.responseMessage())
     }
 
 
     override fun showError(error: String?) {
-        Log.e("stateDialog", "showError")
+        Log.e(TAG, "showError")
         checkAndShow(error)
     }
 
 
     override fun dismissStateDialog() {
-        Log.e("stateDialog", "dismissStateDialog")
+        Log.e(TAG, "dismissStateDialog")
         dismiss()
     }
 
@@ -93,8 +103,8 @@ open class DefaultRequestStateDialog(style: Int = 0) : GlobalDialog(style = styl
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-    fun dismissThis(){
-        Log.e("stateDialog", "on destroy dismissThis")
+    fun dismissThis() {
+        Log.e(TAG, "${mContext.javaClass.simpleName} on destroy dismissThis")
         dismiss()
     }
 }

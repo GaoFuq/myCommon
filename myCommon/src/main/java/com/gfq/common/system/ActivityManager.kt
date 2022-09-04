@@ -4,6 +4,8 @@ import android.app.Activity
 import android.app.Application
 import android.content.pm.ApplicationInfo
 import android.os.Bundle
+import android.util.Log
+import androidx.fragment.app.FragmentActivity
 import com.orhanobut.logger.AndroidLogAdapter
 import com.orhanobut.logger.Logger
 import com.orhanobut.logger.PrettyFormatStrategy
@@ -11,22 +13,27 @@ import java.util.*
 import kotlin.system.exitProcess
 
 /**
- * 持有 [Application] 实例，并对 [Activity] 进行了管理。
+ * 持有 [Application] 实例，并对 [FragmentActivity] 进行了管理。
  */
 object ActivityManager {
+    private const val TAG = "【ActivityManager】"
     lateinit var application: Application
-    private val activities = Collections.synchronizedList(mutableListOf<Activity>())
+    private val activities = Collections.synchronizedList(mutableListOf<FragmentActivity>())
     private val activityLifecycleCallbacks = object : Application.ActivityLifecycleCallbacks {
         override fun onActivityPaused(activity: Activity) {
+            Log.d(TAG, "onActivityPaused: ${activity.javaClass.simpleName}")
         }
 
         override fun onActivityResumed(activity: Activity) {
+            Log.d(TAG, "onActivityResumed: ${activity.javaClass.simpleName}")
         }
 
         override fun onActivityStarted(activity: Activity) {
+            Log.d(TAG, "onActivityStarted: ${activity.javaClass.simpleName}")
         }
 
         override fun onActivityDestroyed(activity: Activity) {
+            Log.d(TAG, "onActivityDestroyed: ${activity.javaClass.simpleName}")
             activities.remove(activity)
         }
 
@@ -34,15 +41,20 @@ object ActivityManager {
         }
 
         override fun onActivityStopped(activity: Activity) {
+            Log.d(TAG, "onActivityStopped: ${activity.javaClass.simpleName}")
         }
 
         override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
-            activities.add(activity)
+            Log.d(TAG, "onActivityCreated: ${activity.javaClass.simpleName}")
+            if(activity is FragmentActivity) {
+                activities.add(activity)
+            }
         }
 
     }
 
     fun init(application: Application) {
+        Log.d(TAG, "init")
         ActivityManager.application = application
         application.registerActivityLifecycleCallbacks(activityLifecycleCallbacks)
         initLogger()
@@ -67,21 +79,21 @@ object ActivityManager {
     }
 
     /**
-     * 关闭所有Activity，除了指定的Activity。
+     * 关闭所有 FragmentActivity，除了指定的 FragmentActivity。
      */
-    fun <T : Activity> finishAllActivitiesExclude(vararg classes: Class<out T>) {
+    fun <T : FragmentActivity> finishAllActivitiesExclude(vararg classes: Class<out T>) {
         activities.filter { !classes.contains(it::class.java) }.forEach { it.finish() }
     }
 
     /**
-     * 关闭指定的所有Activity
+     * 关闭指定的所有 FragmentActivity
      */
-    fun <T : Activity> finishAllActivitiesInclude(vararg classes: Class<out T>) {
+    fun <T : FragmentActivity> finishAllActivitiesInclude(vararg classes: Class<out T>) {
         activities.filter { classes.contains(it::class.java) }.forEach { it.finish() }
     }
 
     /**
-     * 获取指定Activity实例
+     * 获取指定 FragmentActivity 实例
      */
     @Suppress("UNCHECKED_CAST")
     fun <T : Activity> getActivity(clazz: Class<T>): T? {
@@ -90,7 +102,7 @@ object ActivityManager {
         } as? T
     }
 
-    fun getAllActivities(): List<Activity> = activities
+    fun getAllActivities(): List<FragmentActivity> = activities
 
     fun getTopActivity() = activities.lastOrNull()
 
@@ -98,6 +110,7 @@ object ActivityManager {
      * 退出整个app
      */
     fun exitApp() {
+        Log.d(TAG, "exitApp")
         // 关闭所有界面，避免后一句代码执行后，如果栈中还有界面，会重启进程并启动下一个界面，导致不能彻底退出应用。
         finishAllActivities()
         exitProcess(0)

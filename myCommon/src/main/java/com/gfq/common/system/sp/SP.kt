@@ -1,5 +1,6 @@
 package com.gfq.common.system.sp
 
+import android.annotation.SuppressLint
 import android.content.SharedPreferences
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -200,6 +201,17 @@ object SP {
     fun clearAll() {
         getAllSPTableNames().forEach { spTableName ->
             get(spTableName).edit().clear().apply()
+        }
+    }
+
+    /**
+     * 清空所有 sp 表单里面的数据
+     */
+    @SuppressLint("ApplySharedPref")
+    @JvmStatic
+    fun clearAllImmediate() {
+        getAllSPTableNames().forEach { spTableName ->
+            get(spTableName).edit().clear().commit()
         }
     }
 

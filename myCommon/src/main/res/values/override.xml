@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--    BottomNavigationView 配合 NavigationUI 切换 fragment 时的淡入淡出动画时长
+        取消淡入淡出动画效果
+    -->
+    <integer name="config_navAnimTime">0</integer>
+</resources>

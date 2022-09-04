@@ -1,6 +1,8 @@
 package com.gfq.common.net
 
 import com.gfq.common.R
+import com.gfq.common.dialog.DefaultRequestStateDialog
+import com.gfq.common.system.ActivityManager
 
 /**
  * 2021/4/19 11:09
@@ -11,6 +13,6 @@ import com.gfq.common.R
  */
 open class ViewModelRequestWithDialog : ViewModelRequest() {
     init {
-        requestDelegate.stateDialog = DefaultRequestStateDialog(R.style.FullTransparentNoDimDialog)
+        requestDelegate.stateDialog = DefaultRequestStateDialog(ActivityManager.getAllActivities().last(),R.style.FullTransparentNoDimDialog)
     }
 }

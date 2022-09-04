@@ -3,7 +3,7 @@ package com.gfq.common.view
 import android.graphics.Color
 import android.view.View
 import android.view.ViewGroup
-import com.gfq.common.system.dpF
+import com.gfq.common.utils.dpF
 import com.google.android.material.shape.*
 
 /**

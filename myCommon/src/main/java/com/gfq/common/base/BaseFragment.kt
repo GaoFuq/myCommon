@@ -1,6 +1,7 @@
 package com.gfq.common.base
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,6 +10,8 @@ import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
+import com.gfq.common.dialog.DefaultRequestStateDialogNoAnim
+import com.gfq.common.net.RequestDelegate
 import com.gfq.common.system.injectForArguments
 import com.gfq.common.system.log
 
@@ -21,6 +24,11 @@ abstract class BaseFragment<T : ViewDataBinding>(private val layoutId: Int) : Fr
 
     lateinit var fragBinding: T
     var navController: NavController? = null
+
+    private val TAG = "【${javaClass.simpleName}】"
+
+    open val requestDelegate by lazy { RequestDelegate(this, DefaultRequestStateDialogNoAnim(requireContext())) }
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -44,7 +52,7 @@ abstract class BaseFragment<T : ViewDataBinding>(private val layoutId: Int) : Fr
         navController = try {
             findNavController()
         } catch (e: Exception) {
-            log("can not find NavController")
+            Log.d(TAG, "onViewCreated: can not find NavController")
             null
         }
         initViews()
@@ -59,7 +67,7 @@ abstract class BaseFragment<T : ViewDataBinding>(private val layoutId: Int) : Fr
 
     fun popBack(destinationId: Int = 0, inclusive: Boolean = false) {
         if (navController == null) {
-            log("can not find NavController")
+            Log.d(TAG, "popBack: can not find NavController")
             return
         }
         if (destinationId == 0) {
@@ -71,7 +79,7 @@ abstract class BaseFragment<T : ViewDataBinding>(private val layoutId: Int) : Fr
 
     fun navigate(actionId: Int, bundle: Bundle? = null) {
         if (navController == null) {
-            log("can not find NavController")
+            Log.d(TAG, "navigate: can not find NavController")
             return
         }
         navController?.navigate(actionId, bundle)

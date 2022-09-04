@@ -32,7 +32,6 @@ open class SPTableDelegate<T>(
     private val default: T,
     private var spTableName: String = defaultSPTableName,
 ) : ReadWriteProperty<Any?, T?> {
-    private val TAG = "SPDelegate"
     private var dataKeyName: String? = null
 
     companion object {
@@ -40,27 +39,27 @@ open class SPTableDelegate<T>(
     }
 
     init {
-        Log.i(TAG, "init spTableName = $spTableName ")
+        Log.i(SP_TAG, "init spTableName = $spTableName ")
         val spTableCount = SP.getSaveAllSp().getInt(SP.spTableCount, 0)
-        Log.i(TAG, "init spTableCount = $spTableCount ")
+        Log.i(SP_TAG, "init spTableCount = $spTableCount ")
 
         val spNameList = mutableListOf<String>()
         for (index in 0 until spTableCount) {
             val existSpTableName = SP.getSaveAllSp().getString("${SP.tableIndex_}$index", null)
             existSpTableName?.let { spNameList.add(it) }
-            Log.i(TAG, "key = ${SP.tableIndex_}$index , existSpTableName = $existSpTableName")
+            Log.i(SP_TAG, "init key = ${SP.tableIndex_}$index , existSpTableName = $existSpTableName")
         }
 
-        Log.i(TAG, "spCount = $spTableCount spNameList = $spNameList")
+        Log.i(SP_TAG, "init spCount = $spTableCount spNameList = $spNameList")
 
         if (spNameList.all { it != spTableName }) {
             SP.getSaveAllSp().edit().putInt(SP.spTableCount, spTableCount + 1).commit()
             SP.getSaveAllSp().edit().putString("${SP.tableIndex_}${spTableCount}", spTableName)
                 .commit()
-            Log.i(TAG, "更新 spTableCount = ${spTableCount + 1}")
-            Log.i(TAG, "保存 ${SP.tableIndex_}${spTableCount} = $spTableName")
+            Log.i(SP_TAG, "init 更新 spTableCount = ${spTableCount + 1}")
+            Log.i(SP_TAG, "init 保存 ${SP.tableIndex_}${spTableCount} = $spTableName")
         }
-        Log.i(TAG, "--------------------------------")
+        Log.i(SP_TAG, "--------------------------------")
     }
 
     override fun getValue(thisRef: Any?, property: KProperty<*>): T {

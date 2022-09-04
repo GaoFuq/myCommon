@@ -2,7 +2,7 @@ package com.gfq.common.view.drawable
 
 import android.graphics.*
 import android.graphics.drawable.Drawable
-import com.gfq.common.system.dp
+import com.gfq.common.utils.dp
 
 /**
  * 代码设置 渐变色的边框背景drawable

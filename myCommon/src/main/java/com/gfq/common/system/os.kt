@@ -5,11 +5,9 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
-import android.content.res.Resources
 import android.os.*
 import android.provider.Settings
 import android.telephony.TelephonyManager
-import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
@@ -36,16 +34,8 @@ PrettyFormatStrategy.newBuilder()
 
  */
 
-fun dpF(n: Number?): Float {
-    if (n == null) return 0f
-    return TypedValue.applyDimension(
-        TypedValue.COMPLEX_UNIT_DIP,
-        n.toFloat(),
-        Resources.getSystem().displayMetrics
-    )
-}
 
-fun dp(n: Number?): Int = dpF(n).toInt()
+fun Int?.nullOrZero(): Boolean = this == null || this == 0
 
 
 //需要获得READ_PHONE_STATE权限，>=6.0，默认返回null
@@ -171,12 +161,9 @@ fun View.hideSoftInput() {
 
 
 fun Context.getStatusBarHeight(): Int {
-    var result = 0
+    val resources = resources
     val resourceId = resources.getIdentifier("status_bar_height", "dimen", "android")
-    if (resourceId > 0) {
-        result = resources.getDimensionPixelSize(resourceId)
-    }
-    return if (result == 0) dp(25) else result
+    return resources.getDimensionPixelSize(resourceId)
 }
 
 fun isApkExist(context: Context, packageName: String?): Boolean {
