@@ -176,15 +176,14 @@ class RequestDelegate @JvmOverloads constructor(
                             if (isShowDialogCompleteSuccess) {//回调请求完成-成功，默认不显示
                                 it.showComplete(resp)
                                 delay(successShowTime.toLong())
-                                it.dismissRequestStateShower()
                             }
                         } else {
                             if (isShowDialogCompleteFailed) {//回调请求完成-失败，默认显示错误文本
                                 it.showCompleteFailed(resp)
                                 delay(failedShowTime.toLong())
-                                it.dismissRequestStateShower()
                             }
                         }
+                        it.dismissRequestStateShower()
                     }
                 }
         }
