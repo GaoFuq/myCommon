@@ -3,6 +3,7 @@ package com.gfq.common.view
 import android.graphics.Color
 import android.view.View
 import android.view.ViewGroup
+import com.gfq.common.R
 import com.gfq.common.utils.dpF
 import com.google.android.material.shape.*
 
@@ -26,10 +27,10 @@ enum class MarkerDirect {
  * 设置尖角朝左的气泡背景drawable
  * @see [setBubbleBackground]
  */
-fun View?.setBubbleBackgroundLeft(
+fun View.setBubbleBackgroundLeft(
     solid: String = "#bebebe",
-    radius: Float = dpF(8),
-    markerSize: Float = dpF(5),
+    radius: Float = dpF(R.dimen.dp8),
+    markerSize: Float = dpF(R.dimen.dp5),
     markerOffset: Float = 0f,
 ) = setBubbleBackground(solid, radius, markerSize, MarkerDirect.left, markerOffset)
 
@@ -37,10 +38,10 @@ fun View?.setBubbleBackgroundLeft(
  * 设置尖角朝右的气泡背景drawable
  * @see [setBubbleBackground]
  */
-fun View?.setBubbleBackgroundRight(
+fun View.setBubbleBackgroundRight(
     solid: String = "#bebebe",
-    radius: Float = dpF(8),
-    markerSize: Float = dpF(5),
+    radius: Float =dpF(R.dimen.dp8),
+    markerSize: Float = dpF(R.dimen.dp5),
     markerOffset: Float = 0f,
 ) = setBubbleBackground(solid, radius, markerSize, MarkerDirect.right, markerOffset)
 
@@ -48,10 +49,10 @@ fun View?.setBubbleBackgroundRight(
  * 设置尖角朝上的气泡背景drawable
  * @see [setBubbleBackground]
  */
-fun View?.setBubbleBackgroundTop(
+fun View.setBubbleBackgroundTop(
     solid: String = "#bebebe",
-    radius: Float = dpF(8),
-    markerSize: Float = dpF(5),
+    radius: Float =dpF(R.dimen.dp8),
+    markerSize: Float = dpF(R.dimen.dp5),
     markerOffset: Float = 0f,
 ) = setBubbleBackground(solid, radius, markerSize, MarkerDirect.top, markerOffset)
 
@@ -59,10 +60,10 @@ fun View?.setBubbleBackgroundTop(
  * 设置尖角朝下的气泡背景drawable
  * @see [setBubbleBackground]
  */
-fun View?.setBubbleBackgroundBottom(
+fun View.setBubbleBackgroundBottom(
     solid: String = "#bebebe",
-    radius: Float = dpF(8),
-    markerSize: Float = dpF(5),
+    radius: Float =dpF(R.dimen.dp8),
+    markerSize: Float = dpF(R.dimen.dp5),
     markerOffset: Float = 0f,
 ) = setBubbleBackground(solid, radius, markerSize, MarkerDirect.bottom, markerOffset)
 
@@ -74,14 +75,13 @@ fun View?.setBubbleBackgroundBottom(
  * * 尖角在的左边或右边[MarkerDirect.left],[MarkerDirect.right]，markerOffset > 0 ,尖角向上偏移，反之向下偏移。
  * * 尖角在上边或下边[MarkerDirect.top],[MarkerDirect.bottom]，markerOffset > 0 ,尖角向右偏移，反之向左偏移。
  */
-fun View?.setBubbleBackground(
+fun View.setBubbleBackground(
     solid: String,
     radius: Float,
     markerSize: Float,
     markerDirect: MarkerDirect,
     markerOffset: Float = 0f,
 ) {
-    this ?: return
     (this.parent as? ViewGroup)?.clipChildren = false
     background = bubbleDrawable(solid, radius, markerSize, markerOffset, markerDirect)
 }
