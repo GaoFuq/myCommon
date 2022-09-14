@@ -10,6 +10,8 @@ package com.gfq.common.utils
 import android.text.InputFilter
 import android.text.Spanned
 import android.util.Log
+import androidx.annotation.StringRes
+import com.gfq.common.system.ActivityManager
 import java.util.regex.Pattern
 
 fun String?.isEmail(): Boolean {
@@ -232,3 +234,5 @@ class InputFilterExclude(private val arr: Array<Char>)  : BaseInputFilter() {
 class InputFilterOnly(private val arr: Array<Char>) : BaseInputFilter() {
     override fun keepCondition(char: Char) = arr.any { char == it }
 }
+
+fun getString(@StringRes id:Int):String= ActivityManager.application.getString(id)

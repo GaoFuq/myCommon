@@ -51,7 +51,7 @@ open class ViewModelRequest() : ViewModel() {
     }
 
     fun showStateDialog(msg:String?){
-        requestDelegate.stateDialog?.showLoading(msg)
+        requestDelegate.stateShower?.showLoading(msg)
     }
 }
 

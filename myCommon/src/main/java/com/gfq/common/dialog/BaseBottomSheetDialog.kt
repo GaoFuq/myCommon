@@ -7,6 +7,10 @@ import android.view.View
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import com.gfq.common.R
+import com.gfq.common.net.RequestDelegate
+import com.gfq.common.net.interfacee.defimpl.DefShowerDialog
+import com.gfq.common.net.interfacee.defimpl.DefShowerDialogNoDim
+import com.gfq.common.net.interfacee.defimpl.DefShowerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
 
 /**
@@ -22,7 +26,6 @@ abstract class BaseBottomSheetDialog<T : ViewDataBinding>(
     BottomSheetDialog(mContext, style) {
 
     lateinit var dialogBinding: T
-
 
     abstract fun initViews()
     open fun initLayoutParams(){}

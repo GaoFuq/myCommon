@@ -1,12 +1,13 @@
-package com.gfq.common.net
+package com.gfq.common.net.interfacee
+
+import com.gfq.common.net.AbsResponse
 
 /**
- * 请求状态弹窗需要实现该接口
- * @see [DefaultRequestStateDialog]
+ * 展示接口请求状态  实现该接口
  */
-interface IRequestStateDialog {
+interface IRequestStateShower {
 
-    fun showLoading(message: String? = "加载中...")
+    fun showLoading(message: String?)
 
     /**
      * 请求返回结果时回调
@@ -23,5 +24,7 @@ interface IRequestStateDialog {
      */
     fun showError(error: String?)
 
-    fun dismissStateDialog()
+    fun dismissRequestStateShower()
+
+
 }

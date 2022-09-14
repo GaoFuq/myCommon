@@ -1,6 +1,5 @@
 package com.gfq.common.base
 
-import android.content.DialogInterface
 import android.os.Bundle
 import android.view.*
 import androidx.databinding.DataBindingUtil
@@ -9,9 +8,11 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import com.gfq.common.R
-import com.gfq.common.dialog.DefaultRequestStateDialogNoAnim
 import com.gfq.common.dialog.screenW
 import com.gfq.common.net.RequestDelegate
+import com.gfq.common.net.interfacee.defimpl.DefShowerDialog
+import com.gfq.common.net.interfacee.defimpl.DefShowerDialogNoDim
+import com.gfq.common.net.interfacee.defimpl.DefShowerView
 import com.gfq.common.system.injectForArguments
 import com.gfq.common.system.updateAttributes
 
@@ -23,7 +24,12 @@ abstract class BaseDialogFragment<T : ViewDataBinding>(
     lateinit var dialogBinding: T
     var doOnDismiss:(()->Unit)?=null
 
-    open val requestDelegate by lazy { RequestDelegate(this, DefaultRequestStateDialogNoAnim(requireContext())) }
+    //半透明黑色蒙层，会改变状态栏的文字颜色
+    open val requestDelegate by lazy { RequestDelegate(this, DefShowerDialog(requireContext())) }
+    //全透明蒙层，会改变状态栏的文字颜色
+    open val requestDelegateNoDim by lazy { RequestDelegate(this, DefShowerDialogNoDim(requireContext())) }
+    //显示在Dialog下层，无蒙层，不会改变状态栏的文字颜色
+    open val requestDelegateByView by lazy { RequestDelegate(this, DefShowerView(requireContext())) }
 
 
     override fun onCreateView(

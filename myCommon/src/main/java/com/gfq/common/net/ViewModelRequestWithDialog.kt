@@ -1,7 +1,7 @@
 package com.gfq.common.net
 
 import com.gfq.common.R
-import com.gfq.common.dialog.DefaultRequestStateDialog
+import com.gfq.common.net.interfacee.defimpl.DefShowerDialog
 import com.gfq.common.system.ActivityManager
 
 /**
@@ -9,10 +9,10 @@ import com.gfq.common.system.ActivityManager
  * @auth gaofuq
  * @description
  *
- * 初始化了一个默认的 [IRequestStateDialog],[DefaultRequestStateDialog]
+ * 初始化了一个默认的 [IRequestStateShower],[DefShowerDialog]
  */
 open class ViewModelRequestWithDialog : ViewModelRequest() {
     init {
-        requestDelegate.stateDialog = DefaultRequestStateDialog(ActivityManager.getAllActivities().last(),R.style.FullTransparentNoDimDialog)
+        requestDelegate.stateShower = DefShowerDialog(ActivityManager.getAllActivities().last(),R.style.FullTransparentNoDimDialog)
     }
 }

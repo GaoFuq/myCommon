@@ -1,4 +1,4 @@
-package com.gfq.common.dialog
+package com.gfq.common.net.interfacee.defimpl
 
 import android.app.Activity
 import android.content.Context
@@ -14,20 +14,21 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.OnLifecycleEvent
 import com.gfq.common.R
 import com.gfq.common.databinding.DefaultRequestStateDialogLayoutBinding
+import com.gfq.common.dialog.GlobalDialog
 import com.gfq.common.net.AbsResponse
-import com.gfq.common.net.IRequestStateDialog
+import com.gfq.common.net.interfacee.IRequestStateShower
 import com.gfq.common.system.ActivityManager
-import com.gfq.common.net.ViewModelRequest
 
 /**
- * [ViewModelRequest] 中使用的默认 dialog 。
- * 默认宽高 100dp，遮罩透明，黑色背景，点击外部不隐藏。
+ * Dialog实现
+ * 默认宽高 100dp，黑色背景，点击外部不隐藏。
+ * 问题：可能会改变状态栏文字颜色。
  */
-open class DefaultRequestStateDialog(
+open class DefShowerDialog(
     context: Context = ActivityManager.getAllActivities().last(),
     style: Int = 0
-) : GlobalDialog(context, style), IRequestStateDialog, LifecycleObserver {
-    private val TAG = "【RequestStateDialog】"
+) : GlobalDialog(context, style), IRequestStateShower, LifecycleObserver {
+    private val TAG = "【RequestStateShower】"
     protected val binding =
         DataBindingUtil.inflate<DefaultRequestStateDialogLayoutBinding>(
             LayoutInflater.from(context),
@@ -41,7 +42,8 @@ open class DefaultRequestStateDialog(
         setContentView(binding.root)
         setCanceledOnTouchOutside(false)
         window?.setBackgroundDrawable(ColorDrawable())
-
+        //解决在两个Dialog相互切换的时候的闪屏问题
+        window?.setWindowAnimations(R.style.styleDialogNoAnim)
         if (mContext is LifecycleOwner) {
             mContext.lifecycle.addObserver(this)
         }
@@ -75,8 +77,8 @@ open class DefaultRequestStateDialog(
     }
 
 
-    override fun dismissStateDialog() {
-        Log.e(TAG, "dismissStateDialog")
+    override fun dismissRequestStateShower() {
+        Log.e(TAG, "dismissRequestStateShower")
         dismiss()
     }
 

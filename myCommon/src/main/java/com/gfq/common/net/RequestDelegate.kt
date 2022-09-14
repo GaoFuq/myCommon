@@ -4,6 +4,10 @@ import android.net.ParseException
 import android.util.Log
 import android.view.View
 import androidx.lifecycle.*
+import com.gfq.common.R
+import com.gfq.common.net.interfacee.IRequestStateShower
+import com.gfq.common.net.interfacee.IStateView
+import com.gfq.common.utils.getString
 import com.google.gson.JsonParseException
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
@@ -18,7 +22,7 @@ import java.net.*
  * @description
  */
 /**
- * 连续发起多个请求，[IRequestStateDialog] 显示隐藏只会走一次。
+ * 连续发起多个请求，[IRequestStateShower] 显示隐藏只会走一次。
  *
  * 可以在能拿到 CoroutineScope 的地方直接实例化使用。
  */
@@ -30,7 +34,7 @@ class RequestDelegate(
     /**
      * 请求状态弹窗 @see [RequestState]
      */
-    var stateDialog: IRequestStateDialog? = null,
+    var stateShower: IRequestStateShower? = null,
 
 
     /**
@@ -62,7 +66,7 @@ class RequestDelegate(
 
     constructor(
         lifecycleOwner: LifecycleOwner,
-    ) : this(stateDialog = null, stateView = null) {
+    ) : this(stateShower = null, stateView = null) {
         this.lifecycleOwner = lifecycleOwner
         this.scope = lifecycleOwner.lifecycleScope
         this.lifecycleOwner?.lifecycle?.addObserver(this)
@@ -70,8 +74,8 @@ class RequestDelegate(
 
     constructor(
         lifecycleOwner: LifecycleOwner,
-        stateDialog: IRequestStateDialog,
-    ) : this(stateDialog = stateDialog, stateView = null) {
+        stateShower: IRequestStateShower,
+    ) : this(stateShower = stateShower, stateView = null) {
         this.lifecycleOwner = lifecycleOwner
         this.scope = lifecycleOwner.lifecycleScope
         this.lifecycleOwner?.lifecycle?.addObserver(this)
@@ -79,14 +83,13 @@ class RequestDelegate(
 
     constructor(
         lifecycleOwner: LifecycleOwner,
-        stateDialog: IRequestStateDialog,
+        stateShower: IRequestStateShower,
         stateView: IStateView,
-    ) : this(stateDialog = stateDialog, stateView = stateView) {
+    ) : this(stateShower = stateShower, stateView = stateView) {
         this.lifecycleOwner = lifecycleOwner
         this.scope = lifecycleOwner.lifecycleScope
         this.lifecycleOwner?.lifecycle?.addObserver(this)
     }
-
 
 
     private var loadingTime: Long = 0 //实际loading时间
@@ -128,7 +131,7 @@ class RequestDelegate(
         if (requestCount == 1) {
             loadingTime = System.currentTimeMillis()
             if (isShowDialogLoading) {
-                stateDialog?.showLoading()
+                stateShower?.showLoading(getString(R.string.request_loading_state_default_text))
             }
         }
         if (!scope.isActive) return
@@ -152,7 +155,7 @@ class RequestDelegate(
                         apiException = apiException
                     )
                     error?.invoke(apiException)
-                    stateDialog?.let { delay(errorDismissDelay) }
+                    stateShower?.let { delay(errorDismissDelay) }
                     updateRequestStateDialogIfNeed<T, Resp>(RequestState.dismiss)
                 } //数据请求返回处理  emit(block()) 返回的数据
                 .collect {
@@ -167,7 +170,7 @@ class RequestDelegate(
                         updateRequestStateDialogIfNeed<T, Resp>(RequestState.completeFailed, it)
                     }
                     handleResponse(it, success, special, failed, handleResponseBySelf)
-                    stateDialog?.let { delay(completeDismissDelay) }
+                    stateShower?.let { delay(completeDismissDelay) }
                     updateRequestStateDialogIfNeed<T, Resp>(RequestState.dismiss)
                 }
         }
@@ -242,11 +245,11 @@ class RequestDelegate(
         response: Resp? = null,
         apiException: ApiException? = null,
     ) {
-        if (stateDialog == null) return
+        if (stateShower == null) return
         when (dialogState) {
             RequestState.loading -> {
                 if (requestCount == 1) {
-                    stateDialog?.showLoading()
+                    stateShower?.showLoading(getString(R.string.request_loading_state_default_text))
                 }
             }
             RequestState.complete -> {
@@ -257,7 +260,7 @@ class RequestDelegate(
                         delay(remainingTime)
                     }
                     if (isShowDialogCompleteSuccess) {
-                        stateDialog?.showComplete(response)
+                        stateShower?.showComplete(response)
                     }
                 }
             }
@@ -269,7 +272,7 @@ class RequestDelegate(
                         delay(remainingTime)
                     }
                     if (isShowDialogCompleteFailed) {
-                        stateDialog?.showCompleteFailed(response)
+                        stateShower?.showCompleteFailed(response)
                     }
                 }
             }
@@ -281,13 +284,13 @@ class RequestDelegate(
                         delay(remainingTime)
                     }
                     if (isShowDialogError) {
-                        stateDialog?.showError(apiException?.message ?: "出错了")
+                        stateShower?.showError(apiException?.message ?: getString(R.string.request_error_state_default_text))
                     }
                 }
             }
             RequestState.dismiss -> {
                 if (requestCount == 0) {
-                    stateDialog?.dismissStateDialog()
+                    stateShower?.dismissRequestStateShower()
                 }
             }
         }

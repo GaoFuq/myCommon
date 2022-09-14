@@ -1,4 +1,4 @@
-package com.gfq.common.net
+package com.gfq.common.net.interfacee
 
 import android.view.View
 import android.widget.FrameLayout

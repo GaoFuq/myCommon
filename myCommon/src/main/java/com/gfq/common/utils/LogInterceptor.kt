@@ -52,11 +52,6 @@ class LogInterceptor() : Interceptor {
                     headerSb.appendLine("Content-Type: $it")
                 }
             }
-            if (requestBody.contentLength() != -1L) {
-                if (headers["Content-Length"] == null) {
-                    headerSb.appendLine("Content-Length: ${requestBody.contentLength()}")
-                }
-            }
         }
 
         for (i in 0 until headers.size) {
