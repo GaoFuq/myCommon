@@ -41,11 +41,7 @@ abstract class BaseBindingView<binding : ViewDataBinding>(
     //显示在Dialog下层，无蒙层，不会改变状态栏的文字颜色
     open val requestDelegateByView by lazy {
         this.findViewTreeLifecycleOwner()
-            ?.let {
-                if (context is Activity) {
-                    RequestDelegate(it, DefShowerView(context))
-                }
-            }
+            ?.let { RequestDelegate(it, DefShowerView(context)) }
     }
 
 
