@@ -19,7 +19,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
  * @description
  */
 abstract class BaseBottomSheetDialog<T : ViewDataBinding>(
-    val mContext: Context,
+    val mContext:  Context,
     private val layoutId: Int,
     style: Int = 0,
 ) :
@@ -27,12 +27,21 @@ abstract class BaseBottomSheetDialog<T : ViewDataBinding>(
 
     lateinit var dialogBinding: T
 
+    //半透明黑色蒙层，会改变状态栏的文字颜色
+    open val requestDelegate by lazy { RequestDelegate(stateShower = DefShowerDialog(mContext)) }
+    //全透明蒙层，会改变状态栏的文字颜色
+    open val requestDelegateNoDim by lazy { RequestDelegate(stateShower = DefShowerDialogNoDim(mContext)) }
+    //显示在Dialog下层，无蒙层，不会改变状态栏的文字颜色
+    open val requestDelegateByView by lazy { RequestDelegate(stateShower = DefShowerView(mContext)) }
+
+
     abstract fun initViews()
-    open fun initLayoutParams(){}
+    open fun initLayoutParams() {}
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        dialogBinding = DataBindingUtil.inflate<T>(LayoutInflater.from(mContext), layoutId, null, false)
+        dialogBinding =
+            DataBindingUtil.inflate<T>(LayoutInflater.from(mContext), layoutId, null, false)
         setContentView(dialogBinding.root)
         findViewById<View>(R.id.container)?.setOnClickListener {
             dismiss()

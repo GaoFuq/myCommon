@@ -24,7 +24,8 @@ import java.net.*
 /**
  * 连续发起多个请求，[IRequestStateShower] 显示隐藏只会走一次。
  *
- * 可以在能拿到 CoroutineScope 的地方直接实例化使用。
+ * 无参的构造方法，会使用 GlobalScope 发起请求。
+ * 有必要的情况下，需要手动取消 job 。
  */
 class RequestDelegate(
     var scope: CoroutineScope = GlobalScope,
@@ -51,34 +52,22 @@ class RequestDelegate(
      * loading 显示的最少时间，用于展示loading
      */
     var minimumLoadingTime: Long = 800,
-) : LifecycleObserver {
+) {
 
     private val TAG = "【${javaClass.simpleName}】"
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-    fun onDestroy() {
-        lifecycleOwner?.lifecycle?.removeObserver(this)
-        job?.cancel()
-        Log.d(TAG, "RequestDelegate job auto cancel")
-    }
-
-    private var lifecycleOwner: LifecycleOwner? = null
 
     constructor(
         lifecycleOwner: LifecycleOwner,
     ) : this(stateShower = null, stateView = null) {
-        this.lifecycleOwner = lifecycleOwner
         this.scope = lifecycleOwner.lifecycleScope
-        this.lifecycleOwner?.lifecycle?.addObserver(this)
     }
 
     constructor(
         lifecycleOwner: LifecycleOwner,
         stateShower: IRequestStateShower,
     ) : this(stateShower = stateShower, stateView = null) {
-        this.lifecycleOwner = lifecycleOwner
         this.scope = lifecycleOwner.lifecycleScope
-        this.lifecycleOwner?.lifecycle?.addObserver(this)
     }
 
     constructor(
@@ -86,9 +75,7 @@ class RequestDelegate(
         stateShower: IRequestStateShower,
         stateView: IStateView,
     ) : this(stateShower = stateShower, stateView = stateView) {
-        this.lifecycleOwner = lifecycleOwner
         this.scope = lifecycleOwner.lifecycleScope
-        this.lifecycleOwner?.lifecycle?.addObserver(this)
     }
 
 
@@ -99,7 +86,55 @@ class RequestDelegate(
     private var isShowDialogCompleteFailed: Boolean = true
     private var isShowDialogError: Boolean = true
 
+    /**
+    * 无参的构造方法，会使用 GlobalScope 发起请求。
+    * 有必要的情况下，需要手动取消 job 。
+    */
     var job: Job? = null
+    var loadingText = getString(R.string.request_loading_state_default_text)
+    var errorText = getString(R.string.request_error_state_default_text)
+
+
+    /**
+     * 在 DialogFragment 中使用这个方法请求接口。
+     * 因为 DialogFragment 在 dismiss 后，由构造方法传入的 scope 会失活，既是 scope.isActive == false。
+     * 所以需要在请求时传入新的 LifecycleOwner。
+     */
+    fun <T, Resp : AbsResponse<T>> request(
+        lifecycleOwner: LifecycleOwner,
+        api: suspend CoroutineScope.() -> Resp?,
+        clickView: View? = null,
+        loadingText: String = getString(R.string.request_loading_state_default_text),
+        isShowDialogLoading: Boolean = true,
+        isShowDialogCompleteSuccess: Boolean = false,
+        isShowDialogCompleteFailed: Boolean = true,
+        isShowDialogError: Boolean = true,
+        retryCount: Int = 0,
+        retryDelay: Long = 0L,
+        retryCondition: (Throwable) -> Boolean = { it is IOException },
+        success: ((data: T?) -> Unit)? = null,
+        failed: ((code: Int?, message: String?) -> Unit)? = null,
+        error: ((ApiException) -> Unit)? = null,
+        special: ((code: Int?, data: T?, message: String?) -> Unit)? = null,//特殊情况
+        handleResponseBySelf: ((Resp?) -> Unit)? = null,//更特殊的情况，自己处理。success，failed，error，special都不会走。
+    ) {
+        this.scope = lifecycleOwner.lifecycleScope
+        request(api,
+            clickView,
+            loadingText,
+            isShowDialogLoading,
+            isShowDialogCompleteSuccess,
+            isShowDialogCompleteFailed,
+            isShowDialogError,
+            retryCount,
+            retryDelay,
+            retryCondition,
+            success,
+            failed,
+            error,
+            special,
+            handleResponseBySelf)
+    }
 
     /**
      * @param clickView 点击触发请求的view。传入该view，控制enable属性。
@@ -108,6 +143,7 @@ class RequestDelegate(
     fun <T, Resp : AbsResponse<T>> request(
         api: suspend CoroutineScope.() -> Resp?,
         clickView: View? = null,
+        loadingText: String = getString(R.string.request_loading_state_default_text),
         isShowDialogLoading: Boolean = true,
         isShowDialogCompleteSuccess: Boolean = false,
         isShowDialogCompleteFailed: Boolean = true,
@@ -122,6 +158,7 @@ class RequestDelegate(
         handleResponseBySelf: ((Resp?) -> Unit)? = null,//更特殊的情况，自己处理。success，failed，error，special都不会走。
     ) {
         clickView?.isEnabled = false
+        this.loadingText = loadingText
         this.isShowDialogLoading = isShowDialogLoading
         this.isShowDialogCompleteSuccess = isShowDialogCompleteSuccess
         this.isShowDialogCompleteFailed = isShowDialogCompleteFailed
@@ -131,7 +168,7 @@ class RequestDelegate(
         if (requestCount == 1) {
             loadingTime = System.currentTimeMillis()
             if (isShowDialogLoading) {
-                stateShower?.showLoading(getString(R.string.request_loading_state_default_text))
+                stateShower?.showLoading(loadingText)
             }
         }
         if (!scope.isActive) return
@@ -140,10 +177,12 @@ class RequestDelegate(
             flow { emit(api()) }    //网络请求
                 .flowOn(Dispatchers.IO)
                 .retryWhen { cause, attempt ->
-                    Log.e(TAG, cause.message.toString() + " retry - $attempt")
                     delay(retryDelay)
-                    Log.e(TAG, cause.message.toString() + " retryDelay - $retryDelay")
-                    attempt < retryCount && retryCondition(cause)
+                    val boo = attempt < retryCount && retryCondition(cause)
+                    if (boo) {
+                        Log.e(TAG, cause.message.toString() + " retry - $attempt")
+                    }
+                    boo
                 }
                 .catch { e: Throwable? ->//异常捕获处理
                     clickView?.isEnabled = true
@@ -249,7 +288,7 @@ class RequestDelegate(
         when (dialogState) {
             RequestState.loading -> {
                 if (requestCount == 1) {
-                    stateShower?.showLoading(getString(R.string.request_loading_state_default_text))
+                    stateShower?.showLoading(loadingText)
                 }
             }
             RequestState.complete -> {
@@ -284,7 +323,7 @@ class RequestDelegate(
                         delay(remainingTime)
                     }
                     if (isShowDialogError) {
-                        stateShower?.showError(apiException?.message ?: getString(R.string.request_error_state_default_text))
+                        stateShower?.showError(apiException?.message ?: errorText)
                     }
                 }
             }

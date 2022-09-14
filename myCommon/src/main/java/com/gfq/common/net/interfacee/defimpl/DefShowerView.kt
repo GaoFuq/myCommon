@@ -43,23 +43,27 @@ open class DefShowerView @JvmOverloads constructor(
     override fun showLoading(message: String?) {
         Log.e(TAG, "showLoading: $message")
         mainThread {
-            layoutParams = LayoutParams(-2, -2).apply {
-                gravity = Gravity.CENTER
-            }
+            addThisViewIfNeed()
             tvState.text = message
-
-            if (container != null) {
-                container?.addView(this)
-            } else if (context is Activity && parent == null) {
-                ((context as Activity).window?.decorView as? FrameLayout)?.addView(this)
-            }
             this.visible()
             progressBar.visible()
         }
     }
 
+    private fun addThisViewIfNeed() {
+        layoutParams = LayoutParams(-2, -2).apply {
+            gravity = Gravity.CENTER
+        }
+        if (container != null && parent == null) {
+            container?.addView(this)
+        } else if (context is Activity && parent == null) {
+            ((context as Activity).window?.decorView as? FrameLayout)?.addView(this)
+        }
+    }
+
     override fun <T, Resp : AbsResponse<T>> showComplete(response: Resp?) {
         mainThread {
+            addThisViewIfNeed()
             tvState.text = response?.responseMessage()
             progressBar.gone()
             visible()
@@ -68,6 +72,7 @@ open class DefShowerView @JvmOverloads constructor(
 
     override fun <T, Resp : AbsResponse<T>> showCompleteFailed(response: Resp?) {
         mainThread {
+            addThisViewIfNeed()
             tvState.text = response?.responseMessage()
             progressBar.gone()
             visible()
@@ -77,6 +82,7 @@ open class DefShowerView @JvmOverloads constructor(
     override fun showError(error: String?) {
         Log.e(TAG, "showError: $error")
         mainThread {
+            addThisViewIfNeed()
             tvState.text = error
             progressBar.gone()
             visible()
