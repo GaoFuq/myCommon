@@ -10,8 +10,8 @@ import androidx.fragment.app.FragmentActivity
 import com.gfq.common.R
 import com.gfq.common.dialog.screenW
 import com.gfq.common.net.RequestDelegate
-import com.gfq.common.net.interfacee.defimpl.DefShowerDialog
-import com.gfq.common.net.interfacee.defimpl.DefShowerDialogNoDim
+import com.gfq.common.net.interfacee.defimpl.DefShowerDialogDim
+import com.gfq.common.net.interfacee.defimpl.DefShowerDialogDimNt
 import com.gfq.common.net.interfacee.defimpl.DefShowerView
 import com.gfq.common.system.injectForArguments
 import com.gfq.common.system.updateAttributes
@@ -23,13 +23,17 @@ abstract class BaseDialogFragment<T : ViewDataBinding>(
 
     lateinit var dialogBinding: T
     var doOnDismiss:(()->Unit)?=null
+    var doOnStart:(()->Unit)?=null
 
-    //半透明黑色蒙层，会改变状态栏的文字颜色
-    open val requestDelegate by lazy { RequestDelegate(this, DefShowerDialog(requireContext())) }
-    //全透明蒙层，会改变状态栏的文字颜色
-    open val requestDelegateNoDim by lazy { RequestDelegate(this, DefShowerDialogNoDim(requireContext())) }
-    //显示在Dialog下层，无蒙层，不会改变状态栏的文字颜色
-    open val requestDelegateByView by lazy { RequestDelegate(this, DefShowerView(requireContext())) }
+    //默认建议使用View的实现类。显示在Dialog下层，无蒙层，不会改变状态栏的文字颜色
+    open val requestDelegate by lazy { RequestDelegate(this, DefShowerView(requireContext())) }
+
+    //建议在已经有 dim!=0 的Dialog显示时使用。半透明黑色蒙层，会改变状态栏的文字颜色。
+    open val requestDelegateDim by lazy { RequestDelegate(this, DefShowerDialogDim(requireContext())) }
+
+    //建议在已经有 dim==0 的Dialog显示时使用。全透明蒙层，会改变状态栏的文字颜色
+    open val requestDelegateDimNt by lazy { RequestDelegate(this, DefShowerDialogDimNt(requireContext())) }
+
 
 
     override fun onCreateView(
@@ -81,6 +85,8 @@ abstract class BaseDialogFragment<T : ViewDataBinding>(
         val params =  dialog?.window?.attributes
         setWindowLayoutParams(params)
         dialog?.window?.attributes = params
+
+        doOnStart?.invoke()
     }
 
 

@@ -2,6 +2,7 @@ package com.gfq.common.net.interfacee.defimpl
 
 import android.app.Activity
 import android.content.Context
+import android.graphics.Color
 import android.util.AttributeSet
 import android.util.Log
 import android.view.Gravity
@@ -28,11 +29,13 @@ import com.gfq.common.view.visible
 open class DefShowerView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null,
 ) : FrameLayout(context, attrs), IRequestStateShower {
-
-    private val TAG = "【DefShowerView】"
+    companion object{
+        private const val TAG = "【DefShowerView】"
+    }
     private val inflate =
         LayoutInflater.from(context).inflate(R.layout.default_request_state_shower_view, this, true)
-    val rootView = inflate.findViewById<LinearLayout>(R.id.layoutRoot)
+    val layoutRoot = inflate.findViewById<LinearLayout>(R.id.layoutRoot)
+    val layoutDim = inflate.findViewById<FrameLayout>(R.id.layoutDim)
     val ivState = inflate.findViewById<ImageView>(R.id.ivState)
     val tvState = inflate.findViewById<TextView>(R.id.tvState)
     val progressBar = inflate.findViewById<ProgressBar>(R.id.progressBar)
@@ -95,4 +98,7 @@ open class DefShowerView @JvmOverloads constructor(
     }
 
 
+    fun setDim(){
+        layoutDim.setBackgroundColor(Color.parseColor("#80000000"))
+    }
 }

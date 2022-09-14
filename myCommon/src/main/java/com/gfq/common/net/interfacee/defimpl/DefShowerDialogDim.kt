@@ -24,11 +24,13 @@ import com.gfq.common.system.ActivityManager
  * 默认宽高 100dp，黑色背景，点击外部不隐藏。
  * 问题：可能会改变状态栏文字颜色。
  */
-open class DefShowerDialog(
+open class DefShowerDialogDim(
     context: Context = ActivityManager.getAllActivities().last(),
     style: Int = 0
 ) : GlobalDialog(context, style), IRequestStateShower, LifecycleObserver {
-    private val TAG = "【RequestStateShower】"
+    companion object{
+        private const val TAG = "【DefShowerDialog】"
+    }
     protected val binding =
         DataBindingUtil.inflate<DefaultRequestStateDialogLayoutBinding>(
             LayoutInflater.from(context),

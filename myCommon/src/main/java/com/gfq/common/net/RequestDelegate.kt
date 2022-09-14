@@ -7,6 +7,7 @@ import androidx.lifecycle.*
 import com.gfq.common.R
 import com.gfq.common.net.interfacee.IRequestStateShower
 import com.gfq.common.net.interfacee.IStateView
+import com.gfq.common.system.ActivityManager
 import com.gfq.common.utils.getString
 import com.google.gson.JsonParseException
 import kotlinx.coroutines.*
@@ -27,77 +28,46 @@ import java.net.*
  * 无参的构造方法，会使用 GlobalScope 发起请求。
  * 有必要的情况下，需要手动取消 job 。
  */
-class RequestDelegate(
-    var scope: CoroutineScope = GlobalScope,
-
-    var stateView: IStateView? = null,
-
+class RequestDelegate @JvmOverloads constructor(
+    lifecycleOwner: LifecycleOwner?=null,
     /**
-     * 请求状态弹窗 @see [RequestState]
+     * 请求状态 loading
      */
     var stateShower: IRequestStateShower? = null,
+    /**
+     * 请求结果界面状态显示
+     */
+    var stateView: IStateView? = null,
+) {
+
+    private var scope = lifecycleOwner?.lifecycleScope ?: GlobalScope
 
 
     /**
      * 结果成功返回时，dialog隐藏的延迟时间（显示的时间），用于展示结果信息
      */
-    var completeDismissDelay: Long = 1000,
+    var completeDismissDelay: Int = ActivityManager.application.resources.getInteger(R.integer.completeDismissDelay)
 
     /**
      * 请求或返回结果是异常时，dialog隐藏的延迟时间（显示的时间），用于展示异常信息
      */
-    var errorDismissDelay: Long = 1500,
+    var errorDismissDelay: Int = ActivityManager.application.resources.getInteger(R.integer.errorDismissDelay)
 
     /**
      * loading 显示的最少时间，用于展示loading
      */
-    var minimumLoadingTime: Long = 800,
-) {
-
-    private val TAG = "【${javaClass.simpleName}】"
-
-
-    constructor(
-        lifecycleOwner: LifecycleOwner,
-    ) : this(stateShower = null, stateView = null) {
-        this.scope = lifecycleOwner.lifecycleScope
-    }
-
-    constructor(
-        lifecycleOwner: LifecycleOwner,
-        stateShower: IRequestStateShower,
-    ) : this(stateShower = stateShower, stateView = null) {
-        this.scope = lifecycleOwner.lifecycleScope
-    }
-
-    constructor(
-        lifecycleOwner: LifecycleOwner,
-        stateShower: IRequestStateShower,
-        stateView: IStateView,
-    ) : this(stateShower = stateShower, stateView = stateView) {
-        this.scope = lifecycleOwner.lifecycleScope
-    }
-
-
-    private var loadingTime: Long = 0 //实际loading时间
-    private var requestCount = 0
-    private var isShowDialogLoading: Boolean = true
-    private var isShowDialogCompleteSuccess: Boolean = false
-    private var isShowDialogCompleteFailed: Boolean = true
-    private var isShowDialogError: Boolean = true
+    var minimumLoadingTime: Int = ActivityManager.application.resources.getInteger(R.integer.minimumLoadingTime)
 
     /**
-    * 无参的构造方法，会使用 GlobalScope 发起请求。
-    * 有必要的情况下，需要手动取消 job 。
-    */
+     * 无参的构造方法，会使用 GlobalScope 发起请求。
+     * 有必要的情况下，需要手动取消 job 。
+     */
     var job: Job? = null
-    var loadingText = getString(R.string.request_loading_state_default_text)
-    var errorText = getString(R.string.request_error_state_default_text)
-
 
     /**
      * 在 DialogFragment 中使用这个方法请求接口。
-     * 因为 DialogFragment 在 dismiss 后，由构造方法传入的 scope 会失活，既是 scope.isActive == false。
+     * 因为 DialogFragment 在复用(dismiss后再show)时，
+     * RequestDelegate 没有重新创建，由构造方法传入的 scope 会失活，既是 scope.isActive == false。
      * 所以需要在请求时传入新的 LifecycleOwner。
      */
     fun <T, Resp : AbsResponse<T>> request(
@@ -119,7 +89,8 @@ class RequestDelegate(
         handleResponseBySelf: ((Resp?) -> Unit)? = null,//更特殊的情况，自己处理。success，failed，error，special都不会走。
     ) {
         this.scope = lifecycleOwner.lifecycleScope
-        request(api,
+        request(
+            api,
             clickView,
             loadingText,
             isShowDialogLoading,
@@ -133,7 +104,8 @@ class RequestDelegate(
             failed,
             error,
             special,
-            handleResponseBySelf)
+            handleResponseBySelf
+        )
     }
 
     /**
@@ -157,21 +129,17 @@ class RequestDelegate(
         special: ((code: Int?, data: T?, message: String?) -> Unit)? = null,//特殊情况
         handleResponseBySelf: ((Resp?) -> Unit)? = null,//更特殊的情况，自己处理。success，failed，error，special都不会走。
     ) {
-        clickView?.isEnabled = false
-        this.loadingText = loadingText
-        this.isShowDialogLoading = isShowDialogLoading
-        this.isShowDialogCompleteSuccess = isShowDialogCompleteSuccess
-        this.isShowDialogCompleteFailed = isShowDialogCompleteFailed
-        this.isShowDialogError = isShowDialogError
 
-        requestCount++
-        if (requestCount == 1) {
-            loadingTime = System.currentTimeMillis()
-            if (isShowDialogLoading) {
-                stateShower?.showLoading(loadingText)
-            }
+        if (!scope.isActive){
+            Log.e(TAG, "request: scope is not active")
+            return
         }
-        if (!scope.isActive) return
+
+        clickView?.isEnabled = false
+
+        if (isShowDialogLoading) {
+            stateShower?.showLoading(loadingText)
+        }
 
         job = scope.launch {
             flow { emit(api()) }    //网络请求
@@ -186,31 +154,35 @@ class RequestDelegate(
                 }
                 .catch { e: Throwable? ->//异常捕获处理
                     clickView?.isEnabled = true
-                    showStateViewIfNeed<T, Resp>(e, null)
                     val apiException = handleException(e)
-                    requestCount--
-                    updateRequestStateDialogIfNeed<T, Resp>(
-                        RequestState.error,
-                        apiException = apiException
-                    )
                     error?.invoke(apiException)
-                    stateShower?.let { delay(errorDismissDelay) }
-                    updateRequestStateDialogIfNeed<T, Resp>(RequestState.dismiss)
-                } //数据请求返回处理  emit(block()) 返回的数据
-                .collect {
-                    clickView?.isEnabled = true
-                    showStateViewIfNeed<T, Resp>(null, it)
-                    requestCount--
-                    if (it?.isSuccess() == true) {
-                        //回调请求完成-成功，默认不显示dialog
-                        updateRequestStateDialogIfNeed<T, Resp>(RequestState.complete, it)
-                    } else {
-                        //回调请求完成-失败，默认显示dialog错误文本
-                        updateRequestStateDialogIfNeed<T, Resp>(RequestState.completeFailed, it)
+                    showStateViewIfNeed<T, Resp>(e, null)
+                    stateShower?.let {
+                        if (isShowDialogError) {
+                            it.showError(apiException.message)
+                            delay(errorDismissDelay.toLong())
+                            it.dismissRequestStateShower()
+                        }
                     }
-                    handleResponse(it, success, special, failed, handleResponseBySelf)
-                    stateShower?.let { delay(completeDismissDelay) }
-                    updateRequestStateDialogIfNeed<T, Resp>(RequestState.dismiss)
+                } //数据请求返回处理  emit(block()) 返回的数据
+                .collect { resp ->
+                    clickView?.isEnabled = true
+                    delay(minimumLoadingTime.toLong())
+                    handleResponse(resp, success, special, failed, handleResponseBySelf)
+                    showStateViewIfNeed<T, Resp>(null, resp)
+                    stateShower?.let {
+                        if (resp?.isSuccess() == true) {
+                            if (isShowDialogCompleteSuccess) {//回调请求完成-成功，默认不显示
+                                it.showComplete(resp)
+                            }
+                        } else {
+                            if (isShowDialogCompleteFailed) {//回调请求完成-失败，默认显示错误文本
+                                it.showCompleteFailed(resp)
+                            }
+                        }
+                        delay(completeDismissDelay.toLong())
+                        it.dismissRequestStateShower()
+                    }
                 }
         }
     }
@@ -241,6 +213,8 @@ class RequestDelegate(
 
     /**
      * 默认只处理成功的返回
+     * 单独接口的 special 在全局 handleSpecial 之后执行
+     * handleResponseBySelf 最后执行
      */
     fun <T, Resp : AbsResponse<T>> handleResponse(
         response: Resp?,
@@ -249,25 +223,18 @@ class RequestDelegate(
         failed: ((code: Int?, message: String?) -> Unit)?,
         handleResponseBySelf: ((Resp?) -> Unit)? = null,//更特殊的情况，自己处理
     ) {
-        if (handleResponseBySelf != null) {
-            handleResponseBySelf.invoke(response)
-            return
-        }
         when {
             response?.isSpecial() == true -> {
-                if (special == null) {
-                    response.handleSpecial(
-                        response.responseCode(),
-                        response.responseData(),
-                        response.responseMessage()
-                    )
-                } else {
-                    special(
-                        response.responseCode(),
-                        response.responseData(),
-                        response.responseMessage()
-                    )
-                }
+                response.handleSpecial(
+                    response.responseCode(),
+                    response.responseData(),
+                    response.responseMessage()
+                )
+                special?.invoke(
+                    response.responseCode(),
+                    response.responseData(),
+                    response.responseMessage()
+                )
             }
             response?.isSuccess() == true -> {
                 success?.invoke(response.responseData())
@@ -276,64 +243,9 @@ class RequestDelegate(
                 failed?.invoke(response?.responseCode(), response?.responseMessage())
             }
         }
+        handleResponseBySelf?.invoke(response)
     }
 
-
-    private suspend fun <T, Resp : AbsResponse<T>> updateRequestStateDialogIfNeed(
-        dialogState: RequestState,
-        response: Resp? = null,
-        apiException: ApiException? = null,
-    ) {
-        if (stateShower == null) return
-        when (dialogState) {
-            RequestState.loading -> {
-                if (requestCount == 1) {
-                    stateShower?.showLoading(loadingText)
-                }
-            }
-            RequestState.complete -> {
-                if (requestCount == 0) {
-                    val remainingTime =
-                        minimumLoadingTime - (System.currentTimeMillis() - loadingTime)
-                    if (remainingTime > 0) {
-                        delay(remainingTime)
-                    }
-                    if (isShowDialogCompleteSuccess) {
-                        stateShower?.showComplete(response)
-                    }
-                }
-            }
-            RequestState.completeFailed -> {
-                if (requestCount == 0) {
-                    val remainingTime =
-                        minimumLoadingTime - (System.currentTimeMillis() - loadingTime)
-                    if (remainingTime > 0) {
-                        delay(remainingTime)
-                    }
-                    if (isShowDialogCompleteFailed) {
-                        stateShower?.showCompleteFailed(response)
-                    }
-                }
-            }
-            RequestState.error -> {
-                if (requestCount == 0) {
-                    val remainingTime =
-                        minimumLoadingTime - (System.currentTimeMillis() - loadingTime)
-                    if (remainingTime > 0) {
-                        delay(remainingTime)
-                    }
-                    if (isShowDialogError) {
-                        stateShower?.showError(apiException?.message ?: errorText)
-                    }
-                }
-            }
-            RequestState.dismiss -> {
-                if (requestCount == 0) {
-                    stateShower?.dismissRequestStateShower()
-                }
-            }
-        }
-    }
 
 
     private fun handleException(e: Throwable?): ApiException {
@@ -420,6 +332,7 @@ class RequestDelegate(
 
 
     companion object {
+        private const val TAG = "【RequestDelegate】"
 
         const val ERROR_str = "出错了"
 
