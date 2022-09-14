@@ -43,20 +43,22 @@ class RequestDelegate @JvmOverloads constructor(
     private var scope = lifecycleOwner?.lifecycleScope ?: GlobalScope
 
 
-    /**
-     * 结果成功返回时，dialog隐藏的延迟时间（显示的时间），用于展示结果信息
-     */
-    var completeDismissDelay: Int = ActivityManager.application.resources.getInteger(R.integer.completeDismissDelay)
 
     /**
-     * 请求或返回结果是异常时，dialog隐藏的延迟时间（显示的时间），用于展示异常信息
+     * 发起请求 到 请求异常，stateShower 要显示的时间，默认 1500
      */
-    var errorDismissDelay: Int = ActivityManager.application.resources.getInteger(R.integer.errorDismissDelay)
+    var errorShowTime: Int = ActivityManager.application.resources.getInteger(R.integer.RequestDelegate_errorShowTime)
 
     /**
-     * loading 显示的最少时间，用于展示loading
+     * 发起请求 到 请求成功 ，stateShower 要显示的时间，默认 0
      */
-    var minimumLoadingTime: Int = ActivityManager.application.resources.getInteger(R.integer.minimumLoadingTime)
+    var successShowTime: Int = ActivityManager.application.resources.getInteger(R.integer.RequestDelegate_successShowTime)
+
+    /**
+     * 发起请求 到 请求成功 ，stateShower 要显示的时间，默认 1500
+     */
+    var failedShowTime: Int = ActivityManager.application.resources.getInteger(R.integer.RequestDelegate_failedShowTime)
+
 
     /**
      * 无参的构造方法，会使用 GlobalScope 发起请求。
@@ -160,28 +162,29 @@ class RequestDelegate @JvmOverloads constructor(
                     stateShower?.let {
                         if (isShowDialogError) {
                             it.showError(apiException.message)
-                            delay(errorDismissDelay.toLong())
+                            delay(errorShowTime.toLong())
                             it.dismissRequestStateShower()
                         }
                     }
                 } //数据请求返回处理  emit(block()) 返回的数据
                 .collect { resp ->
                     clickView?.isEnabled = true
-                    delay(minimumLoadingTime.toLong())
                     handleResponse(resp, success, special, failed, handleResponseBySelf)
                     showStateViewIfNeed<T, Resp>(null, resp)
                     stateShower?.let {
                         if (resp?.isSuccess() == true) {
                             if (isShowDialogCompleteSuccess) {//回调请求完成-成功，默认不显示
                                 it.showComplete(resp)
+                                delay(successShowTime.toLong())
+                                it.dismissRequestStateShower()
                             }
                         } else {
                             if (isShowDialogCompleteFailed) {//回调请求完成-失败，默认显示错误文本
                                 it.showCompleteFailed(resp)
+                                delay(failedShowTime.toLong())
+                                it.dismissRequestStateShower()
                             }
                         }
-                        delay(completeDismissDelay.toLong())
-                        it.dismissRequestStateShower()
                     }
                 }
         }

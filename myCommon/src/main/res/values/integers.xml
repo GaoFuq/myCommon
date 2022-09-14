@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <integer name="completeDismissDelay">1000</integer>
-    <integer name="errorDismissDelay">1500</integer>
-    <integer name="minimumLoadingTime">0</integer>
+    <integer name="RequestDelegate_errorShowTime">1500</integer>
+    <integer name="RequestDelegate_successShowTime">0</integer>
+    <integer name="RequestDelegate_failedShowTime">1500</integer>
 </resources>
