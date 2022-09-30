@@ -40,7 +40,7 @@ fun BottomSheetDialog.setFixedHeight(fixedHeight: Int) {
  * 设置高度包裹内容
  */
 fun BottomSheetDialog.setHeightWrapContent() {
-    behavior.skipCollapsed = true
+    setFixedHeight(screenH)
 }
 
 fun BottomSheetDialog.setHideWhenSwipeDown(boo: Boolean) {
