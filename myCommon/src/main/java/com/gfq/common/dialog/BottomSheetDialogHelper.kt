@@ -27,13 +27,23 @@ fun BottomSheetDialog.setMaxHeight(maxHeight: Int) {
     findViewById<View>(R.id.coordinator)?.updateLayoutParams { height = maxHeight }
 }
 
+/**
+ * 设置固定高度
+ */
 fun BottomSheetDialog.setFixedHeight(fixedHeight: Int) {
     setMaxHeight(fixedHeight)
     behavior.peekHeight = fixedHeight
     behavior.skipCollapsed = true
 }
 
-fun BottomSheetDialog.isHideWhenSwipeDown(boo: Boolean) {
+/**
+ * 设置高度包裹内容
+ */
+fun BottomSheetDialog.setHeightWrapContent() {
+    behavior.skipCollapsed = true
+}
+
+fun BottomSheetDialog.setHideWhenSwipeDown(boo: Boolean) {
     behavior.isHideable = boo
 }
 

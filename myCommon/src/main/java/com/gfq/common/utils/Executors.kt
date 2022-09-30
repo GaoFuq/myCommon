@@ -22,11 +22,19 @@ fun mainThread(f: () -> Unit) {
     if (Looper.getMainLooper() === Looper.myLooper()) f() else MAIN_EXECUTOR.execute(f)
 }
 
+fun mainThreadDelay(delay:Long,f: () -> Unit) {
+    MAIN_EXECUTOR.executeDelay({f()},delay)
+}
+
 class MainThreadExecutor : Executor {
     private val mainThreadHandler: Handler by lazy { Handler(Looper.getMainLooper()) }
 
     override fun execute(command: Runnable) {
         mainThreadHandler.post(command)
+    }
+
+    fun executeDelay(command: Runnable,delay:Long) {
+        mainThreadHandler.postDelayed(command,delay)
     }
 
 }
