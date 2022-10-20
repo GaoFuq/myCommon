@@ -7,6 +7,7 @@ import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.FragmentTransaction
 import com.gfq.common.R
 import com.gfq.common.dialog.screenW
 import com.gfq.common.net.RequestDelegate
@@ -61,18 +62,19 @@ abstract class BaseDialogFragment<T : ViewDataBinding>(
     }
 
     fun show(a: FragmentActivity) {
-        show(a.supportFragmentManager, this.javaClass.simpleName)
+        val ft: FragmentTransaction = a.supportFragmentManager.beginTransaction()
+        ft.add(this, this.javaClass.simpleName)
+        ft.commitAllowingStateLoss()
     }
 
     fun show(a: Fragment) {
-        a.activity?.supportFragmentManager?.let { show(it, this.javaClass.simpleName) }
+        a.childFragmentManager.beginTransaction().add(this,this.javaClass.simpleName).commitAllowingStateLoss()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initView()
     }
-
 
     override fun onStart() {
         super.onStart()
