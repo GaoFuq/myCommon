@@ -9,6 +9,7 @@ import com.gfq.common.net.interfacee.IRequestStateShower
 import com.gfq.common.net.interfacee.IStateView
 import com.gfq.common.system.ActivityManager
 import com.gfq.common.utils.getString
+import com.gfq.common.utils.mainThread
 import com.google.gson.JsonParseException
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
@@ -29,7 +30,7 @@ import java.net.*
  * 有必要的情况下，需要手动取消 job 。
  */
 class RequestDelegate @JvmOverloads constructor(
-    lifecycleOwner: LifecycleOwner?=null,
+    lifecycleOwner: LifecycleOwner? = null,
     /**
      * 请求状态 loading
      */
@@ -43,21 +44,23 @@ class RequestDelegate @JvmOverloads constructor(
     private var scope = lifecycleOwner?.lifecycleScope ?: GlobalScope
 
 
-
     /**
      * 发起请求 到 请求异常，stateShower 要显示的时间，默认 1500
      */
-    var errorShowTime: Int = ActivityManager.application.resources.getInteger(R.integer.RequestDelegate_errorShowTime)
+    var errorShowTime: Int =
+        ActivityManager.application.resources.getInteger(R.integer.RequestDelegate_errorShowTime)
 
     /**
      * 发起请求 到 请求成功 ，stateShower 要显示的时间，默认 0
      */
-    var successShowTime: Int = ActivityManager.application.resources.getInteger(R.integer.RequestDelegate_successShowTime)
+    var successShowTime: Int =
+        ActivityManager.application.resources.getInteger(R.integer.RequestDelegate_successShowTime)
 
     /**
      * 发起请求 到 请求成功 ，stateShower 要显示的时间，默认 1500
      */
-    var failedShowTime: Int = ActivityManager.application.resources.getInteger(R.integer.RequestDelegate_failedShowTime)
+    var failedShowTime: Int =
+        ActivityManager.application.resources.getInteger(R.integer.RequestDelegate_failedShowTime)
 
 
     /**
@@ -132,7 +135,7 @@ class RequestDelegate @JvmOverloads constructor(
         handleResponseBySelf: ((Resp?) -> Unit)? = null,//更特殊的情况，自己处理。success，failed，error，special都不会走。
     ) {
 
-        if (!scope.isActive){
+        if (!scope.isActive) {
             Log.e(TAG, "request: scope is not active")
             return
         }
@@ -155,35 +158,40 @@ class RequestDelegate @JvmOverloads constructor(
                     boo
                 }
                 .catch { e: Throwable? ->//异常捕获处理
-                    clickView?.isEnabled = true
-                    val apiException = handleException(e)
-                    error?.invoke(apiException)
-                    showStateViewIfNeed<T, Resp>(e, null)
-                    stateShower?.let {
-                        if (isShowDialogError) {
-                            it.showError(apiException.message)
-                            delay(errorShowTime.toLong())
-                            it.dismissRequestStateShower()
+                    scope.launch(Dispatchers.Main) {
+                        clickView?.isEnabled = true
+                        val apiException = handleException(e)
+                        error?.invoke(apiException)
+                        showStateViewIfNeed<T, Resp>(e, null)
+                        stateShower?.let {
+                            if (isShowDialogError) {
+                                it.showError(apiException.message)
+                                delay(errorShowTime.toLong())
+                                it.dismissRequestStateShower()
+                            }
                         }
                     }
                 } //数据请求返回处理  emit(block()) 返回的数据
                 .collect { resp ->
-                    clickView?.isEnabled = true
-                    handleResponse(resp, success, special, failed, handleResponseBySelf)
-                    showStateViewIfNeed<T, Resp>(null, resp)
-                    stateShower?.let {
-                        if (resp?.isSuccess() == true) {
-                            if (isShowDialogCompleteSuccess) {//回调请求完成-成功，默认不显示
-                                it.showComplete(resp)
-                                delay(successShowTime.toLong())
+                    //当 scope 为 GlobalScope 时，需要手动切换线程
+                    scope.launch(Dispatchers.Main) {
+                        clickView?.isEnabled = true
+                        handleResponse(resp, success, special, failed, handleResponseBySelf)
+                        showStateViewIfNeed<T, Resp>(null, resp)
+                        stateShower?.let {
+                            if (resp?.isSuccess() == true) {
+                                if (isShowDialogCompleteSuccess) {//回调请求完成-成功，默认不显示
+                                    it.showComplete(resp)
+                                    delay(successShowTime.toLong())
+                                }
+                            } else {
+                                if (isShowDialogCompleteFailed) {//回调请求完成-失败，默认显示错误文本
+                                    it.showCompleteFailed(resp)
+                                    delay(failedShowTime.toLong())
+                                }
                             }
-                        } else {
-                            if (isShowDialogCompleteFailed) {//回调请求完成-失败，默认显示错误文本
-                                it.showCompleteFailed(resp)
-                                delay(failedShowTime.toLong())
-                            }
+                            it.dismissRequestStateShower()
                         }
-                        it.dismissRequestStateShower()
                     }
                 }
         }
@@ -247,7 +255,6 @@ class RequestDelegate @JvmOverloads constructor(
         }
         handleResponseBySelf?.invoke(response)
     }
-
 
 
     private fun handleException(e: Throwable?): ApiException {
