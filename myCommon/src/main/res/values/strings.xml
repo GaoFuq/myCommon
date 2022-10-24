@@ -3,4 +3,21 @@
     <string name="request_complete_state_default_text">加载完成</string>
     <string name="request_error_state_default_text">加载失败</string>
     <string name="stateViewRefreshTag">stateViewRefreshTag</string>
+
+
+    <string name="requestDelegateERROR_str">出错了</string>
+    <string name="requestDelegateIO_ERROR_str">网络连接失败</string>
+    <string name="requestDelegateIO_ERROR_TIMEOUT_str">网络连接超时</string>
+    <string name="requestDelegateIO_ERROR_UNKNOWN_HOST_str">未知主机错误</string>
+    <string name="requestDelegateDATA_PARSE_ERROR_str">数据解析错误</string>
+    <string name="requestDelegateHTTP_BAD_REQUEST_MSG">错误的请求</string>
+    <string name="requestDelegateHTTP_UNAUTHORIZED_MSG">没有访问权限</string>
+    <string name="requestDelegateHTTP_FORBIDDEN_MSG">禁止访问</string>
+    <string name="requestDelegateHTTP_NOT_FOUND_MSG">找不到资源</string>
+    <string name="requestDelegateHTTP_BAD_METHOD_MSG">不允许此方法</string>
+    <string name="requestDelegateHTTP_INTERNAL_ERROR_MSG">服务器内部错误</string>
+    <string name="requestDelegateHTTP_BAD_GATEWAY_MSG">网关错误</string>
+    <string name="requestDelegateHTTP_UNAVAILABLE_MSG">服务器忙，暂时不可用</string>
+    <string name="requestDelegateHTTP_GATEWAY_TIMEOUT_MSG">网关超时</string>
+    <string name="requestDelegateHTTP_VERSION_MSG">HTTP版本不受支持</string>
 </resources>

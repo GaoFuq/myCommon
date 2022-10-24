@@ -41,6 +41,7 @@ class RequestDelegate @JvmOverloads constructor(
     var stateView: IStateView? = null,
 ) {
 
+    private val  TAG = "RequestDelegate"
     private var scope = lifecycleOwner?.lifecycleScope ?: GlobalScope
 
 
@@ -136,7 +137,7 @@ class RequestDelegate @JvmOverloads constructor(
     ) {
 
         if (!scope.isActive) {
-            Log.e(TAG, "request: scope is not active")
+            Log.e("", "request: scope is not active")
             return
         }
 
@@ -259,62 +260,62 @@ class RequestDelegate @JvmOverloads constructor(
 
     private fun handleException(e: Throwable?): ApiException {
 
-        if (e == null) return ApiException(message = ERROR_str)
+        if (e == null) return ApiException(message = getString(R.string.requestDelegateERROR_str))
         Log.e(TAG, "handleException " + e.message.toString())
         var code: Int? = null
         var message = e.message
 
         when (e) {
             is ConnectException -> {
-                message = IO_ERROR_str
+                message = getString(R.string.requestDelegateIO_ERROR_str)
             }
             is HttpException -> {
                 code = e.code()
                 when (e.code()) {
                     HttpURLConnection.HTTP_BAD_REQUEST -> {
-                        message = HTTP_BAD_REQUEST_MSG
+                        message = getString(R.string.requestDelegateHTTP_BAD_REQUEST_MSG)
                     }
                     HttpURLConnection.HTTP_UNAUTHORIZED -> {
-                        message = HTTP_UNAUTHORIZED_MSG
+                        message = getString(R.string.requestDelegateHTTP_UNAUTHORIZED_MSG)
                     }
                     HttpURLConnection.HTTP_FORBIDDEN -> {
-                        message = HTTP_FORBIDDEN_MSG
+                        message = getString(R.string.requestDelegateHTTP_FORBIDDEN_MSG)
                     }
                     HttpURLConnection.HTTP_NOT_FOUND -> {
-                        message = HTTP_NOT_FOUND_MSG
+                        message = getString(R.string.requestDelegateHTTP_NOT_FOUND_MSG)
                     }
                     HttpURLConnection.HTTP_BAD_METHOD -> {
-                        message = HTTP_BAD_METHOD_MSG
+                        message = getString(R.string.requestDelegateHTTP_BAD_METHOD_MSG)
                     }
                     HttpURLConnection.HTTP_INTERNAL_ERROR -> {
-                        message = HTTP_INTERNAL_ERROR_MSG
+                        message = getString(R.string.requestDelegateHTTP_INTERNAL_ERROR_MSG)
                     }
                     HttpURLConnection.HTTP_BAD_GATEWAY -> {
-                        message = HTTP_BAD_GATEWAY_MSG
+                        message = getString(R.string.requestDelegateHTTP_BAD_GATEWAY_MSG)
                     }
                     HttpURLConnection.HTTP_UNAVAILABLE -> {
-                        message = HTTP_UNAVAILABLE_MSG
+                        message = getString(R.string.requestDelegateHTTP_UNAVAILABLE_MSG)
                     }
                     HttpURLConnection.HTTP_GATEWAY_TIMEOUT -> {
-                        message = HTTP_GATEWAY_TIMEOUT_MSG
+                        message = getString(R.string.requestDelegateHTTP_GATEWAY_TIMEOUT_MSG)
                     }
                     HttpURLConnection.HTTP_VERSION -> {
-                        message = HTTP_VERSION_MSG
+                        message = getString(R.string.requestDelegateHTTP_VERSION_MSG)
                     }
                     in 400..500 -> {
-                        message = HTTP_BAD_REQUEST_MSG
+                        message = getString(R.string.requestDelegateHTTP_BAD_REQUEST_MSG)
                     }
                     in 500..600 -> {
-                        message = HTTP_INTERNAL_ERROR_MSG
+                        message = getString(R.string.requestDelegateHTTP_INTERNAL_ERROR_MSG)
                     }
                 }
             }
 
             is UnknownHostException -> {
-                message = IO_ERROR_UNKNOWN_HOST_str
+                message = getString(R.string.requestDelegateIO_ERROR_UNKNOWN_HOST_str)
             }
             is SocketTimeoutException -> {
-                message = IO_ERROR_TIMEOUT_str
+                message = getString(R.string.requestDelegateIO_ERROR_TIMEOUT_str)
             }
 
 
@@ -322,10 +323,10 @@ class RequestDelegate @JvmOverloads constructor(
             is ParseException,
             is JsonParseException,
             -> {
-                message = DATA_PARSE_ERROR_str
+                message = getString(R.string.requestDelegateDATA_PARSE_ERROR_str)
             }
             else -> {
-                message = ERROR_str
+                message = getString(R.string.requestDelegateERROR_str)
             }
 
         }
@@ -339,35 +340,4 @@ class RequestDelegate @JvmOverloads constructor(
         job?.cancel()
     }
 
-
-    companion object {
-        private const val TAG = "【RequestDelegate】"
-
-        const val ERROR_str = "出错了"
-
-        const val IO_ERROR_str = "网络连接失败"
-        const val IO_ERROR_TIMEOUT_str = "网络连接超时"
-        const val IO_ERROR_UNKNOWN_HOST_str = "未知主机错误"
-        const val DATA_PARSE_ERROR_str = "数据解析错误"
-
-
-        const val HTTP_BAD_REQUEST_MSG = "错误的请求"
-        const val HTTP_UNAUTHORIZED_MSG = "没有访问权限"
-        const val HTTP_FORBIDDEN_MSG = "禁止访问"
-
-        const val HTTP_NOT_FOUND_MSG = "找不到资源\n not found"
-
-        //对于请求所标识的资源，不允许使用请求行中所指定的方法。请确保为所请求的资源设置了正确的 MIME 类型。
-        //如果问题依然存在，请与服务器的管理员联系。
-        const val HTTP_BAD_METHOD_MSG = "不允许此方法"
-
-
-        const val HTTP_INTERNAL_ERROR_MSG = "服务器内部错误 "
-        const val HTTP_BAD_GATEWAY_MSG = "网关错误 "
-        const val HTTP_UNAVAILABLE_MSG = "服务器忙\n暂时不可用"
-        const val HTTP_GATEWAY_TIMEOUT_MSG = "网关超时"
-        const val HTTP_VERSION_MSG = "HTTP版本不受支持"
-
-
-    }
 }
