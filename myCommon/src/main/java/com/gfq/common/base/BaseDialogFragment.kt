@@ -4,10 +4,7 @@ import android.os.Bundle
 import android.view.*
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
-import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
-import androidx.fragment.app.FragmentTransaction
+import androidx.fragment.app.*
 import com.gfq.common.R
 import com.gfq.common.dialog.screenW
 import com.gfq.common.net.RequestDelegate
@@ -61,14 +58,45 @@ abstract class BaseDialogFragment<T : ViewDataBinding>(
         }
     }
 
-    fun show(a: FragmentActivity) {
-        val ft: FragmentTransaction = a.supportFragmentManager.beginTransaction()
-        ft.add(this, this.javaClass.simpleName)
-        ft.commitAllowingStateLoss()
+    fun show(activity: FragmentActivity) {
+        show(activity.supportFragmentManager)
     }
 
-    fun show(a: Fragment) {
-        a.childFragmentManager.beginTransaction().add(this,this.javaClass.simpleName).commitAllowingStateLoss()
+    fun show(fragment: Fragment) {
+        fragment.fragmentManager?.apply {
+            show(this)
+        }
+    }
+
+    /**
+     * bug：Can not perform this action after onSaveInstanceState
+     * onSaveInstanceState方法是在该Activity即将被销毁前调用，来保存Activity数据的，如果在保存玩状态后再给它添加Fragment就会出错
+     * 解决方法就是把show()方法中的 commit（）方法替换成 commitAllowingStateLoss()、或者直接try
+     */
+    fun show(fragmentManager: FragmentManager) {
+        val tag = this::class.java.simpleName
+        val fragment = fragmentManager.findFragmentByTag(tag)
+        if (fragment == null && !this.isAdded) {
+            try {
+                // 在每个add事务前增加一个remove事务，防止连续的add。造成java.lang.IllegalStateException: Fragment already added
+                fragmentManager.beginTransaction().remove(this).commit()
+                this.show(fragmentManager, tag)
+            } catch (e: Exception) {// 相当于重写了 show() 方法，至于其中的 mDismissed、mShownByMe 这两个变量的值，在 try 中已经设置好了。
+                fragmentManager.beginTransaction().add(this, tag).commitAllowingStateLoss()
+            }
+        }
+    }
+
+    override fun dismiss() {
+        // 防止横竖屏切换时 getFragmentManager置空引起的问题：
+        // Attempt to invoke virtual method 'android.app.FragmentTransaction
+        // android.app.FragmentManager.beginTransaction()' on a null object reference
+        fragmentManager ?: return
+        try {
+            super.dismiss()
+        } catch (e: Exception) {
+            dismissAllowingStateLoss()
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
