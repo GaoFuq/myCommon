@@ -248,6 +248,17 @@ fun formatSizeInMB(sizeInBytes: Long): Float {
     df.applyPattern("0.0")
     var result = df.format((sizeInBytes.toFloat() / 1024 / 1024).toDouble())
     loge("getSizeInMB: $result M")
+    val resultKB = df.format((sizeInBytes.toFloat() / 1024).toDouble())
+    loge("getSizeInKB: $resultKB KB")
+    result = result.replace(",".toRegex(), ".") // in some case , 0.0 will be 0,0
+    return java.lang.Float.valueOf(result)
+}
+
+fun formatSizeInKB(sizeInBytes: Long): Float {
+    val df = NumberFormat.getNumberInstance(Locale.US) as DecimalFormat
+    df.applyPattern("0.0")
+    var result = df.format((sizeInBytes.toFloat() / 1024).toDouble())
+    loge("getSizeInKB: $result KB")
     result = result.replace(",".toRegex(), ".") // in some case , 0.0 will be 0,0
     return java.lang.Float.valueOf(result)
 }
