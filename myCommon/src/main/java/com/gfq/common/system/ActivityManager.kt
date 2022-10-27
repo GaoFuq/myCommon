@@ -6,6 +6,7 @@ import android.content.pm.ApplicationInfo
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.FragmentActivity
+import com.gfq.common.BuildConfig
 import com.orhanobut.logger.AndroidLogAdapter
 import com.orhanobut.logger.Logger
 import com.orhanobut.logger.PrettyFormatStrategy
@@ -46,7 +47,7 @@ object ActivityManager {
 
         override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
             Log.d(TAG, "onActivityCreated: ${activity.javaClass.simpleName}")
-            if(activity is FragmentActivity) {
+            if (activity is FragmentActivity) {
                 activities.add(activity)
             }
         }
@@ -61,13 +62,13 @@ object ActivityManager {
     }
 
     private fun initLogger() {
-        Logger.addLogAdapter(
-            AndroidLogAdapter(
-                PrettyFormatStrategy.newBuilder()
-                    .showThreadInfo(true)
-                    .build()
-            )
+       /* val logAdapter = MyAndroidLogAdapter(
+            PrettyFormatStrategy.newBuilder()
+                .showThreadInfo(false)
+                .build()
         )
+        logAdapter.isLoggable(BuildConfig.BUILD_TYPE == "debug")
+        Logger.addLogAdapter(logAdapter)*/
     }
 
 
