@@ -4,14 +4,15 @@ import android.view.View;
 import android.view.ViewGroup;
 
 /**
+ * @author gaofuq
  * 方便给View做宽高改变动画的辅助类
  * ObjectAnimator.ofInt(viewWrapper,"height",view.height,0).start()
  */
-public class ViewAttr {
+public class ViewWrapper {
 
     private View view;
 
-    public ViewAttr(View target) {
+    public ViewWrapper(View target) {
         view = target;
     }
 

@@ -22,6 +22,16 @@ import java.util.*
  * @auth gaofuq
  * @description
  */
+/**
+externalCacheDir    : /storage/emulated/0/Android/data/com.mmj.android/cache
+cacheDir            : /data/user/0/com.mmj.android/cache
+filesDir            : /data/user/0/com.mmj.android/files
+externalMusic       : /storage/emulated/0/Android/data/com.mmj.android/files/Music
+externalDCIM        : /storage/emulated/0/Android/data/com.mmj.android/files/DCIM
+externalDownload    : /storage/emulated/0/Android/data/com.mmj.android/files/Download
+externalPicture     : /storage/emulated/0/Android/data/com.mmj.android/files/Pictures
+externalMovies      : /storage/emulated/0/Android/data/com.mmj.android/files/Movies
+ */
 val externalCacheDir by lazy { ActivityManager.application.externalCacheDir }
 val cacheDir by lazy { ActivityManager.application.cacheDir }
 val filesDir by lazy { ActivityManager.application.filesDir }
@@ -48,7 +58,7 @@ fun downloadFile(
     saveDir: String? = externalDownload?.path,
     saveFileName: String? = url.getFileName(),
     autoOpen: Boolean = false,
-    isOverrideOldFile: Boolean = false,
+    isOverrideOldFile: Boolean = true,
     isInsertMediaStore: Boolean = true,
     onProgress: ((Int) -> Unit)? = null,
     success: ((file: File) -> Unit)? = null,
@@ -118,7 +128,8 @@ fun downloadFile(
                 fos.flush()
                 mainThread { success?.invoke(file) }
 
-                Log.d(TAG, "success cost time = ${(System.currentTimeMillis() - startTime)}, save path = ${file.path}")
+                Log.d(TAG,
+                    "success cost time = ${(System.currentTimeMillis() - startTime)}, save path = ${file.path}")
 
                 if (file.canInsertMediaStore() && isInsertMediaStore) {
                     file.insertMediaStore()
@@ -142,8 +153,8 @@ fun downloadFile(
     })
 }
 
-fun getFileNameFromUrl(url: String): String {
-    return url.getFileName() ?: ""
+fun getFileNameFromUrl(url: String): String? {
+    return url.getFileName()
 }
 
 fun String?.getFileName(): String? = this?.substring(this.lastIndexOf("/") + 1)

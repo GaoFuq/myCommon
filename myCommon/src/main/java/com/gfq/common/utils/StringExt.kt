@@ -11,6 +11,7 @@ import android.text.InputFilter
 import android.text.Spanned
 import android.util.Log
 import androidx.annotation.StringRes
+import androidx.core.text.isDigitsOnly
 import com.gfq.common.system.ActivityManager
 import java.util.regex.Pattern
 
@@ -236,3 +237,60 @@ class InputFilterOnly(private val arr: Array<Char>) : BaseInputFilter() {
 }
 
 fun getString(@StringRes id:Int):String= ActivityManager.application.getString(id)
+
+/**
+ * 手动输入数字时，第一个数字不能是0
+ */
+class InputFilterFirstNot0  : InputFilter {
+    override fun filter(
+        source: CharSequence?,
+        start: Int,
+        end: Int,
+        dest: Spanned?,
+        dstart: Int,
+        dend: Int,
+    ): CharSequence {
+        if (source == "0" && dstart == 0) {
+            return ""
+        }
+        return source.toString()
+    }
+}
+
+/**
+ *  2022/9/20 12:07
+ * @auth gaofuq
+ * @description
+ *
+ * 需要配合 InputFilterFirstNot0 使用 ， 避免 首位数字是 0。
+ * 设置的 maxLength 要等于 maxValue.length + 1
+ */
+class InputFilterMaxValue(
+    private val maxValue: Int,
+    private val onNumberGreaterThanMax: ((Int) -> Unit)? =null,
+) :
+    InputFilter {
+    override fun filter(
+        source: CharSequence?,
+        start: Int,
+        end: Int,
+        dest: Spanned?,
+        dstart: Int,
+        dend: Int,
+    ): CharSequence {
+        if (!source.isNullOrEmpty() && !dest.isNullOrEmpty()) {
+            if(source.isDigitsOnly() && dest.isDigitsOnly()) {
+                val destLongNext = (dest.toString() + source).toInt()
+                Log.e("TAG", "filter: destLongNext = $destLongNext")
+
+                if (destLongNext > maxValue) {
+                    onNumberGreaterThanMax?.invoke(destLongNext)
+                    return ""
+                }
+            }
+        }
+        return source.toString()
+    }
+}
+
+
