@@ -1,5 +1,8 @@
 package com.gfq.common.dialog
 
+import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -13,12 +16,13 @@ import com.gfq.common.R
  * @description
  */
 abstract class BaseDialog<T : ViewDataBinding>(
+    context: Context,
     layoutId: Int,
     private val withAnim: Boolean = true,
 ) :
-    GlobalDialog() {
+    GlobalDialog(context) {
 
-    var doOnStart:(()->Unit)?=null
+    var doOnStart: (() -> Unit)? = null
 
     val dialogBinding = DataBindingUtil.inflate<T>(
         LayoutInflater.from(context),
@@ -46,4 +50,6 @@ abstract class BaseDialog<T : ViewDataBinding>(
         initLayoutParams()
         doOnStart?.invoke()
     }
+
+
 }

@@ -48,7 +48,6 @@ abstract class BaseBottomSheetDialog<T : ViewDataBinding>(
             dismiss()
         }
         initViews()
-
     }
 
     override fun onStart() {
