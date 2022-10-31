@@ -15,7 +15,7 @@ fun toast(msg: Any?,icon:Any?=null, gravity: Int = Gravity.CENTER, xOffset: Int 
 }
 
 fun toast(msg: Any?,append:Boolean=false) {
-    myToast.show(msg,null,Gravity.CENTER, 0, 0)
+    myToast.show(msg,append)
 }
 
 fun toast2(msg: Any?,icon:Any?=null, gravity: Int = Gravity.CENTER, xOffset: Int = 0, yOffset: Int = 0) {
