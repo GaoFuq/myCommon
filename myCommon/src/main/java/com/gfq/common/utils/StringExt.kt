@@ -14,6 +14,8 @@ import androidx.annotation.StringRes
 import androidx.core.text.isDigitsOnly
 import com.gfq.common.system.ActivityManager
 import java.util.regex.Pattern
+import java.security.MessageDigest
+import java.security.NoSuchAlgorithmException
 
 fun String?.isEmail(): Boolean {
     this?:return false
@@ -294,3 +296,22 @@ class InputFilterMaxValue(
 }
 
 
+
+
+val String?.md5: String
+    get() {
+        if (this.isNullOrEmpty()) {
+            return ""
+        }
+        return try {
+            val messageDigest = MessageDigest.getInstance("MD5")
+            val digestBytes = messageDigest.digest(toByteArray())
+            val sb = StringBuilder()
+            for (b in digestBytes) {
+                sb.append(String.format("%02x", b))
+            }
+            sb.toString()
+        } catch (e: NoSuchAlgorithmException) {
+            ""
+        }
+    }

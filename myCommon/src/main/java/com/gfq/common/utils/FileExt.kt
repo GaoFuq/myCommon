@@ -2,6 +2,8 @@ package com.gfq.common.utils
 
 import android.content.ContentValues
 import android.content.Intent
+import android.graphics.Bitmap
+import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
@@ -11,6 +13,8 @@ import android.webkit.MimeTypeMap
 import androidx.core.content.FileProvider
 import com.gfq.common.system.ActivityManager
 import com.gfq.common.system.loge
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import okhttp3.*
 import java.io.*
 import java.text.DecimalFormat
@@ -254,22 +258,26 @@ fun File?.open() {
 }
 
 
-fun formatSizeInMB(sizeInBytes: Long): Float {
-    val df = NumberFormat.getNumberInstance(Locale.US) as DecimalFormat
-    df.applyPattern("0.0")
-    var result = df.format((sizeInBytes.toFloat() / 1024 / 1024).toDouble())
-    loge("getSizeInMB: $result M")
-    val resultKB = df.format((sizeInBytes.toFloat() / 1024).toDouble())
-    loge("getSizeInKB: $resultKB KB")
-    result = result.replace(",".toRegex(), ".") // in some case , 0.0 will be 0,0
-    return java.lang.Float.valueOf(result)
+
+/**
+ * 根据视频网络地址获取第一帧图片
+ */
+suspend fun getThumbnail(videoUrl: String?): Bitmap? = withContext(Dispatchers.IO) {
+    if (videoUrl.isNullOrEmpty()) return@withContext null
+    try {
+        MediaMetadataRetriever().use {
+            // 根据网络视频的url获取第一帧--亲测可用。但是这个方法获取本地视频的第一帧，不可用，还没找到方法解决。
+            it.setDataSource(videoUrl, HashMap())
+            // 获得第一帧图片
+            return@withContext it.frameAtTime
+        }
+    } catch (e: IllegalArgumentException) {
+        e.printStackTrace()
+    }
+    return@withContext null
 }
 
-fun formatSizeInKB(sizeInBytes: Long): Float {
-    val df = NumberFormat.getNumberInstance(Locale.US) as DecimalFormat
-    df.applyPattern("0.0")
-    var result = df.format((sizeInBytes.toFloat() / 1024).toDouble())
-    loge("getSizeInKB: $result KB")
-    result = result.replace(",".toRegex(), ".") // in some case , 0.0 will be 0,0
-    return java.lang.Float.valueOf(result)
-}
+fun getFileLengthMB(file: File): Double = file.length() / 1024.0 / 1024.0
+
+fun getFileLengthKB(file: File): Double = file.length() / 1024.0
+
