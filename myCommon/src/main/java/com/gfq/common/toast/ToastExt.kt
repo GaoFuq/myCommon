@@ -7,7 +7,7 @@ import android.view.Gravity
  * @auth gaofuq
  * @description
  */
-
+//内存泄漏
 private val myToast by lazy {  MToast() }
 
 fun toast(msg: Any?,icon:Any?=null, gravity: Int = Gravity.CENTER, xOffset: Int = 0, yOffset: Int = 0) {
