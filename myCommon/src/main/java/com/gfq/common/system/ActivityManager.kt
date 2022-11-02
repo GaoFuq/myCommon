@@ -3,12 +3,12 @@ package com.gfq.common.system
 import android.app.Activity
 import android.app.Application
 import android.content.pm.ApplicationInfo
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.FragmentActivity
-import com.gfq.common.BuildConfig
 import com.gfq.common.R
-import com.orhanobut.logger.AndroidLogAdapter
+import com.gfq.common.helper.actlifecycle.SimpleActivityLifecycleCallbacks
 import com.orhanobut.logger.Logger
 import com.orhanobut.logger.PrettyFormatStrategy
 import java.util.*
@@ -22,40 +22,19 @@ object ActivityManager {
     lateinit var application: Application
     private val activities = Collections.synchronizedList(mutableListOf<FragmentActivity>())
 
-
-    private val activityLifecycleCallbacks = object : Application.ActivityLifecycleCallbacks {
-        override fun onActivityPaused(activity: Activity) {
-            Log.d(TAG, "onActivityPaused: ${activity.javaClass.simpleName}")
-        }
-
-        override fun onActivityResumed(activity: Activity) {
-            Log.d(TAG, "onActivityResumed: ${activity.javaClass.simpleName}")
-        }
-
-        override fun onActivityStarted(activity: Activity) {
-            Log.d(TAG, "onActivityStarted: ${activity.javaClass.simpleName}")
-        }
-
+    private val activityLifecycleCallbacks = object : SimpleActivityLifecycleCallbacks(true, TAG) {
         override fun onActivityDestroyed(activity: Activity) {
-            Log.d(TAG, "onActivityDestroyed: ${activity.javaClass.simpleName}")
+            super.onActivityDestroyed(activity)
             activities.remove(activity)
         }
-
-        override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {
-        }
-
-        override fun onActivityStopped(activity: Activity) {
-            Log.d(TAG, "onActivityStopped: ${activity.javaClass.simpleName}")
-        }
-
         override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
-            Log.d(TAG, "onActivityCreated: ${activity.javaClass.simpleName}")
+           super.onActivityCreated(activity, savedInstanceState)
             if (activity is FragmentActivity) {
                 activities.add(activity)
             }
         }
-
     }
+
 
     fun init(application: Application) {
         Log.d(TAG, "init")

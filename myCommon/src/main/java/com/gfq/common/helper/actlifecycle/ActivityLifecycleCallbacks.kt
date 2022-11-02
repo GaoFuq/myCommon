@@ -4,12 +4,6 @@ import android.app.Activity
 import android.app.Application
 import android.os.Build
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
-import android.widget.EditText
-import android.widget.TextView
-import androidx.annotation.ChecksSdkIntAtLeast
-import androidx.core.widget.doAfterTextChanged
 import com.gfq.common.system.ActivityManager
 
 /**
@@ -18,108 +12,107 @@ import com.gfq.common.system.ActivityManager
  * @description
  */
 
-inline fun Activity.doOnActivityCreated(
-    crossinline action: (activity: Activity,savedInstanceState: Bundle?) -> Unit,
+fun Activity.doOnActivityCreated(
+    action: (activity: Activity, savedInstanceState: Bundle?) -> Unit,
 ): Application.ActivityLifecycleCallbacks = addLifecycleCallback(onActivityCreated = action)
 
-inline fun Activity.doOnActivityStarted(
-    crossinline action: (activity: Activity) -> Unit,
+fun Activity.doOnActivityStarted(
+    action: (activity: Activity) -> Unit,
 ): Application.ActivityLifecycleCallbacks = addLifecycleCallback(onActivityStarted = action)
 
-inline fun Activity.doOnActivityResumed(
-    crossinline action: (activity: Activity) -> Unit,
+fun Activity.doOnActivityResumed(
+    action: (activity: Activity) -> Unit,
 ): Application.ActivityLifecycleCallbacks = addLifecycleCallback(onActivityResumed = action)
 
 
-inline fun Activity.doOnActivityPaused(
-    crossinline action: (activity: Activity) -> Unit,
+fun Activity.doOnActivityPaused(
+    action: (activity: Activity) -> Unit,
 ): Application.ActivityLifecycleCallbacks = addLifecycleCallback(onActivityPaused = action)
 
 
-inline fun Activity.doOnActivityStopped(
-    crossinline action: (activity: Activity) -> Unit,
+fun Activity.doOnActivityStopped(
+    action: (activity: Activity) -> Unit,
 ): Application.ActivityLifecycleCallbacks = addLifecycleCallback(onActivityStopped = action)
 
-inline fun Activity.doOnActivityDestroyed(
-    crossinline action: (activity: Activity) -> Unit,
+fun Activity.doOnActivityDestroyed(
+    action: (activity: Activity) -> Unit,
 ): Application.ActivityLifecycleCallbacks = addLifecycleCallback(onActivityDestroyed = action)
 
 //----------- pre
-inline fun Activity.doOnActivityPreCreated(
-    crossinline action: (activity: Activity,savedInstanceState: Bundle?) -> Unit,
+fun Activity.doOnActivityPreCreated(
+    action: (activity: Activity, savedInstanceState: Bundle?) -> Unit,
 ): Application.ActivityLifecycleCallbacks = addLifecycleCallback(onActivityPreCreated = action)
 
-inline fun Activity.doOnActivityPreStarted(
-    crossinline action: (activity: Activity) -> Unit,
+fun Activity.doOnActivityPreStarted(
+    action: (activity: Activity) -> Unit,
 ): Application.ActivityLifecycleCallbacks = addLifecycleCallback(onActivityPreStarted = action)
 
-inline fun Activity.doOnActivityPreResumed(
-    crossinline action: (activity: Activity) -> Unit,
+fun Activity.doOnActivityPreResumed(
+    action: (activity: Activity) -> Unit,
 ): Application.ActivityLifecycleCallbacks = addLifecycleCallback(onActivityPreResumed = action)
 
 
-inline fun Activity.doOnActivityPrePaused(
-    crossinline action: (activity: Activity) -> Unit,
+fun Activity.doOnActivityPrePaused(
+    action: (activity: Activity) -> Unit,
 ): Application.ActivityLifecycleCallbacks = addLifecycleCallback(onActivityPrePaused = action)
 
 
-inline fun Activity.doOnActivityPreStopped(
-    crossinline action: (activity: Activity) -> Unit,
+fun Activity.doOnActivityPreStopped(
+    action: (activity: Activity) -> Unit,
 ): Application.ActivityLifecycleCallbacks = addLifecycleCallback(onActivityPreStopped = action)
 
-inline fun Activity.doOnActivityPreDestroyed(
-    crossinline action: (activity: Activity) -> Unit,
+fun Activity.doOnActivityPreDestroyed(
+    action: (activity: Activity) -> Unit,
 ): Application.ActivityLifecycleCallbacks = addLifecycleCallback(onActivityPreDestroyed = action)
 
 
 //----------- Post
-inline fun Activity.doOnActivityPostCreated(
-    crossinline action: (activity: Activity,savedInstanceState: Bundle?) -> Unit,
+fun Activity.doOnActivityPostCreated(
+    action: (activity: Activity, savedInstanceState: Bundle?) -> Unit,
 ): Application.ActivityLifecycleCallbacks = addLifecycleCallback(onActivityPostCreated = action)
 
-inline fun Activity.doOnActivityPostStarted(
-    crossinline action: (activity: Activity) -> Unit,
+fun Activity.doOnActivityPostStarted(
+    action: (activity: Activity) -> Unit,
 ): Application.ActivityLifecycleCallbacks = addLifecycleCallback(onActivityPostStarted = action)
 
-inline fun Activity.doOnActivityPostResumed(
-    crossinline action: (activity: Activity) -> Unit,
+fun Activity.doOnActivityPostResumed(
+    action: (activity: Activity) -> Unit,
 ): Application.ActivityLifecycleCallbacks = addLifecycleCallback(onActivityPostResumed = action)
 
 
-inline fun Activity.doOnActivityPostPaused(
-    crossinline action: (activity: Activity) -> Unit,
+fun Activity.doOnActivityPostPaused(
+    action: (activity: Activity) -> Unit,
 ): Application.ActivityLifecycleCallbacks = addLifecycleCallback(onActivityPostPaused = action)
 
 
-inline fun Activity.doOnActivityPostStopped(
-    crossinline action: (activity: Activity) -> Unit,
+fun Activity.doOnActivityPostStopped(
+    action: (activity: Activity) -> Unit,
 ): Application.ActivityLifecycleCallbacks = addLifecycleCallback(onActivityPostStopped = action)
 
-inline fun Activity.doOnActivityPostDestroyed(
-    crossinline action: (activity: Activity) -> Unit,
+fun Activity.doOnActivityPostDestroyed(
+    action: (activity: Activity) -> Unit,
 ): Application.ActivityLifecycleCallbacks = addLifecycleCallback(onActivityPostDestroyed = action)
 
 
-
-inline fun Activity.addLifecycleCallback(
-    crossinline onActivityCreated: (activity: Activity, savedInstanceState: Bundle?) -> Unit = {_,_->},
-    crossinline onActivityPreCreated: (activity: Activity, savedInstanceState: Bundle?) -> Unit = {_,_->},
-    crossinline onActivityPostCreated: (activity:Activity,savedInstanceState: Bundle?) -> Unit = {_,_->},
-    crossinline onActivityPreStarted: (activity: Activity) -> Unit = {},
-    crossinline onActivityStarted: (activity: Activity) -> Unit = {},
-    crossinline onActivityPostStarted: (activity: Activity) -> Unit = {},
-    crossinline onActivityPreResumed: (activity: Activity) -> Unit = {},
-    crossinline onActivityResumed: (activity: Activity) -> Unit = {},
-    crossinline onActivityPostResumed: (activity: Activity) -> Unit = {},
-    crossinline onActivityPrePaused: (activity: Activity) -> Unit = {},
-    crossinline onActivityPaused: (activity: Activity) -> Unit = {},
-    crossinline onActivityPostPaused: (activity: Activity) -> Unit = {},
-    crossinline onActivityPreStopped: (activity: Activity) -> Unit = {},
-    crossinline onActivityStopped: (activity: Activity) -> Unit = {},
-    crossinline onActivityPostStopped: (activity: Activity) -> Unit = {},
-    crossinline onActivityPreDestroyed: (activity: Activity) -> Unit = {},
-    crossinline onActivityDestroyed: (activity: Activity) -> Unit = {},
-    crossinline onActivityPostDestroyed: (activity: Activity) -> Unit = {},
+fun Activity.addLifecycleCallback(
+    onActivityCreated: (activity: Activity, savedInstanceState: Bundle?) -> Unit = { _, _ -> },
+    onActivityPreCreated: (activity: Activity, savedInstanceState: Bundle?) -> Unit = { _, _ -> },
+    onActivityPostCreated: (activity: Activity, savedInstanceState: Bundle?) -> Unit = { _, _ -> },
+    onActivityPreStarted: (activity: Activity) -> Unit = {},
+    onActivityStarted: (activity: Activity) -> Unit = {},
+    onActivityPostStarted: (activity: Activity) -> Unit = {},
+    onActivityPreResumed: (activity: Activity) -> Unit = {},
+    onActivityResumed: (activity: Activity) -> Unit = {},
+    onActivityPostResumed: (activity: Activity) -> Unit = {},
+    onActivityPrePaused: (activity: Activity) -> Unit = {},
+    onActivityPaused: (activity: Activity) -> Unit = {},
+    onActivityPostPaused: (activity: Activity) -> Unit = {},
+    onActivityPreStopped: (activity: Activity) -> Unit = {},
+    onActivityStopped: (activity: Activity) -> Unit = {},
+    onActivityPostStopped: (activity: Activity) -> Unit = {},
+    onActivityPreDestroyed: (activity: Activity) -> Unit = {},
+    onActivityDestroyed: (activity: Activity) -> Unit = {},
+    onActivityPostDestroyed: (activity: Activity) -> Unit = {},
 ): Application.ActivityLifecycleCallbacks {
     val callbacks = object : SimpleActivityLifecycleCallbacks() {
         override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
@@ -147,99 +140,51 @@ inline fun Activity.addLifecycleCallback(
         }
 
         override fun onActivityPreCreated(activity: Activity, savedInstanceState: Bundle?) {
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-                onActivityPreCreated(activity, savedInstanceState)
-            }else{
-                onActivityCreated(activity, savedInstanceState)
-            }
+            onActivityPreCreated(activity, savedInstanceState)
         }
 
         override fun onActivityPrePaused(activity: Activity) {
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-                onActivityPrePaused(activity)
-            }else{
-                onActivityPaused(activity)
-            }
+            onActivityPrePaused(activity)
         }
 
         override fun onActivityPreResumed(activity: Activity) {
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-                onActivityPreResumed(activity)
-            }else{
-                onActivityResumed(activity)
-            }
+            onActivityPreResumed(activity)
         }
 
         override fun onActivityPreStarted(activity: Activity) {
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-                onActivityPreStarted(activity)
-            }else{
-                onActivityStarted(activity)
-            }
+            onActivityPreStarted(activity)
         }
 
         override fun onActivityPreStopped(activity: Activity) {
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-                onActivityPreStopped(activity)
-            }else{
-                onActivityStopped(activity)
-            }
+            onActivityPreStopped(activity)
         }
 
         override fun onActivityPreDestroyed(activity: Activity) {
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-                onActivityPreDestroyed(activity)
-            }else{
-                onActivityDestroyed(activity)
-            }
+            onActivityPreDestroyed(activity)
         }
 
         override fun onActivityPostCreated(activity: Activity, savedInstanceState: Bundle?) {
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-                onActivityPostCreated(activity, savedInstanceState)
-            }else{
-                onActivityCreated(activity,savedInstanceState)
-            }
+            onActivityPostCreated(activity, savedInstanceState)
         }
 
         override fun onActivityPostPaused(activity: Activity) {
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-                onActivityPostPaused(activity)
-            } else {
-                onActivityPaused(activity)
-            }
+            onActivityPostPaused(activity)
         }
 
         override fun onActivityPostResumed(activity: Activity) {
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-                onActivityPostResumed(activity)
-            } else {
-                onActivityResumed(activity)
-            }
+            onActivityPostResumed(activity)
         }
 
         override fun onActivityPostStarted(activity: Activity) {
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-                onActivityPostStarted(activity)
-            } else {
-                onActivityStarted(activity)
-            }
+            onActivityPostStarted(activity)
         }
 
         override fun onActivityPostStopped(activity: Activity) {
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-                onActivityPostStopped(activity)
-            } else {
-                onActivityStopped(activity)
-            }
+            onActivityPostStopped(activity)
         }
 
         override fun onActivityPostDestroyed(activity: Activity) {
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-                onActivityPostDestroyed(activity)
-            } else {
-                onActivityDestroyed(activity)
-            }
+            onActivityPostDestroyed(activity)
         }
     }
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
