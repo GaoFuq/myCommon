@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.FragmentActivity
 import com.gfq.common.BuildConfig
+import com.gfq.common.R
 import com.orhanobut.logger.AndroidLogAdapter
 import com.orhanobut.logger.Logger
 import com.orhanobut.logger.PrettyFormatStrategy
@@ -20,6 +21,8 @@ object ActivityManager {
     private const val TAG = "【ActivityManager】"
     lateinit var application: Application
     private val activities = Collections.synchronizedList(mutableListOf<FragmentActivity>())
+
+
     private val activityLifecycleCallbacks = object : Application.ActivityLifecycleCallbacks {
         override fun onActivityPaused(activity: Activity) {
             Log.d(TAG, "onActivityPaused: ${activity.javaClass.simpleName}")
@@ -62,13 +65,16 @@ object ActivityManager {
     }
 
     private fun initLogger() {
-       /* val logAdapter = MyAndroidLogAdapter(
+        val logAdapter = MyAndroidLogAdapter(
             PrettyFormatStrategy.newBuilder()
-                .showThreadInfo(false)
+                .showThreadInfo(application.resources.getBoolean(R.bool.showThreadInfo))
+                .methodOffset(application.resources.getInteger(R.integer.methodOffset))
+                .methodCount(application.resources.getInteger(R.integer.methodCount))
+                .tag(application.resources.getString(R.string.loggerTag))
                 .build()
         )
-        logAdapter.isLoggable(BuildConfig.BUILD_TYPE == "debug")
-        Logger.addLogAdapter(logAdapter)*/
+        logAdapter.isLoggable(application.resources.getBoolean(R.bool.openLogger))
+        Logger.addLogAdapter(logAdapter)
     }
 
 

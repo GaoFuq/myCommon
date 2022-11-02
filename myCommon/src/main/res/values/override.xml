@@ -4,4 +4,13 @@
         取消淡入淡出动画效果
     -->
     <integer name="config_navAnimTime">0</integer>
+
+    <!-- Logger 配置    -->
+    <bool name="openLogger">true</bool>
+    <bool name="showThreadInfo">false</bool>
+    <integer name="methodOffset">1</integer>
+    <integer name="methodCount">1</integer>
+    <string name="loggerTag">PRETTY_LOGGER</string>
+
+
 </resources>

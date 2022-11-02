@@ -10,7 +10,6 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonParser
 import okhttp3.*
 import okhttp3.ResponseBody.Companion.toResponseBody
-import okhttp3.logging.HttpLoggingInterceptor
 import okio.Buffer
 import java.io.EOFException
 import java.io.IOException

@@ -13,7 +13,7 @@ import android.view.View
 /**
  * 点击事件防抖动
  */
-inline fun View.setDebounceClick(limitTime: Long = 500L, crossinline onClick: (View) -> Unit) {
+fun View.setDebounceClick(limitTime: Long = 500L, onClick: (View) -> Unit) {
     var lastClickTime = 0L
     setOnClickListener {
         val currentTime = System.currentTimeMillis()
@@ -31,10 +31,10 @@ inline fun View.setDebounceClick(limitTime: Long = 500L, crossinline onClick: (V
  * @param interval      两次点击的时间间隔
  * @param clickTimes    点击次数
  */
-inline fun View.setMultiClicksListener(
+fun View.setMultiClicksListener(
     interval: Long = 1000,
     clickTimes: Int,
-    crossinline block: () -> Unit
+    block: () -> Unit
 ) {
     setOnClickListener(object : View.OnClickListener {
         var firstTime: Long = 0

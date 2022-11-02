@@ -9,7 +9,7 @@ import com.gfq.common.view.setImage
 import com.gfq.common.view.visible
 
 class MToast : BaseToast(R.layout.common_toast_with_img) {
-    var tvToastMsg :TextView?=null
+    var tvToastMsg: TextView? = null
 
     override fun bindView(view: View?, bean: ToastDataBean) {
 
@@ -21,15 +21,15 @@ class MToast : BaseToast(R.layout.common_toast_with_img) {
         }
 
         val msg = bean.msg
-        setMsg(msg,false)
+        setMsg(msg, false)
     }
 
     override fun appendMsg(msg: Any?) {
-            setMsg(msg,true)
+        setMsg(msg, true)
     }
 
-    private fun setMsg(msg:Any?,append:Boolean){
-      val text = when (msg) {
+    private fun setMsg(msg: Any?, append: Boolean) {
+        val text = when (msg) {
             is CharSequence -> msg
             is Int -> {
                 try {
@@ -41,9 +41,9 @@ class MToast : BaseToast(R.layout.common_toast_with_img) {
             else -> msg.toString()
         }
 
-        if(append){
-            tvToastMsg?.append(text)
-        }else{
+        if (append) {
+            tvToastMsg?.append("\n" + text)
+        } else {
             tvToastMsg?.text = text
         }
     }
