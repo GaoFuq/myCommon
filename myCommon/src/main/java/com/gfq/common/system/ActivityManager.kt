@@ -90,7 +90,31 @@ object ActivityManager {
 
     fun getAllActivities(): List<FragmentActivity> = activities
 
+    /**
+     * 获取最近的一个 FragmentActivity 。
+     * 当从 B 返回 A 时， 在 A 的 onResume 里调用该方法，得到的是 B。
+    onActivityResumed: MainActivity
+    onActivityDestroyed: SplashActivity
+    onActivityPaused: MainActivity //点击跳转 SettingActivity
+    onActivityCreated: SettingActivity
+    onActivityStarted: SettingActivity
+    onActivityResumed: SettingActivity
+    onActivityStopped: MainActivity
+    onActivityPaused: SettingActivity //返回 MainActivity
+    onActivityStarted: MainActivity
+    onActivityResumed: MainActivity
+    onActivityStopped: SettingActivity
+    onActivityDestroyed: SettingActivity // 此时才会移除 SettingActivity
+     */
     fun getTopActivity() = activities.lastOrNull()
+
+    /**
+     * 是否从某Activity返回
+     */
+    inline fun <reified T : FragmentActivity> isBackFrom(clazz: Class<T>):Boolean{
+//        getTopActivity()?.javaClass?.typeName
+        return false
+    }
 
     /**
      * 退出整个app
