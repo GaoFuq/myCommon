@@ -8,8 +8,8 @@ import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.findViewTreeLifecycleOwner
 import com.gfq.common.net.RequestDelegate
-import com.gfq.common.net.interfacee.defimpl.DefShowerDialogDim
-import com.gfq.common.net.interfacee.defimpl.DefShowerDialogDimNt
+import com.gfq.common.net.interfacee.defimpl.DefShowerDialog
+import com.gfq.common.net.interfacee.defimpl.DefShowerDialogDim0
 import com.gfq.common.net.interfacee.defimpl.DefShowerView
 
 /**
@@ -26,13 +26,13 @@ abstract class BaseBindingView<binding : ViewDataBinding> @JvmOverloads construc
 
 
     //默认建议使用View的实现类。显示在Dialog下层，无蒙层，不会改变状态栏的文字颜色
-    open val requestDelegate by lazy { findViewTreeLifecycleOwner()?.let { RequestDelegate(it, DefShowerView(context)) }}
+    open val reqDel by lazy { findViewTreeLifecycleOwner()?.let { RequestDelegate(it, DefShowerView(context)) }}
 
     //建议在已经有 dim!=0 的Dialog显示时使用。半透明黑色蒙层，会改变状态栏的文字颜色。
-    open val requestDelegateDim by lazy { findViewTreeLifecycleOwner()?.let { RequestDelegate(it, DefShowerDialogDim(context)) }}
+    open val reqDelDim by lazy { findViewTreeLifecycleOwner()?.let { RequestDelegate(it, DefShowerDialog(context)) }}
 
     //建议在已经有 dim==0 的Dialog显示时使用。全透明蒙层，会改变状态栏的文字颜色
-    open val requestDelegateDimNt by lazy { findViewTreeLifecycleOwner()?.let { RequestDelegate(it, DefShowerDialogDimNt(context)) }}
+    open val reqDelDim0 by lazy { findViewTreeLifecycleOwner()?.let { RequestDelegate(it, DefShowerDialogDim0(context)) }}
 
 
 

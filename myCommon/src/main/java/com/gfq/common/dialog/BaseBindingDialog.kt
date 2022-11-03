@@ -13,14 +13,19 @@ import com.gfq.common.R
  * @auth gaofuq
  * @description
  */
+
+/**
+ * @param withAnim
+ * 是否有进入和退出动画，默认有。
+ * 当在Dialog上显示Dialog时，建议设置为false，
+ * 解决在两个Dialog相互切换的时候的闪屏问题。
+ */
 abstract class BaseBindingDialog<T : ViewDataBinding>(
     context: Context,
     layoutId: Int,
-    private val withAnim: Boolean = true,
+    withAnim: Boolean = true,
 ) :
-    BaseDialog(context) {
-
-    var doOnStart: (() -> Unit)? = null
+    BaseDialog(context, withAnim = withAnim) {
 
     val dialogBinding = DataBindingUtil.inflate<T>(
         LayoutInflater.from(context),
@@ -32,22 +37,9 @@ abstract class BaseBindingDialog<T : ViewDataBinding>(
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(dialogBinding.root)
-        window?.setBackgroundDrawable(ColorDrawable())
-        if (!withAnim) {
-            window?.setWindowAnimations(R.style.styleDialogNoAnim)
-        }
         initViews()
     }
 
     abstract fun initViews()
-    open fun initLayoutParams() {}
-
-
-    override fun onStart() {
-        super.onStart()
-        initLayoutParams()
-        doOnStart?.invoke()
-    }
-
 
 }

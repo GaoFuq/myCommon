@@ -13,14 +13,11 @@ import com.gfq.common.system.ActivityManager
  * 默认宽高 100dp，黑色背景，点击外部不隐藏。
  * 问题：1.可能会改变状态栏文字颜色。
  */
-open class DefShowerDialogDimNt(
-    context: Context = ActivityManager.getAllActivities().last(),
-    style: Int = 0
-) : DefShowerDialogDim(context, style) {
+open class DefShowerDialogDim0(
+    context: Context,
+) : DefShowerDialog(context) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //解决在两个Dialog相互切换的时候的闪屏问题
-//        window?.setWindowAnimations(R.style.styleDialogNoAnim)
         window?.setDimAmount(0f)
     }
 }

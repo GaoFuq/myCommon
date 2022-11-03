@@ -11,6 +11,7 @@ import android.widget.*
 import com.gfq.common.R
 import com.gfq.common.net.AbsResponse
 import com.gfq.common.net.interfacee.IRequestStateShower
+import com.gfq.common.system.loge
 import com.gfq.common.utils.mainThread
 import com.gfq.common.view.gone
 import com.gfq.common.view.visible
@@ -44,7 +45,7 @@ open class DefShowerView @JvmOverloads constructor(
     var container: FrameLayout? = null
 
     override fun showLoading(message: String?) {
-        Log.e(TAG, "showLoading: $message")
+        loge("$TAG showLoading: $message")
         mainThread {
             addThisViewIfNeed()
             tvState.text = message
@@ -83,7 +84,7 @@ open class DefShowerView @JvmOverloads constructor(
     }
 
     override fun showError(error: String?) {
-        Log.e(TAG, "showError: $error")
+        loge("$TAG showError: $error")
         mainThread {
             addThisViewIfNeed()
             tvState.text = error
@@ -93,7 +94,7 @@ open class DefShowerView @JvmOverloads constructor(
     }
 
     override fun dismissRequestStateShower() {
-        Log.e(TAG, "dismissRequestStateShower ")
+        loge("$TAG dismissRequestStateShower ")
         mainThread { gone() }
     }
 

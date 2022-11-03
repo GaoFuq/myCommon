@@ -1,16 +1,17 @@
 package com.gfq.common.dialog
 
 import android.content.Context
+import android.content.ContextWrapper
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
+import androidx.fragment.app.FragmentActivity
 import com.gfq.common.R
-import com.gfq.common.net.RequestDelegate
-import com.gfq.common.net.interfacee.defimpl.DefShowerDialogDim
-import com.gfq.common.net.interfacee.defimpl.DefShowerDialogDimNt
-import com.gfq.common.net.interfacee.defimpl.DefShowerView
+import com.gfq.common.helper.actlifecycle.doOnDestroyed
+import com.gfq.common.system.ActivityManager
+import com.gfq.common.system.loge
 import com.google.android.material.bottomsheet.BottomSheetDialog
 
 /**
@@ -19,30 +20,32 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
  * @description
  */
 abstract class BaseBottomSheetDialog<T : ViewDataBinding>(
-    val mContext: Context,
-    private val layoutId: Int,
+    context: Context,
+    layoutId: Int,
     style: Int = 0,
 ) :
-    BottomSheetDialog(mContext, style) {
+    BottomSheetDialog(context, style) {
 
-    lateinit var dialogBinding: T
+    private val TAG = this.javaClass.simpleName
 
-    //默认建议使用View的实现类。显示在Dialog下层，无蒙层，不会改变状态栏的文字颜色
-    open val requestDelegate by lazy { RequestDelegate(null, DefShowerView(mContext)) }
+    var dialogBinding = DataBindingUtil.inflate<T>(
+        LayoutInflater.from(context),
+        layoutId,
+        null,
+        false
+    )
 
-    //建议在已经有 dim!=0 的Dialog显示时使用。半透明黑色蒙层，会改变状态栏的文字颜色。
-    open val requestDelegateDim by lazy { RequestDelegate(null, DefShowerDialogDim(mContext)) }
 
-    //建议在已经有 dim==0 的Dialog显示时使用。全透明蒙层，会改变状态栏的文字颜色
-    open val requestDelegateDimNt by lazy { RequestDelegate(null, DefShowerDialogDimNt(mContext)) }
+    var doOnStart: (() -> Unit)? = null
+
 
     abstract fun initViews()
     open fun initLayoutParams() {}
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        dialogBinding =
-            DataBindingUtil.inflate<T>(LayoutInflater.from(mContext), layoutId, null, false)
+        loge("$TAG onCreate")
+        addLifecycleObserver()
         setContentView(dialogBinding.root)
         findViewById<View>(R.id.container)?.setOnClickListener {
             dismiss()
@@ -50,9 +53,42 @@ abstract class BaseBottomSheetDialog<T : ViewDataBinding>(
         initViews()
     }
 
-    override fun onStart() {
-        super.onStart()
-        initLayoutParams()
+    private fun addLifecycleObserver() {
+        if (context is FragmentActivity) {
+            (context as FragmentActivity).doOnDestroyed { dismissSelf() }
+        } else if (context is ContextWrapper) {
+            val wrapper = context as ContextWrapper
+            loge("$TAG wrapper.baseContext is ${wrapper.baseContext}")
+            if (wrapper.baseContext is FragmentActivity) {
+                (wrapper.baseContext as FragmentActivity).doOnDestroyed { dismissSelf() }
+            }
+        }
     }
 
+    override fun onStart() {
+        super.onStart()
+        loge("$TAG onStart")
+        initLayoutParams()
+        doOnStart?.invoke()
+    }
+
+    override fun dismiss() {
+        super.dismiss()
+        loge("$TAG dismiss")
+    }
+
+    override fun show() {
+        super.show()
+        loge("$TAG show")
+    }
+
+    override fun onStop() {
+        super.onStop()
+        loge("$TAG onStop")
+    }
+
+    private fun dismissSelf() {
+        loge("$TAG before ${ActivityManager.getTopActivity()?.localClassName} destroy dismiss itself")
+        dismiss()
+    }
 }

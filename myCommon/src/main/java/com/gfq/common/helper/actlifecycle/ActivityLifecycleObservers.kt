@@ -6,7 +6,7 @@ import androidx.fragment.app.FragmentActivity
 /**
  *  2022/11/3 15:21
  * @auth gaofuq
- * @description
+ * @description 添加生命周期观察者，并在 ON_DESTROY 自动移除
  */
 fun FragmentActivity.doOnCreated(action: () -> Unit) {
     SimpleActivityLifecycleObserver(this, doOnCreated = action)
