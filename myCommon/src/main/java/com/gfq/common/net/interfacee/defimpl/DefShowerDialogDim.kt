@@ -14,10 +14,9 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.OnLifecycleEvent
 import com.gfq.common.R
 import com.gfq.common.databinding.DefaultRequestStateDialogLayoutBinding
-import com.gfq.common.dialog.GlobalDialog
+import com.gfq.common.dialog.BaseDialog
 import com.gfq.common.net.AbsResponse
 import com.gfq.common.net.interfacee.IRequestStateShower
-import com.gfq.common.system.ActivityManager
 
 /**
  * Dialog实现
@@ -25,9 +24,9 @@ import com.gfq.common.system.ActivityManager
  * 问题：可能会改变状态栏文字颜色。
  */
 open class DefShowerDialogDim(
-    context: Context = ActivityManager.getAllActivities().last(),
+    context: Context,
     style: Int = 0
-) : GlobalDialog(context, style), IRequestStateShower, LifecycleObserver {
+) : BaseDialog(context, style), IRequestStateShower, LifecycleObserver {
     companion object{
         private const val TAG = "【DefShowerDialog】"
     }
@@ -46,8 +45,8 @@ open class DefShowerDialogDim(
         window?.setBackgroundDrawable(ColorDrawable())
         //解决在两个Dialog相互切换的时候的闪屏问题
         window?.setWindowAnimations(R.style.styleDialogNoAnim)
-        if (mContext is LifecycleOwner) {
-            mContext.lifecycle.addObserver(this)
+        if (context is LifecycleOwner) {
+            (context as LifecycleOwner).lifecycle.addObserver(this)
         }
     }
 
@@ -84,20 +83,7 @@ open class DefShowerDialogDim(
         dismiss()
     }
 
-    fun check(): Boolean {
-        if (mContext is Activity) {
-            return !mContext.isFinishing && !mContext.isDestroyed
-        }
 
-        if (context is ContextWrapper) {
-            val wrapper = context as ContextWrapper
-            if (wrapper.baseContext is Activity) {
-                val act = wrapper.baseContext as Activity
-                return !act.isFinishing && !act.isDestroyed
-            }
-        }
-        return false
-    }
 
     fun checkAndShow(msg: String?) {
         binding.tvState.text = msg
@@ -108,7 +94,7 @@ open class DefShowerDialogDim(
 
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
     fun dismissThis() {
-        Log.e(TAG, "${mContext.javaClass.simpleName} on destroy dismissThis")
+        Log.e(TAG, "${this.javaClass.simpleName} on destroy dismissThis")
         dismiss()
     }
 }

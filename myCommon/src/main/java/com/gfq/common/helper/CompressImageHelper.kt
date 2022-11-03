@@ -4,7 +4,6 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import com.gfq.common.system.loge
 import com.gfq.common.utils.cacheDir
-import com.gfq.common.utils.formatSizeInMB
 import com.gfq.common.utils.getFileName
 import com.gfq.common.utils.getMimeType
 import java.io.ByteArrayOutputStream
@@ -19,6 +18,10 @@ import java.io.IOException
  */
 object CompressImageHelper {
 
+    /**
+     * 采样率压缩
+     * 无法确切的压缩到指定的图片大小。
+     */
     @JvmStatic
     fun compress(
         path: String,
@@ -54,8 +57,8 @@ object CompressImageHelper {
             dir.mkdirs()
         }
         loge("file compressed size = ${
-            formatSizeInMB(stream.size().toLong())
-        } , compressPath = $compressPath")
+            stream.size() / 1024 
+        } KB, compressPath = $compressPath")
         var fos: FileOutputStream? = null
         try {
             fos = FileOutputStream(compressPath)

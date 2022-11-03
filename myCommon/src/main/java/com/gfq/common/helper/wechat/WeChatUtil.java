@@ -1,4 +1,4 @@
-package com.gfq.common.utils;
+package com.gfq.common.helper.wechat;
 
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
@@ -19,7 +19,7 @@ import java.net.URLConnection;
 
 public class WeChatUtil {
 
-    private static final String TAG = "SDK_Sample.Util";
+    private static final String TAG = "WeChatUtil";
 
     public static byte[] bmpToByteArray(final Bitmap bmp, final boolean needRecycle) {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
