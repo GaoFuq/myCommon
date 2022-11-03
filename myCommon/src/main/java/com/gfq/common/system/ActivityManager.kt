@@ -1,7 +1,10 @@
 package com.gfq.common.system
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Application
+import android.content.Context
+import android.content.pm.ActivityInfo
 import android.content.pm.ApplicationInfo
 import android.os.Build
 import android.os.Bundle
@@ -19,19 +22,40 @@ import kotlin.system.exitProcess
  */
 object ActivityManager {
     private const val TAG = "【ActivityManager】"
+
+    /**
+     * 全局设置Activity的方向
+     * @see ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+     * @see ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+     */
+    var globalOrientation: Int? = null
     lateinit var application: Application
     private val activities = Collections.synchronizedList(mutableListOf<FragmentActivity>())
+    private val currentResumedActivity = Collections.synchronizedList(mutableListOf<Activity>())
+
 
     private val activityLifecycleCallbacks = object : SimpleActivityLifecycleCallbacks(true, TAG) {
         override fun onActivityDestroyed(activity: Activity) {
             super.onActivityDestroyed(activity)
             activities.remove(activity)
         }
+
         override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
-           super.onActivityCreated(activity, savedInstanceState)
+            super.onActivityCreated(activity, savedInstanceState)
+            globalOrientation?.let { setScreenOrientationPortrait(activity, it) }
             if (activity is FragmentActivity) {
                 activities.add(activity)
             }
+        }
+
+        override fun onActivityResumed(activity: Activity) {
+            super.onActivityResumed(activity)
+            currentResumedActivity.add(activity)
+        }
+
+        override fun onActivityPaused(activity: Activity) {
+            super.onActivityPaused(activity)
+            currentResumedActivity.clear()
         }
     }
 
@@ -91,7 +115,7 @@ object ActivityManager {
     fun getAllActivities(): List<FragmentActivity> = activities
 
     /**
-     * 获取最近的一个 FragmentActivity 。
+     * 获取最近的一个未被 Destroy 的 FragmentActivity 。
      * 当从 B 返回 A 时， 在 A 的 onResume 里调用该方法，得到的是 B。
     onActivityResumed: MainActivity
     onActivityDestroyed: SplashActivity
@@ -109,12 +133,31 @@ object ActivityManager {
     fun getTopActivity() = activities.lastOrNull()
 
     /**
-     * 是否从某Activity返回
+     * 获取当前正处于 onResume 状态的 Activity
      */
-    inline fun <reified T : FragmentActivity> isBackFrom(clazz: Class<T>):Boolean{
-//        getTopActivity()?.javaClass?.typeName
-        return false
+    fun getTopResumeActivity() = currentResumedActivity.firstOrNull()
+
+    /**
+     * 在Activity的onResume中调用，根据全限定类名，判断是否从某Activity返回
+     */
+    fun isBackFrom(clazz: Class<out Activity>): Boolean {
+        val topAct = getTopActivity() ?: return false
+        return topAct::class.java.name == clazz.name
     }
+
+
+    /**
+     * 全局设置 屏幕方向
+     */
+    @SuppressLint("SourceLockedOrientationActivity")
+    private fun setScreenOrientationPortrait(activity: Activity, orientation: Int) {
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.O) {
+            AdaptsHelper.fixOrientationInAndroidO(activity)
+        } else {
+            activity.requestedOrientation = orientation
+        }
+    }
+
 
     /**
      * 退出整个app

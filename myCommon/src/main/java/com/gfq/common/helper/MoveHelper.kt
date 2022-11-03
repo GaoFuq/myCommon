@@ -1,5 +1,6 @@
 package com.gfq.common.helper
 
+import android.os.SystemClock
 import android.view.*
 import android.widget.RelativeLayout
 import androidx.core.view.updateLayoutParams
@@ -25,8 +26,8 @@ class MoveHelper(private val view: View) {
     private var lastY = 0f
     private val viewParent = view.parent as? RelativeLayout
     private val slop = ViewConfiguration.get(view.context).scaledTouchSlop
-    private var isMoved = false
     private var isKeepShape = true//保持宽高不变
+    private var mDownTime:Long = 0
 
 
     // 限制移动区域
@@ -45,15 +46,13 @@ class MoveHelper(private val view: View) {
 
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
+                mDownTime = SystemClock.elapsedRealtime()
                 lastX = x
                 lastY = y
             }
             MotionEvent.ACTION_MOVE -> {
                 val dx = x - lastX
                 val dy = y - lastY
-                if (dx.absoluteValue > slop || dy.absoluteValue > slop) {
-                    isMoved = true
-                }
                 view.updateLayoutParams<ViewGroup.MarginLayoutParams> {
                     this.leftMargin += dx.toInt()
                     this.topMargin += dy.toInt()
@@ -64,10 +63,12 @@ class MoveHelper(private val view: View) {
                 lastY = y
             }
             MotionEvent.ACTION_UP -> {
-                if (!isMoved) {
+                val disTime = SystemClock.elapsedRealtime() - mDownTime
+                val dx = x - lastX
+                val dy = y - lastY
+                if (dx.absoluteValue < slop && dy.absoluteValue < slop && disTime < 300) {
                     view.performClick()
                 }
-                isMoved = false
             }
         }
         return true

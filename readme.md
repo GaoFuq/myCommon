@@ -62,3 +62,10 @@
      implementation 'com.makeramen:roundedimageview:2.3.0'//圆角图片
     
 ```
+
+## 笔记
+ 1. 解决某些手机安装失败的问题 The application could not be installed: INSTALL_FAILED_TEST_ONLY
+    gradle.properties 中添加： android.injected.testOnly=false
+    AndroidManifest.xml 中在 application 节点添加： android:testOnly="false"
+    
+ 2. 
