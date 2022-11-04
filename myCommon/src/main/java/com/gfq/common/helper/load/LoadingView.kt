@@ -1,4 +1,4 @@
-package com.gfq.common.helper.global.loading
+package com.gfq.common.helper.load
 
 import android.content.Context
 import android.graphics.Color
@@ -32,6 +32,9 @@ open class LoadingView @JvmOverloads constructor(
 
     val ivState = inflate.findViewById<ImageView>(R.id.ivState)
     val tvState = inflate.findViewById<TextView>(R.id.tvState)
+
+    // 设置转圈圈的颜色
+    // progressBar.indeterminateTintList = ColorStateList.valueOf(getColor(R.color.theme))
     val progressBar = inflate.findViewById<ProgressBar>(R.id.progressBar)
 
     init {

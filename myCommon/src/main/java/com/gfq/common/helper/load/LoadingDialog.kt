@@ -1,4 +1,4 @@
-package com.gfq.common.helper.global.loading
+package com.gfq.common.helper.load
 
 import android.content.Context
 import android.os.Bundle
@@ -18,8 +18,12 @@ open class LoadingDialog(context: Context) : BaseDialog(context, withAnim = fals
     private val inflate =
         LayoutInflater.from(context).inflate(R.layout.default_loading_dialog, null, false)
     val ivState = inflate.findViewById<ImageView>(R.id.ivState)
-    val progressBar = inflate.findViewById<ProgressBar>(R.id.progressBar)
+
     val tvState = inflate.findViewById<TextView>(R.id.tvState)
+
+    // 设置转圈圈的颜色
+    // progressBar.indeterminateTintList = ColorStateList.valueOf(getColor(R.color.theme))
+    val progressBar = inflate.findViewById<ProgressBar>(R.id.progressBar)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
