@@ -53,8 +53,8 @@ object ActivityManager {
             currentResumedActivity.add(activity)
         }
 
-        override fun onActivityPaused(activity: Activity) {
-            super.onActivityPaused(activity)
+        override fun onActivityStopped(activity: Activity) {
+            super.onActivityStopped(activity)
             currentResumedActivity.clear()
         }
     }
