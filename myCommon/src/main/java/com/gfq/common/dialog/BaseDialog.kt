@@ -8,9 +8,7 @@ import android.os.Bundle
 import androidx.fragment.app.FragmentActivity
 import com.gfq.common.R
 import com.gfq.common.helper.actlifecycle.doOnDestroyed
-import com.gfq.common.system.ActivityManager
-import com.gfq.common.system.loge
-import com.gfq.common.system.updateAttributes
+import com.gfq.common.system.*
 
 /**
  *  2022/1/12 11:54
@@ -43,7 +41,7 @@ open class BaseDialog(
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        loge("$TAG onCreate")
+        logd("$TAG onCreate")
         addLifecycleObserver()
         window?.setBackgroundDrawable(ColorDrawable())
         if (!withAnim) {
@@ -53,7 +51,7 @@ open class BaseDialog(
 
     override fun onStart() {
         super.onStart()
-        loge("$TAG onStart")
+        logd("$TAG onStart")
         initLayoutParams()
         doOnStart?.invoke()
     }
@@ -62,34 +60,26 @@ open class BaseDialog(
 
     override fun onStop() {
         super.onStop()
-        loge("$TAG onStop")
+        logd("$TAG onStop")
     }
 
     override fun dismiss() {
         super.dismiss()
-        loge("$TAG dismiss")
+        logd("$TAG dismiss")
     }
 
     override fun show() {
         super.show()
-        loge("$TAG show")
+        logd("$TAG show")
     }
 
     private fun addLifecycleObserver() {
-        if (context is FragmentActivity) {
-            (context as FragmentActivity).doOnDestroyed { dismissSelf() }
-        } else if (context is ContextWrapper) {
-            val wrapper = context as ContextWrapper
-            loge("$TAG wrapper.baseContext is ${wrapper.baseContext}")
-            if (wrapper.baseContext is FragmentActivity) {
-                (wrapper.baseContext as FragmentActivity).doOnDestroyed { dismissSelf() }
-            }
-        }
+        context.fragmentActivity()?.doOnDestroyed { dismissSelf() }
     }
 
 
     private fun dismissSelf() {
-        loge("$TAG before ${ActivityManager.getTopActivity()?.localClassName} destroy dismiss itself")
+        logd("$TAG before ${ActivityManager.getTopActivity()?.localClassName} destroy dismiss itself")
         dismiss()
     }
 }

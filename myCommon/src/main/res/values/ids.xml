@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <item name="tag_badge" type="id" />
+    <item name="defShowerViewId" type="id" />
+    <item name="defLoadingViewId" type="id" />
 </resources>

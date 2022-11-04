@@ -11,6 +11,7 @@ import androidx.fragment.app.FragmentActivity
 import com.gfq.common.R
 import com.gfq.common.helper.actlifecycle.doOnDestroyed
 import com.gfq.common.system.ActivityManager
+import com.gfq.common.system.fragmentActivity
 import com.gfq.common.system.loge
 import com.google.android.material.bottomsheet.BottomSheetDialog
 
@@ -54,15 +55,7 @@ abstract class BaseBottomSheetDialog<T : ViewDataBinding>(
     }
 
     private fun addLifecycleObserver() {
-        if (context is FragmentActivity) {
-            (context as FragmentActivity).doOnDestroyed { dismissSelf() }
-        } else if (context is ContextWrapper) {
-            val wrapper = context as ContextWrapper
-            loge("$TAG wrapper.baseContext is ${wrapper.baseContext}")
-            if (wrapper.baseContext is FragmentActivity) {
-                (wrapper.baseContext as FragmentActivity).doOnDestroyed { dismissSelf() }
-            }
-        }
+        context.fragmentActivity()?.doOnDestroyed { dismissSelf() }
     }
 
     override fun onStart() {

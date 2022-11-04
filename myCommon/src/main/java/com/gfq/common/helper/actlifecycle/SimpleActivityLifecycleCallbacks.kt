@@ -10,10 +10,20 @@ import com.gfq.common.system.ActivityManager
  *  2022/9/15 17:19
  * @auth gaofuq
  * @description
+ * LifecycleCallbacks 的生命周期回调，在 Activity 中该生命周期的 super调用之后 执行。
+ *
+ * 比如：
+  override fun onResume() {
+    //SimpleActivityLifecycleObserver.onActivityResumed 在此时回调
+    super.onResume()
+    //SimpleActivityLifecycleCallbacks.onActivityResumed 在此时回调
+    loge("onResume")
+    //SimpleActivityLifecycleCallbacks.onActivityPostResumed 在此时回调
+}
  */
 open class SimpleActivityLifecycleCallbacks(
     private val needLog: Boolean = false,
-    private val logTAG: String = "SimpleActivityLifecycle",
+    private val logTAG: String = "LifecycleCallbacks",
 ) : Application.ActivityLifecycleCallbacks {
     /**
      * Called as the first step of the Activity being created. This is always called before

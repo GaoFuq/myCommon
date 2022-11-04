@@ -2,12 +2,15 @@ package com.gfq.common.system
 
 import android.app.Activity
 import android.content.Context
+import android.content.ContextWrapper
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
 import android.view.Window
 import android.view.WindowManager
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
+import com.gfq.common.helper.actlifecycle.doOnDestroyed
 
 /**
  *  2021/12/30 9:29
@@ -15,12 +18,12 @@ import androidx.fragment.app.Fragment
  * @description
  */
 
-inline fun <reified T : Activity> Context.openActivity(bundle: Bundle?=null) {
+inline fun <reified T : Activity> Context.openActivity(bundle: Bundle? = null) {
     startActivity(createIntent<T>(bundle))
 }
 
 
-inline fun <reified T : Activity> Fragment.openActivity(bundle: Bundle?=null) {
+inline fun <reified T : Activity> Fragment.openActivity(bundle: Bundle? = null) {
     startActivity(this.context?.createIntent<T>(bundle))
 }
 
@@ -54,4 +57,32 @@ inline fun Window.updateAttributes(block: (WindowManager.LayoutParams) -> Unit) 
 
 fun isActivityDestroyed(mActivity: Activity?): Boolean {
     return mActivity == null || mActivity.isFinishing || mActivity.isDestroyed
+}
+
+fun Context.activity(): Activity? {
+    return if (this is Activity) {
+        this
+    } else if (this is ContextWrapper) {
+        if (this.baseContext is Activity) {
+            this.baseContext as Activity
+        }else {
+            null
+        }
+    } else {
+        null
+    }
+}
+
+fun Context.fragmentActivity(): FragmentActivity? {
+    return if (this is FragmentActivity) {
+        this
+    } else if (this is ContextWrapper) {
+        if (this.baseContext is FragmentActivity) {
+            this.baseContext as FragmentActivity
+        }else {
+            null
+        }
+    } else {
+        null
+    }
 }

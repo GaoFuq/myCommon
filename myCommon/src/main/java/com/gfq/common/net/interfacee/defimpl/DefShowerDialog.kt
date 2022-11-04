@@ -6,7 +6,7 @@ import com.gfq.common.databinding.DefaultRequestStateDialogLayoutBinding
 import com.gfq.common.dialog.BaseBindingDialog
 import com.gfq.common.net.AbsResponse
 import com.gfq.common.net.interfacee.IRequestStateShower
-import com.gfq.common.system.loge
+import com.gfq.common.system.logd
 
 /**
  * Dialog实现
@@ -27,19 +27,19 @@ open class DefShowerDialog(context: Context) :
     }
 
     override fun showLoading(message: String?) {
-        loge("$TAG showLoading : $message")
+        logd("$TAG showLoading : $message")
         dialogBinding.tvState.text = message
         show()
     }
 
     override fun <T, Resp : AbsResponse<T>> showComplete(response: Resp?) {
-        loge("$TAG showComplete : ${response?.responseMessage()}")
+        logd("$TAG showComplete : ${response?.responseMessage()}")
         dialogBinding.tvState.text = response?.responseMessage()
         show()
     }
 
     override fun <T, Resp : AbsResponse<T>> showCompleteFailed(response: Resp?) {
-        loge( "$TAG showCompleteFailed  : ${response?.responseMessage()}")
+        logd( "$TAG showCompleteFailed  : ${response?.responseMessage()}")
         //默认显示返回的错误信息
         dialogBinding.tvState.text = response?.responseMessage()
         show()
@@ -47,14 +47,14 @@ open class DefShowerDialog(context: Context) :
 
 
     override fun showError(error: String?) {
-        loge( "$TAG showError :  $error")
+        logd( "$TAG showError :  $error")
         dialogBinding.tvState.text = error
         show()
     }
 
 
     override fun dismissRequestStateShower() {
-        loge( "$TAG dismissRequestStateShower")
+        logd( "$TAG dismissRequestStateShower")
         dismiss()
     }
 
