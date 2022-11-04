@@ -7,10 +7,26 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 
 /**
- *  2022/11/2 9:22
+ *  2022/9/15 17:19
  * @auth gaofuq
  * @description
- * Observer 的生命周期回调，在 Activity 中该生命周期的 super调用之前 执行
+
+代码 ：
+·doOnResumed { loge("doOnResumed observer") }
+·
+·override fun onResume() {
+···   loge("doOnResumed before")
+···   super.onResume()
+···   loge("doOnResumed late")
+·}
+
+日志执行顺序：
+【ActivityManager】: onActivityPreResumed: MainActivity
+PRETTY_LOGGER: │ doOnResumed before
+【ActivityManager】: onActivityResumed: MainActivity
+PRETTY_LOGGER: │ doOnResumed late
+PRETTY_LOGGER: │ doOnResumed observer
+【ActivityManager】: onActivityPostResumed: MainActivity
  */
 class SimpleActivityLifecycleObserver(
     private val activity: FragmentActivity,

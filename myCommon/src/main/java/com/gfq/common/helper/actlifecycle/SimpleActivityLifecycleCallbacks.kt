@@ -10,16 +10,23 @@ import com.gfq.common.system.ActivityManager
  *  2022/9/15 17:19
  * @auth gaofuq
  * @description
- * LifecycleCallbacks 的生命周期回调，在 Activity 中该生命周期的 super调用之后 执行。
- *
- * 比如：
-  override fun onResume() {
-    //SimpleActivityLifecycleObserver.onActivityResumed 在此时回调
-    super.onResume()
-    //SimpleActivityLifecycleCallbacks.onActivityResumed 在此时回调
-    loge("onResume")
-    //SimpleActivityLifecycleCallbacks.onActivityPostResumed 在此时回调
-}
+
+代码 ：
+·doOnResumed { loge("doOnResumed observer") }
+·
+·override fun onResume() {
+···   loge("doOnResumed before")
+···   super.onResume()
+···   loge("doOnResumed late")
+·}
+
+日志执行顺序：
+【ActivityManager】: onActivityPreResumed: MainActivity
+PRETTY_LOGGER: │ doOnResumed before
+【ActivityManager】: onActivityResumed: MainActivity
+PRETTY_LOGGER: │ doOnResumed late
+PRETTY_LOGGER: │ doOnResumed observer
+【ActivityManager】: onActivityPostResumed: MainActivity
  */
 open class SimpleActivityLifecycleCallbacks(
     private val needLog: Boolean = false,
@@ -30,7 +37,7 @@ open class SimpleActivityLifecycleCallbacks(
      * [Activity.onCreate].
      */
     override fun onActivityPreCreated(activity: Activity, savedInstanceState: Bundle?) {
-        if(needLog) {
+        if (needLog) {
             Log.d(logTAG, "onActivityPreCreated: ${activity.javaClass.simpleName}")
         }
     }
@@ -39,7 +46,7 @@ open class SimpleActivityLifecycleCallbacks(
      * Called when the Activity calls [super.onCreate()][Activity.onCreate].
      */
     override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
-        if(needLog) {
+        if (needLog) {
             Log.d(logTAG, "onActivityCreated: ${activity.javaClass.simpleName}")
         }
     }
@@ -49,7 +56,7 @@ open class SimpleActivityLifecycleCallbacks(
      * [Activity.onCreate].
      */
     override fun onActivityPostCreated(activity: Activity, savedInstanceState: Bundle?) {
-        if(needLog) {
+        if (needLog) {
             Log.d(logTAG, "onActivityPostCreated: ${activity.javaClass.simpleName}")
         }
     }
@@ -59,7 +66,7 @@ open class SimpleActivityLifecycleCallbacks(
      * [Activity.onStart].
      */
     override fun onActivityPreStarted(activity: Activity) {
-        if(needLog) {
+        if (needLog) {
             Log.d(logTAG, "onActivityPreStarted: ${activity.javaClass.simpleName}")
         }
     }
@@ -68,7 +75,7 @@ open class SimpleActivityLifecycleCallbacks(
      * Called when the Activity calls [super.onStart()][Activity.onStart].
      */
     override fun onActivityStarted(activity: Activity) {
-        if(needLog) {
+        if (needLog) {
             Log.d(logTAG, "onActivityStarted: ${activity.javaClass.simpleName}")
         }
     }
@@ -78,7 +85,7 @@ open class SimpleActivityLifecycleCallbacks(
      * [Activity.onStart].
      */
     override fun onActivityPostStarted(activity: Activity) {
-        if(needLog) {
+        if (needLog) {
             Log.d(logTAG, "onActivityPostStarted: ${activity.javaClass.simpleName}")
         }
     }
@@ -88,7 +95,7 @@ open class SimpleActivityLifecycleCallbacks(
      * [Activity.onResume].
      */
     override fun onActivityPreResumed(activity: Activity) {
-        if(needLog) {
+        if (needLog) {
             Log.d(logTAG, "onActivityPreResumed: ${activity.javaClass.simpleName}")
         }
     }
@@ -97,7 +104,7 @@ open class SimpleActivityLifecycleCallbacks(
      * Called when the Activity calls [super.onResume()][Activity.onResume].
      */
     override fun onActivityResumed(activity: Activity) {
-        if(needLog) {
+        if (needLog) {
             Log.d(logTAG, "onActivityResumed: ${activity.javaClass.simpleName}")
         }
     }
@@ -107,7 +114,7 @@ open class SimpleActivityLifecycleCallbacks(
      * [Activity.onResume] and [Activity.onPostResume].
      */
     override fun onActivityPostResumed(activity: Activity) {
-        if(needLog) {
+        if (needLog) {
             Log.d(logTAG, "onActivityPostResumed: ${activity.javaClass.simpleName}")
         }
     }
@@ -117,7 +124,7 @@ open class SimpleActivityLifecycleCallbacks(
      * [Activity.onPause].
      */
     override fun onActivityPrePaused(activity: Activity) {
-        if(needLog) {
+        if (needLog) {
             Log.d(logTAG, "onActivityPrePaused: ${activity.javaClass.simpleName}")
         }
     }
@@ -126,7 +133,7 @@ open class SimpleActivityLifecycleCallbacks(
      * Called when the Activity calls [super.onPause()][Activity.onPause].
      */
     override fun onActivityPaused(activity: Activity) {
-        if(needLog) {
+        if (needLog) {
             Log.d(logTAG, "onActivityPaused: ${activity.javaClass.simpleName}")
         }
     }
@@ -136,7 +143,7 @@ open class SimpleActivityLifecycleCallbacks(
      * [Activity.onPause].
      */
     override fun onActivityPostPaused(activity: Activity) {
-        if(needLog) {
+        if (needLog) {
             Log.d(logTAG, "onActivityPostPaused: ${activity.javaClass.simpleName}")
         }
     }
@@ -146,7 +153,7 @@ open class SimpleActivityLifecycleCallbacks(
      * [Activity.onStop].
      */
     override fun onActivityPreStopped(activity: Activity) {
-        if(needLog) {
+        if (needLog) {
             Log.d(logTAG, "onActivityPreStopped: ${activity.javaClass.simpleName}")
         }
     }
@@ -155,7 +162,7 @@ open class SimpleActivityLifecycleCallbacks(
      * Called when the Activity calls [super.onStop()][Activity.onStop].
      */
     override fun onActivityStopped(activity: Activity) {
-        if(needLog) {
+        if (needLog) {
             Log.d(logTAG, "onActivityStopped: ${activity.javaClass.simpleName}")
         }
     }
@@ -165,7 +172,7 @@ open class SimpleActivityLifecycleCallbacks(
      * [Activity.onStop].
      */
     override fun onActivityPostStopped(activity: Activity) {
-        if(needLog) {
+        if (needLog) {
             Log.d(logTAG, "onActivityPostStopped: ${activity.javaClass.simpleName}")
         }
     }
@@ -175,7 +182,7 @@ open class SimpleActivityLifecycleCallbacks(
      * called before [Activity.onSaveInstanceState].
      */
     override fun onActivityPreSaveInstanceState(activity: Activity, outState: Bundle) {
-        if(needLog) {
+        if (needLog) {
             Log.d(logTAG, "onActivityPreSaveInstanceState: ${activity.javaClass.simpleName}")
         }
     }
@@ -185,7 +192,7 @@ open class SimpleActivityLifecycleCallbacks(
      * [super.onSaveInstanceState()][Activity.onSaveInstanceState].
      */
     override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {
-        if(needLog) {
+        if (needLog) {
             Log.d(logTAG, "onActivitySaveInstanceState: ${activity.javaClass.simpleName}")
         }
     }
@@ -195,7 +202,7 @@ open class SimpleActivityLifecycleCallbacks(
      * called after[Activity.onSaveInstanceState].
      */
     override fun onActivityPostSaveInstanceState(activity: Activity, outState: Bundle) {
-        if(needLog) {
+        if (needLog) {
             Log.d(logTAG, "onActivityPostSaveInstanceState: ${activity.javaClass.simpleName}")
         }
     }
@@ -205,7 +212,7 @@ open class SimpleActivityLifecycleCallbacks(
      * [Activity.onDestroy].
      */
     override fun onActivityPreDestroyed(activity: Activity) {
-        if(needLog) {
+        if (needLog) {
             Log.d(logTAG, "onActivityPreDestroyed: ${activity.javaClass.simpleName}")
         }
     }
@@ -214,7 +221,7 @@ open class SimpleActivityLifecycleCallbacks(
      * Called when the Activity calls [super.onDestroy()][Activity.onDestroy].
      */
     override fun onActivityDestroyed(activity: Activity) {
-        if(needLog) {
+        if (needLog) {
             Log.d(logTAG, "onActivityDestroyed: ${activity.javaClass.simpleName}")
         }
     }
@@ -224,7 +231,7 @@ open class SimpleActivityLifecycleCallbacks(
      * [Activity.onDestroy].
      */
     override fun onActivityPostDestroyed(activity: Activity) {
-        if(needLog) {
+        if (needLog) {
             Log.d(logTAG, "onActivityPostDestroyed: ${activity.javaClass.simpleName}")
         }
     }

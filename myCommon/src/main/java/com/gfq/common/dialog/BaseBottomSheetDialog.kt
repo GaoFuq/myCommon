@@ -3,6 +3,7 @@ package com.gfq.common.dialog
 import android.content.Context
 import android.content.ContextWrapper
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import androidx.databinding.DataBindingUtil
@@ -12,7 +13,6 @@ import com.gfq.common.R
 import com.gfq.common.helper.actlifecycle.doOnDestroyed
 import com.gfq.common.system.ActivityManager
 import com.gfq.common.system.fragmentActivity
-import com.gfq.common.system.loge
 import com.google.android.material.bottomsheet.BottomSheetDialog
 
 /**
@@ -45,7 +45,7 @@ abstract class BaseBottomSheetDialog<T : ViewDataBinding>(
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        loge("$TAG onCreate")
+        Log.d(TAG, "onCreate: ")
         addLifecycleObserver()
         setContentView(dialogBinding.root)
         findViewById<View>(R.id.container)?.setOnClickListener {
@@ -60,28 +60,28 @@ abstract class BaseBottomSheetDialog<T : ViewDataBinding>(
 
     override fun onStart() {
         super.onStart()
-        loge("$TAG onStart")
+        Log.d(TAG, "onStart: ")
         initLayoutParams()
         doOnStart?.invoke()
     }
 
     override fun dismiss() {
         super.dismiss()
-        loge("$TAG dismiss")
+        Log.d(TAG, "dismiss: ")
     }
 
     override fun show() {
         super.show()
-        loge("$TAG show")
+        Log.d(TAG, "show: ")
     }
 
     override fun onStop() {
         super.onStop()
-        loge("$TAG onStop")
+        Log.d(TAG, "onStop: ")
     }
 
     private fun dismissSelf() {
-        loge("$TAG before ${ActivityManager.getTopActivity()?.localClassName} destroy dismiss itself")
+        Log.d(TAG, "before ${ActivityManager.getTopActivity()?.localClassName} destroy dismiss itself")
         dismiss()
     }
 }

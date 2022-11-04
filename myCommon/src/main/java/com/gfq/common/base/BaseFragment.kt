@@ -1,6 +1,8 @@
 package com.gfq.common.base
 
+import android.content.Context
 import android.os.Bundle
+import android.util.AttributeSet
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -44,23 +46,27 @@ abstract class BaseFragment<T : ViewDataBinding>(private val layoutId: Int) : Fr
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
+        Log.e(TAG, "onCreateView: " )
         fragBinding = DataBindingUtil.inflate<T>(inflater, layoutId, container, false)
         return fragBinding.root
     }
 
     override fun onStart() {
         super.onStart()
+        Log.e(TAG, "onStart: " )
         doOnStart?.invoke()
     }
     abstract fun initViews()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.e(TAG, "onCreate: " )
         injectForArguments()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        Log.e(TAG, "onViewCreated: " )
         navController = try {
             findNavController()
         } catch (e: Exception) {
@@ -72,6 +78,7 @@ abstract class BaseFragment<T : ViewDataBinding>(private val layoutId: Int) : Fr
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
+        Log.e(TAG, "onViewStateRestored: " )
         DataBindingUtil.findBinding<T>(requireView())?.let {
             fragBinding = it
         }
@@ -96,4 +103,41 @@ abstract class BaseFragment<T : ViewDataBinding>(private val layoutId: Int) : Fr
         }
         navController?.navigate(actionId, bundle)
     }
+
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        Log.e(TAG, "onAttach: " )
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.e(TAG, "onDestroy: " )
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        Log.e(TAG, "onDestroyView: " )
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        Log.e(TAG, "onDetach: " )
+    }
+
+    override fun onStop() {
+        super.onStop()
+        Log.e(TAG, "onStop: " )
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.e(TAG, "onResume: " )
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.e(TAG, "onPause: " )
+    }
+
 }

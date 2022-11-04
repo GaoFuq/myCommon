@@ -5,10 +5,12 @@ import android.content.Context
 import android.content.ContextWrapper
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.FragmentActivity
 import com.gfq.common.R
 import com.gfq.common.helper.actlifecycle.doOnDestroyed
-import com.gfq.common.system.*
+import com.gfq.common.system.ActivityManager
+import com.gfq.common.system.fragmentActivity
 
 /**
  *  2022/1/12 11:54
@@ -41,7 +43,7 @@ open class BaseDialog(
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        logd("$TAG onCreate")
+        Log.d(TAG, "onCreate: ")
         addLifecycleObserver()
         window?.setBackgroundDrawable(ColorDrawable())
         if (!withAnim) {
@@ -51,7 +53,7 @@ open class BaseDialog(
 
     override fun onStart() {
         super.onStart()
-        logd("$TAG onStart")
+        Log.d(TAG, "onStart: ")
         initLayoutParams()
         doOnStart?.invoke()
     }
@@ -60,17 +62,17 @@ open class BaseDialog(
 
     override fun onStop() {
         super.onStop()
-        logd("$TAG onStop")
+        Log.d(TAG, "onStop: ")
     }
 
     override fun dismiss() {
         super.dismiss()
-        logd("$TAG dismiss")
+        Log.d(TAG, "dismiss: ")
     }
 
     override fun show() {
         super.show()
-        logd("$TAG show")
+        Log.d(TAG, "show: ")
     }
 
     private fun addLifecycleObserver() {
@@ -79,7 +81,7 @@ open class BaseDialog(
 
 
     private fun dismissSelf() {
-        logd("$TAG before ${ActivityManager.getTopActivity()?.localClassName} destroy dismiss itself")
+        Log.d(TAG, "before ${ActivityManager.getTopActivity()?.localClassName} destroy dismiss itself")
         dismiss()
     }
 }
