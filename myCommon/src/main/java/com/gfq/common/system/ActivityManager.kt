@@ -32,8 +32,16 @@ object ActivityManager {
     lateinit var application: Application
     private val activities = Collections.synchronizedList(mutableListOf<FragmentActivity>())
     private val currentDisplayingActivity = Collections.synchronizedList(mutableListOf<Activity>())
-    var onAppForeground: (() -> Unit)? =null
-    var onAppBackground: (() -> Unit)? =null
+
+    /**
+     * 在 Activity 的 onStart 或者 onResume 中使用
+     */
+    fun isAppForeground() = activityShowCount == 1
+    /**
+     * 在 Activity 的 onStart 或者 onResume 中使用
+     */
+    fun isAppBackground() = activityShowCount == 0
+
 
     private val activityLifecycleCallbacks = object : SimpleActivityLifecycleCallbacks(true, TAG) {
         override fun onActivityDestroyed(activity: Activity) {
@@ -54,11 +62,6 @@ object ActivityManager {
             super.onActivityStarted(activity)
             currentDisplayingActivity.add(activity)
             activityShowCount++
-            if (activityShowCount == 1) {
-                Log.d(TAG, "onAppForeground")
-                onAppForeground?.invoke()
-                onAppForeground = null
-            }
         }
 
         override fun onActivityPaused(activity: Activity) {
@@ -69,11 +72,6 @@ object ActivityManager {
         override fun onActivityStopped(activity: Activity) {
             super.onActivityStopped(activity)
             activityShowCount--
-            if (activityShowCount == 0) {
-                Log.d(TAG, "onAppBackground")
-                onAppBackground?.invoke()
-                onAppBackground = null
-            }
         }
     }
 
