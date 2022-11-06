@@ -104,7 +104,7 @@ open class LoadingView @JvmOverloads constructor(
          * 在同一个 Activity 生命周期内调用 withActivity() ,应该得到同一个 LoadingView 对象。
          */
         @JvmStatic
-        fun withActivity(context: Context? = ActivityManager.getTopResumeActivity()): LoadingView? {
+        fun withActivity(context: Context? = ActivityManager.getTopDisplayingActivity()): LoadingView? {
             context ?: return null
             val act = context.activity()
             act ?: return null
