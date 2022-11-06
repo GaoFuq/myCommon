@@ -39,7 +39,7 @@ open class LoadingDialog(context: Context) : BaseDialog(context, withAnim = fals
         show()
     }
 
-    fun appendShow(message: String?) {
+    fun showAppend(message: String?) {
         logd("$TAG appendShow : $message")
         tvState.append(message)
         show()

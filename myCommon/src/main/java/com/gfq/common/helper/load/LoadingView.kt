@@ -41,8 +41,6 @@ open class LoadingView @JvmOverloads constructor(
         id = R.id.defLoadingViewId
     }
 
-    //容器
-    var container: FrameLayout? = null
 
     fun show(message: String?): LoadingView {
         logd("$TAG show : $message")
@@ -54,7 +52,7 @@ open class LoadingView @JvmOverloads constructor(
         return this
     }
 
-    fun appendShow(message: String?): LoadingView {
+    fun showAppend(message: String?): LoadingView {
         logd("$TAG appendShow : $message")
         mainThread {
             addThisViewIfNeed()
@@ -72,11 +70,7 @@ open class LoadingView @JvmOverloads constructor(
         layoutParams = LayoutParams(-2, -2).apply {
             gravity = Gravity.CENTER
         }
-        if (container != null) {
-            container?.addView(this)
-        } else {
-            (context.activity()?.window?.decorView as? FrameLayout)?.addView(this)
-        }
+        (context.activity()?.window?.decorView as? FrameLayout)?.addView(this)
     }
 
 
