@@ -6,6 +6,12 @@ import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response
 import retrofit2.Invocation
+import java.io.IOException
+import java.net.Proxy
+import java.net.ProxySelector
+import java.net.SocketAddress
+import java.net.URI
+import java.util.*
 
 /**
  * 获取方法上的注解
@@ -41,4 +47,19 @@ fun getUserAgent(): String {
         i++
     }
     return sb.toString()
+}
+
+/**
+ * 禁止代理
+ * OkHttpClient.Builder().proxySelector(NoProxy())
+ */
+class NoProxy : ProxySelector() {
+    override fun select(p0: URI?): MutableList<Proxy> {
+        return Collections.singletonList(Proxy.NO_PROXY)
+    }
+
+    override fun connectFailed(p0: URI?, p1: SocketAddress?, p2: IOException?) {
+
+    }
+
 }
