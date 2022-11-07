@@ -35,6 +35,7 @@
               android:layout_height="wrap_content"
               android:layout_marginTop="@dimen/dp5"
               android:textColor="@color/white"
+              android:gravity="center"
               android:textSize="@dimen/sp14"
               android:text="@string/request_loading_state_default_text"/>
       </LinearLayout>

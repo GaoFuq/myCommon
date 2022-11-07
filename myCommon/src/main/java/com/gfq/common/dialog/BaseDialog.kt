@@ -2,11 +2,9 @@ package com.gfq.common.dialog
 
 import android.app.Dialog
 import android.content.Context
-import android.content.ContextWrapper
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.FragmentActivity
 import com.gfq.common.R
 import com.gfq.common.helper.actlifecycle.doOnDestroyed
 import com.gfq.common.system.ActivityManager
@@ -81,7 +79,7 @@ open class BaseDialog(
 
 
     private fun dismissSelf() {
-        Log.d(TAG, "before ${ActivityManager.getTopActivity()?.localClassName} destroy dismiss itself")
+        Log.d(TAG, "before ${ActivityManager.getTopAliveActivity()?.localClassName} destroy dismiss itself")
         dismiss()
     }
 }

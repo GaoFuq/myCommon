@@ -21,12 +21,8 @@ open class LoadingView @JvmOverloads constructor(
 ) : FrameLayout(context, attrs) {
 
 
-    private val inflate =
-        LayoutInflater.from(context).inflate(R.layout.default_loading_view, this, true)
-
-
+    val inflate = LayoutInflater.from(context).inflate(R.layout.default_loading_view, this, true)
     val layoutLoading = inflate.findViewById<LinearLayout>(R.id.layoutLoading)
-
     //最外层的layout，和Activity同宽高
     val layoutDim = inflate.findViewById<FrameLayout>(R.id.layoutDim)
 
@@ -37,12 +33,16 @@ open class LoadingView @JvmOverloads constructor(
     // progressBar.indeterminateTintList = ColorStateList.valueOf(getColor(R.color.theme))
     val progressBar = inflate.findViewById<ProgressBar>(R.id.progressBar)
 
-    init {
-        id = R.id.defLoadingViewId
+
+    private val TAG = "【LoadingView】"
+
+    private var container: ViewGroup? = null
+
+    fun setContainer(viewGroup: ViewGroup): LoadingView {
+        this.container = viewGroup
+        return this
     }
 
-    //容器
-    var container: FrameLayout? = null
 
     fun show(message: String?): LoadingView {
         logd("$TAG show : $message")
@@ -54,7 +54,7 @@ open class LoadingView @JvmOverloads constructor(
         return this
     }
 
-    fun appendShow(message: String?): LoadingView {
+    fun showAppend(message: String?): LoadingView {
         logd("$TAG appendShow : $message")
         mainThread {
             addThisViewIfNeed()
@@ -82,12 +82,16 @@ open class LoadingView @JvmOverloads constructor(
 
     fun dismiss() {
         logd("$TAG dismiss ")
-        mainThread { gone() }
+        mainThread {
+            (parent as? ViewGroup)?.removeView(this)
+        }
     }
 
-    fun dismissDelay(delay: Long) {
+    fun dismiss(delay: Long = 0) {
         logd("$TAG dismissDelay $delay")
-        mainThreadDelay(delay) { gone() }
+        mainThreadDelay(delay) {
+            (parent as? ViewGroup)?.removeView(this)
+        }
     }
 
 
@@ -95,39 +99,5 @@ open class LoadingView @JvmOverloads constructor(
         layoutDim.setBackgroundColor(Color.parseColor("#80000000"))
     }
 
-
-    companion object {
-        private const val TAG = "【LoadingView】"
-
-        /**
-         * 全局获取 LoadingView ,依附于当前显示的 Activity 。
-         * 在同一个 Activity 生命周期内调用 withActivity() ,应该得到同一个 LoadingView 对象。
-         */
-        @JvmStatic
-        fun withActivity(context: Context? = ActivityManager.getTopResumeActivity()): LoadingView? {
-            context ?: return null
-            val act = context.activity()
-            act ?: return null
-            val v = act.findViewById<LoadingView>(R.id.defShowerViewId)
-            return v ?: LoadingView(act)
-        }
-
-        /**
-         * 全局获取 LoadingView ,依附于传入的 container 。
-         * 在同一个 container 生命周期内调用 withViewGroup() ,应该得到同一个 LoadingView 对象。
-         */
-        @JvmStatic
-        fun withViewGroup(container: ViewGroup?): LoadingView? {
-            container ?: return null
-            val v = container.findViewById<LoadingView>(R.id.defShowerViewId)
-            return if (v == null) {
-                val l = LoadingView(container.context)
-                container.addView(l)
-                l
-            } else {
-                v
-            }
-        }
-    }
 
 }

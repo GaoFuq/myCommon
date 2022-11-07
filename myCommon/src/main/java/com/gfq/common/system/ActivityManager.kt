@@ -3,7 +3,6 @@ package com.gfq.common.system
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Application
-import android.content.Context
 import android.content.pm.ActivityInfo
 import android.content.pm.ApplicationInfo
 import android.os.Build
@@ -30,9 +29,19 @@ object ActivityManager {
      * @see ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
      */
     var globalOrientation: Int? = null
+    private var activityShowCount: Int = 0
     lateinit var application: Application
     private val activities = Collections.synchronizedList(mutableListOf<FragmentActivity>())
-    private val currentResumedActivity = Collections.synchronizedList(mutableListOf<Activity>())
+    private val currentDisplayingActivity = Collections.synchronizedList(mutableListOf<Activity>())
+
+    /**
+     * 在 Activity 的 onStart 或者 onResume 中使用
+     */
+    fun isAppForeground() = activityShowCount == 1
+    /**
+     * 在 Activity 的 onStart 或者 onResume 中使用
+     */
+    fun isAppBackground() = activityShowCount == 0
 
 
     private val activityLifecycleCallbacks = object : SimpleActivityLifecycleCallbacks(true, TAG) {
@@ -49,14 +58,21 @@ object ActivityManager {
             }
         }
 
-        override fun onActivityResumed(activity: Activity) {
-            super.onActivityResumed(activity)
-            currentResumedActivity.add(activity)
+
+        override fun onActivityStarted(activity: Activity) {
+            super.onActivityStarted(activity)
+            currentDisplayingActivity.add(activity)
+            activityShowCount++
+        }
+
+        override fun onActivityPaused(activity: Activity) {
+            super.onActivityPaused(activity)
+            currentDisplayingActivity.clear()
         }
 
         override fun onActivityStopped(activity: Activity) {
             super.onActivityStopped(activity)
-            currentResumedActivity.clear()
+            activityShowCount--
         }
     }
 
@@ -118,6 +134,7 @@ object ActivityManager {
 
     /**
      * 获取最近的一个未被 Destroy 的 FragmentActivity 。
+     * 可能不是当前正在（将要）显示的 Activity 。
      * 当从 B 返回 A 时， 在 A 的 onResume 里调用该方法，得到的是 B。
     onActivityResumed: MainActivity
     onActivityDestroyed: SplashActivity
@@ -132,18 +149,19 @@ object ActivityManager {
     onActivityStopped: SettingActivity
     onActivityDestroyed: SettingActivity // 此时才会移除 SettingActivity
      */
-    fun getTopActivity() = activities.lastOrNull()
+    fun getTopAliveActivity() = activities.lastOrNull()
 
     /**
-     * 获取当前正处于 onResume 状态的 Activity
+     * 在 Activity 的 onStart 或者 onResume 中调用
+     * 获取当前正在（将要）显示的 Activity 。
      */
-    fun getTopResumeActivity() = currentResumedActivity.firstOrNull()
+    fun getTopDisplayingActivity() = currentDisplayingActivity.firstOrNull()
 
     /**
-     * 在Activity的onResume中调用，根据全限定类名，判断是否从某Activity返回
+     * 在 Activity 的 onStart 或者 onResume 中调用，根据全限定类名，判断是否从某Activity返回
      */
     fun isBackFrom(clazz: Class<out Activity>): Boolean {
-        val topAct = getTopActivity() ?: return false
+        val topAct = getTopAliveActivity() ?: return false
         return topAct::class.java.name == clazz.name
     }
 

@@ -15,8 +15,7 @@ open class LoadingDialog(context: Context) : BaseDialog(context, withAnim = fals
 
     private val TAG = "【LoadingDialog】"
 
-    private val inflate =
-        LayoutInflater.from(context).inflate(R.layout.default_loading_dialog, null, false)
+    val inflate = LayoutInflater.from(context).inflate(R.layout.default_loading_dialog, null, false)
     val ivState = inflate.findViewById<ImageView>(R.id.ivState)
 
     val tvState = inflate.findViewById<TextView>(R.id.tvState)
@@ -39,7 +38,7 @@ open class LoadingDialog(context: Context) : BaseDialog(context, withAnim = fals
         show()
     }
 
-    fun appendShow(message: String?) {
+    fun showAppend(message: String?) {
         logd("$TAG appendShow : $message")
         tvState.append(message)
         show()

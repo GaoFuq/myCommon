@@ -1,14 +1,12 @@
 package com.gfq.common.dialog
 
 import android.content.Context
-import android.content.ContextWrapper
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
-import androidx.fragment.app.FragmentActivity
 import com.gfq.common.R
 import com.gfq.common.helper.actlifecycle.doOnDestroyed
 import com.gfq.common.system.ActivityManager
@@ -81,7 +79,7 @@ abstract class BaseBottomSheetDialog<T : ViewDataBinding>(
     }
 
     private fun dismissSelf() {
-        Log.d(TAG, "before ${ActivityManager.getTopActivity()?.localClassName} destroy dismiss itself")
+        Log.d(TAG, "before ${ActivityManager.getTopAliveActivity()?.localClassName} destroy dismiss itself")
         dismiss()
     }
 }
