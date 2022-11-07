@@ -63,6 +63,9 @@ object ActivityManager {
             super.onActivityStarted(activity)
             currentDisplayingActivity.add(activity)
             activityShowCount++
+            if(activityShowCount == 1){
+                Log.e(TAG, "app in foreground")
+            }
         }
 
         override fun onActivityPaused(activity: Activity) {
@@ -73,6 +76,9 @@ object ActivityManager {
         override fun onActivityStopped(activity: Activity) {
             super.onActivityStopped(activity)
             activityShowCount--
+            if(activityShowCount == 0){
+                Log.e(TAG, "app in background")
+            }
         }
     }
 
