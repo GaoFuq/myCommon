@@ -19,7 +19,7 @@
     <item android:top="6dp">
         <shape android:shape="rectangle">
             <solid android:color="#dcdcdc" />
-            <size android:width="100dp" android:height="50dp"/>
+            <size android:width="@dimen/dp100" android:height="@dimen/dp50"/>
             <corners android:radius="4dp" />
         </shape>
     </item>

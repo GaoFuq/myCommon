@@ -1,6 +1,7 @@
 package com.gfq.common.helper.load
 
 import android.content.Context
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.widget.ImageView
@@ -11,6 +12,9 @@ import com.gfq.common.dialog.BaseDialog
 import com.gfq.common.system.logd
 import com.gfq.common.utils.mainThreadDelay
 
+/**
+ * 默认背景透明，既 dim=0
+ */
 open class LoadingDialog(context: Context) : BaseDialog(context, withAnim = false) {
 
     private val TAG = "【LoadingDialog】"
@@ -28,9 +32,13 @@ open class LoadingDialog(context: Context) : BaseDialog(context, withAnim = fals
         super.onCreate(savedInstanceState)
         setCanceledOnTouchOutside(false)
         setContentView(inflate)
-
+        window?.setDimAmount(0f)
     }
 
+    //getColor(R.color.theme)
+    fun setProgressColor(color:Int){
+        progressBar.indeterminateTintList = ColorStateList.valueOf(color)
+    }
 
     fun show(message: String?) {
         logd("$TAG show : $message")

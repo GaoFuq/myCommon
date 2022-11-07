@@ -13,11 +13,11 @@
         android:layout_gravity="center"
         android:background="@drawable/bg_default_request_state_dialog"
         android:gravity="center"
-        android:minWidth="100dp"
-        android:minHeight="100dp"
+        android:minWidth="@dimen/dp100"
+        android:minHeight="@dimen/dp100"
         android:orientation="vertical"
-        android:paddingStart="15dp"
-        android:paddingEnd="15dp">
+        android:paddingStart="@dimen/dp15"
+        android:paddingEnd="@dimen/dp15">
 
         <ImageView
             android:id="@+id/ivState"

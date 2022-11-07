@@ -35,6 +35,11 @@ internal fun dpF(n: Number?): Float {
 internal fun dp(n: Number?): Int = dpF(n).toInt()
 
 
+fun Int?.nullOrZero(): Boolean = this == null || this == 0
+fun Long?.nullOrZero(): Boolean = this?.toInt().nullOrZero()
+fun Float?.nullOrZero(): Boolean = this?.toInt().nullOrZero()
+fun Double?.nullOrZero(): Boolean = this?.toInt().nullOrZero()
+
 
 fun String?.nullToDef(def: String = ""): String {
     if (this == null) return def

@@ -164,9 +164,10 @@ object ActivityManager {
     fun getTopDisplayingActivity() = currentDisplayingActivity.firstOrNull()
 
     /**
-     * 在 Activity 的 onStart 或者 onResume 中调用，根据全限定类名，判断是否从某Activity返回
+     * 在 Activity 的 onStart 或者 onResume 中调用，
+     * 根据全限定类名，判断是否从某Activity 进入 或者 返回
      */
-    fun isBackFrom(clazz: Class<out Activity>): Boolean {
+    fun isFrom(clazz: Class<out Activity>): Boolean {
         val topAct = getTopAliveActivity() ?: return false
         return topAct::class.java.name == clazz.name
     }
