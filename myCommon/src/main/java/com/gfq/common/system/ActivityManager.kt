@@ -10,6 +10,7 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.FragmentActivity
+import com.blankj.utilcode.util.Utils
 import com.gfq.common.R
 import com.gfq.common.helper.actlifecycle.SimpleActivityLifecycleCallbacks
 import com.orhanobut.logger.Logger
@@ -65,6 +66,7 @@ object ActivityManager {
         ActivityManager.application = application
         application.registerActivityLifecycleCallbacks(activityLifecycleCallbacks)
         initLogger()
+        Utils.init(application)
     }
 
     private fun initLogger() {

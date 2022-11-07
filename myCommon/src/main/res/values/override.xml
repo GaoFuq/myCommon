@@ -10,7 +10,7 @@
     <bool name="showThreadInfo">false</bool>
     <integer name="methodOffset">1</integer>
     <integer name="methodCount">1</integer>
-    <string name="loggerTag">PRETTY_LOGGER</string>
+    <string name="loggerTag">【三思而行】</string>
 
 
 </resources>
