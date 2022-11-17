@@ -2,12 +2,10 @@ package com.gfq.common.utils
 
 object FastClickUtil {
 
-    private const val MIN_CLICK_TIME = 500
-
     var lastTime = 0L
 
     @JvmStatic
-    fun isFastClick(): Boolean {
+    fun isFastClick(MIN_CLICK_TIME :Long= 500): Boolean {
         val nowTime = System.currentTimeMillis()
         if (nowTime - lastTime <= MIN_CLICK_TIME) {
             return true
