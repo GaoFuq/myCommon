@@ -22,6 +22,32 @@ import com.google.android.material.tabs.TabLayoutMediator
  *  2022/5/9 11:44
  * @auth gaofuq
  * @description
+ *
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+<!--    TabLayout 自定义 indicator -->
+<!--    边距：item -> left top bottom right-->
+<!--    宽高：item -> shape -> size -> width height-->
+<!--    要设置渐变色，需要在xml中设置 TabLayout app:tabIndicatorColor="@android:color/transparent"-->
+<item android:gravity="center"
+android:bottom="3dp"
+>
+<shape>
+
+<size
+android:width="@dimen/dp20"
+android:height="@dimen/dp4" />
+
+<corners android:radius="2dp" />
+
+<gradient android:startColor="#FF00B7EC" android:endColor="#FF2DDAC2"/>
+
+</shape>
+</item>
+
+</layer-list>
+
  */
 class PagerAndTabLayoutHelper(
     lifecycleOwner: LifecycleOwner,
