@@ -1,14 +1,15 @@
 package com.gfq.common.other
 
+import com.gfq.common.system.loge
 import com.gfq.common.system.toBean
-import com.gfq.common.view.getSplitInputFilter
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
-import java.lang.StringBuilder
 
 /**
  * 2021/12/149:19
@@ -41,12 +42,12 @@ data class BankInfoResp(
     val messages: List<Message?>?,
     val stat: String?,
     val validated: Boolean?,
-    val cardType: String?
+    val cardType: String?,
 )
 
 data class Message(
     val errorCodes: String?,
-    val name: String?
+    val name: String?,
 )
 
 /**
@@ -56,7 +57,7 @@ data class Message(
  *
  * 如：key ICBC , value 中国工商银行
  */
-val bankNameMap by lazy { bankAbbrNames.toBean<Map<String, String>>()!! }
+private val bankNameMap by lazy { bankAbbrNames.toBean<Map<String, String>>()!! }
 
 /**
  * @param bankAbbrName 银行英文简称
@@ -79,28 +80,54 @@ fun bankLogoUrl(bankAbbrName: String) =
 "stat": "ok"
 }
  */
-suspend fun getBankInfo(bankNo: String) = bankService.getBankName(bankNo)
+suspend fun bankNameApi(bankNo: String) = bankService.getBankName(bankNo)
 
 /**
- *  用于 EditText 输入银行卡号时，自动分割
- *  注意：EditText 在xml中要设置 "inputType" = "phone"
+ * @param bankNumber 银行卡号
+ * @param supportCC 是否支持信用卡
+ * @return  银行名称
  */
-fun getBankSpaceInputFilter() = getSplitInputFilter(4," ",false)
+suspend fun bankName(
+    bankNumber: String,
+    supportCC: Boolean = false,
+    onNotSupport: (() -> Unit)? = null,
+): String? {
+    val resp = withContext(Dispatchers.IO) { bankService.getBankName(bankNumber) }
+    if (resp == null) {
+        return null
+    } else {
+        if (resp.stat == "ok" && resp.validated == true) {
+            //储蓄卡（DC） 信用卡（CC）
+            if (resp.cardType == "CC") {
+                if (supportCC) {
+                    return bankNameMap[resp.bank]
+                } else {
+                    onNotSupport?.invoke()
+                    loge("不支持信用卡")
+                }
+            } else if (resp.cardType == "DC") {
+                return bankNameMap[resp.bank]
+            }
+        }
+        return null
+    }
+}
+
 
 /**
  * 用于直接设置一个完整的银行卡号
- * @param bankNo 银行卡号
+ * @param bankNumber 银行卡号 11112222333344440000
  * return "1111 2222 3333 4444 0000"
  */
-fun getBankSpaceText(bankNo: String?): String {
-    if (bankNo.isNullOrEmpty()) return ""
+fun bankSpaceText(bankNumber: String?): String {
+    if (bankNumber.isNullOrEmpty()) return ""
 
     var result = ""
 
-    val temp = if (bankNo.contains(" ")) {
-        bankNo.replace(" ", "")
+    val temp = if (bankNumber.contains(" ")) {
+        bankNumber.replace(" ", "")
     } else {
-        bankNo
+        bankNumber
     }
 
     val x = temp.length % 4

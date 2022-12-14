@@ -295,7 +295,75 @@ class InputFilterMaxValue(
     }
 }
 
+/**
+ * 给 EditText 设置过滤器
+ * 作用：限制小数的输入
+ * 使用场景：money输入
+ * @param decimalDigits 小数位数
+ */
+class InputFilterLimitDecimal(private val decimalDigits: Int):InputFilter {
+    override fun filter(
+        source: CharSequence?,
+        start: Int,
+        end: Int,
+        dest: Spanned?,
+        dstart: Int,
+        dend: Int,
+    ): CharSequence {
+        var result = ""
+        // 删除等特殊字符，直接返回
+        val sVal = source.toString()
+        if ("" == sVal) {
+            result = ""
+        }
+        val dVal = dest.toString()
+        if ("." == sVal && "" == dVal) {
+            result = "0."
+        }
+        if ("0" == dVal && "." != sVal) {
+            result = ""
+        }
+        val splitArray = dVal.split("\\.")
+        if (splitArray.size > 1) {
+            val dotValue = splitArray[1]
+            val diff = dotValue.length + 1 - decimalDigits
+            if (diff > 0) {
+                result = ""
+            }
+        }
+        return result
+    }
 
+}
+
+
+/**
+ * 给 EditText 设置过滤器
+ * 场景：银行卡号的输入，每输入4位，自动添加空格。
+ * 需求：点击输入框，打开数字键盘，可以输入数字，空格。
+ * 解决：
+ * 1.EditText 设置 inputType = "number" ，可以使系统打开数字键盘，但是会限制输入只能是0~9。
+ * 2.EditText 设置 digits = "1234567890 " 。
+ * @description 在输入时插入特定字符
+ * @param insertStr 要插入的字符串
+ * @param insertSpace 插入的字符间隔数
+ */
+class InputFilterInset(private val insertStr: String = " ", private val insertSpace: Int = 4) :
+    InputFilter {
+    override fun filter(
+        source: CharSequence?,
+        start: Int,
+        end: Int,
+        dest: Spanned?,
+        dstart: Int,
+        dend: Int,
+    ): CharSequence? {
+        if (!source.isNullOrEmpty() && (dest?.length ?: 0) % (insertSpace + 1) == 0) {
+            return "$insertStr$source"
+        }
+        return source
+    }
+}
 
 
 val String?.md5: String
