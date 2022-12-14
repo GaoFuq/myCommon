@@ -1,7 +1,11 @@
 package com.gfq.common.view
 
+import android.graphics.Rect
 import android.util.Log
 import android.view.View
+import android.view.ViewGroup
+import android.view.ViewTreeObserver
+import androidx.core.view.ViewCompat
 import androidx.core.view.isGone
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
@@ -86,7 +90,7 @@ fun RecyclerView.isScrollingStopped() = scrollState == 0
 fun View.onVisibilityChange(
     viewGroups: List<ViewGroup> = emptyList(), // 会被插入 Fragment 的容器集合
     needScrollListener: Boolean = true,
-    block: (view: View, isVisible: Boolean) -> Unit
+    block: (view: View, isVisible: Boolean) -> Unit,
 ) {
     val KEY_VISIBILITY = "KEY_VISIBILITY".hashCode()
     val KEY_HAS_LISTENER = "KEY_HAS_LISTENER".hashCode()
@@ -157,7 +161,7 @@ fun View.onVisibilityChange(
     }
     viewTreeObserver.addOnGlobalLayoutListener(layoutListener)
     // 全局滚动监听器
-    var scrollListener:ViewTreeObserver.OnScrollChangedListener? = null
+    var scrollListener: ViewTreeObserver.OnScrollChangedListener? = null
     if (needScrollListener) {
         scrollListener = ViewTreeObserver.OnScrollChangedListener { checkVisibility() }
         viewTreeObserver.addOnScrollChangedListener(scrollListener)
@@ -194,7 +198,8 @@ fun View.onVisibilityChange(
                     v.viewTreeObserver.removeGlobalOnLayoutListener(layoutListener)
                 }
                 v.viewTreeObserver.removeOnWindowFocusChangeListener(focusChangeListener)
-                if(scrollListener !=null) v.viewTreeObserver.removeOnScrollChangedListener(scrollListener)
+                if (scrollListener != null) v.viewTreeObserver.removeOnScrollChangedListener(
+                    scrollListener)
                 viewGroups.forEach { it.setOnHierarchyChangeListener(null) }
             }
             removeOnAttachStateChangeListener(this)
@@ -204,3 +209,8 @@ fun View.onVisibilityChange(
     setTag(KEY_HAS_LISTENER, true)
 }
 
+
+val View.isInScreen: Boolean
+    get() = ViewCompat.isAttachedToWindow(this)
+            && visibility == View.VISIBLE
+            && getLocalVisibleRect(Rect())
