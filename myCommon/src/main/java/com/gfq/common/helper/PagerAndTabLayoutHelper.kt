@@ -3,7 +3,6 @@ package com.gfq.common.helper
 import android.R
 import android.content.res.ColorStateList
 import android.graphics.Color
-import android.graphics.Typeface
 import android.view.Gravity
 import android.view.ViewGroup
 import android.widget.TextView
@@ -13,9 +12,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.OnLifecycleEvent
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
-import com.gfq.common.view.styleBold
 import com.gfq.common.view.styleBoldTypeface
-import com.gfq.common.view.styleNotBold
 import com.gfq.common.view.styleNotBoldTypeface
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
