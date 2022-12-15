@@ -14,7 +14,9 @@ import androidx.lifecycle.OnLifecycleEvent
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.gfq.common.view.styleBold
+import com.gfq.common.view.styleBoldTypeface
 import com.gfq.common.view.styleNotBold
+import com.gfq.common.view.styleNotBoldTypeface
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 
@@ -70,11 +72,11 @@ class PagerAndTabLayoutHelper(
                 if (tab?.position == position) {
                     tabView?.textSize = tabSelectedTextSize
                     if (isTabSelectedBold) {
-                        tabView?.styleBold()
+                        tabView?.styleBoldTypeface()
                     }
                 } else {
                     tabView?.textSize = tabTextSize
-                    tabView?.styleNotBold()
+                    tabView?.styleNotBoldTypeface()
                 }
             }
         }
