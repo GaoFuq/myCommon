@@ -112,6 +112,7 @@ abstract class BaseDialogFragment<T : ViewDataBinding>(
         super.onViewCreated(view, savedInstanceState)
         Log.d(TAG, "onViewCreated: ")
         initView()
+        initClick()
     }
 
     override fun onStart() {
@@ -180,6 +181,7 @@ abstract class BaseDialogFragment<T : ViewDataBinding>(
 
 
     abstract fun initView()
+    abstract fun initClick()
     abstract fun setWindowLayoutParams (param:WindowManager.LayoutParams?)
 
 }

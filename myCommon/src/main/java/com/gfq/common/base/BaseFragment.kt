@@ -56,7 +56,8 @@ abstract class BaseFragment<T : ViewDataBinding>(private val layoutId: Int) : Fr
         Log.d(TAG, "onStart: " )
         doOnStart?.invoke()
     }
-    abstract fun initViews()
+    abstract fun initView()
+    abstract fun initClick()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -73,7 +74,8 @@ abstract class BaseFragment<T : ViewDataBinding>(private val layoutId: Int) : Fr
             Log.d(TAG, "onViewCreated: can not find NavController")
             null
         }
-        initViews()
+        initView()
+        initClick()
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {

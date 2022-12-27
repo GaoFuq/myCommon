@@ -37,9 +37,9 @@ abstract class BaseBindingDialog<T : ViewDataBinding>(
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(dialogBinding.root)
-        initViews()
+        initView()
     }
 
-    abstract fun initViews()
+    abstract fun initView()
 
 }

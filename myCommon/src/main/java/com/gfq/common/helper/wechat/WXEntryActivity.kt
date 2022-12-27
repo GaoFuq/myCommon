@@ -1,4 +1,3 @@
-/*
 package com.gfq.common.helper.wechat
 
 import android.app.Activity
@@ -8,9 +7,6 @@ import android.os.Handler
 import android.os.Looper
 import android.os.Message
 import android.util.Log
-import com.mmj.android.Constant
-import com.mmj.android.helper.LoginHelper
-import com.mmj.android.helper.WeChatHelper
 import com.tencent.mm.opensdk.constants.ConstantsAPI
 import com.tencent.mm.opensdk.modelbase.BaseReq
 import com.tencent.mm.opensdk.modelbase.BaseResp
@@ -21,7 +17,7 @@ import com.tencent.mm.opensdk.openapi.IWXAPIEventHandler
 import com.tencent.mm.opensdk.openapi.WXAPIFactory
 import java.lang.ref.WeakReference
 
-class WXEntryActivity : Activity(), IWXAPIEventHandler {
+internal class WXEntryActivity : Activity(), IWXAPIEventHandler {
     private var api: IWXAPI? = null
     private var handler: MyHandler? = null
 
@@ -34,7 +30,7 @@ class WXEntryActivity : Activity(), IWXAPIEventHandler {
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        api = WXAPIFactory.createWXAPI(this, Constant.weChatAppID, false)
+        api = WXAPIFactory.createWXAPI(this, "weChatAppID", false)
         handler = MyHandler(this)
         api?.handleIntent(intent, this)
     }
@@ -85,9 +81,9 @@ class WXEntryActivity : Activity(), IWXAPIEventHandler {
                 val authResp = resp as SendAuth.Resp
                 val code = authResp.code
                 when (authResp.state) {
-                    WeChatHelper.State.stateLogin.text -> LoginHelper.bindPhoneIfNeed(code)
-                    WeChatHelper.State.stateBind.text -> WeChatHelper.bindWeChat(code)
-                    WeChatHelper.State.stateBindQuick.text -> LoginHelper.weChatBindQuickIfNeed(code)
+//                    WeChatHelper.State.stateLogin.text -> LoginHelper.bindPhoneIfNeed(code)
+//                    WeChatHelper.State.stateBind.text -> WeChatHelper.bindWeChat(code)
+//                    WeChatHelper.State.stateBindQuick.text -> LoginHelper.weChatBindQuickIfNeed(code)
                 }
             }
         }
@@ -105,4 +101,4 @@ class WXEntryActivity : Activity(), IWXAPIEventHandler {
     companion object {
         private const val TAG = "WXEntryActivity"
     }
-}*/
+}

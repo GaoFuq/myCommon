@@ -38,7 +38,7 @@ abstract class BaseBottomSheetDialog<T : ViewDataBinding>(
     var doOnStart: (() -> Unit)? = null
 
 
-    abstract fun initViews()
+    abstract fun initView()
     open fun initLayoutParams() {}
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,7 +49,7 @@ abstract class BaseBottomSheetDialog<T : ViewDataBinding>(
         findViewById<View>(R.id.container)?.setOnClickListener {
             dismiss()
         }
-        initViews()
+        initView()
     }
 
     private fun addLifecycleObserver() {

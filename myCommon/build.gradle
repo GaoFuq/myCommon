@@ -101,6 +101,8 @@ dependencies {
     //沉浸式 fragment快速实现（可选）
     implementation 'com.gyf.immersionbar:immersionbar-components:3.0.0'
 
+    implementation 'com.tencent.mm.opensdk:wechat-sdk-android:6.8.15'
+
 
     //bugly
 //    implementation 'com.tencent.bugly:crashreport:4.1.9'
