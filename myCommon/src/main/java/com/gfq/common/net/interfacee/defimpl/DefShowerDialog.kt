@@ -22,7 +22,7 @@ open class DefShowerDialog(context: Context) :
 
     private val TAG = "【DefShowerDialog】"
 
-    override fun initViews() {
+    override fun initView() {
         setCanceledOnTouchOutside(false)
     }
 

@@ -28,4 +28,7 @@ internal class WebActivity : BaseActivity<MycommonWebActivityBinding>(R.layout.m
 
         agentWeb.urlLoader.loadDataWithBaseURL(null,html, "text/html", "utf-8", null)
     }
+
+    override fun initClick() {
+    }
 }
